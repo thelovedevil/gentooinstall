@@ -16,6 +16,7 @@ import cursesscrollmenu
 from cursesscrollmenu import menu
 from inputastring import input_string
 from cursesprint import print_curses
+from lvm import name_physical_volume
 print_curses("testing whether booted in uefi or bios")
 
 
@@ -145,6 +146,7 @@ luksDictionaryPrefab = {
         "hash" : "null",
         "keyfile" : "null",
 }
+
 for key, value in luksDictionaryPrefab.items():
                         if value == "null":
                                 luksDictionaryPrefab[key]=input()
@@ -191,12 +193,14 @@ def luks_key():
 
 print_curses(str(luks_dictionary.cipher))
 def luks_process_prefab():              
-        luks_process = subprocess.run(['cryptsetup', '--cipher', luks_dictionary.cipher, '--key-size', luks_dictionary.keysize, '--hash', luks_dictionary.hash, '--key-file', luks_dictionary.keyfile 'luksFormat', luks])
+        luks_process = subprocess.run(['cryptsetup', '--cipher', luks_dictionary.cipher, '--key-size', luks_dictionary.keysize, '--hash', luks_dictionary.hash, '--key-file', luks_dictionary.keyfile, 'luksFormat', luks])
 
 luks_process_prefab()
 
+name_physical_volume = name_physical_volume()
+
 def luks_key_decrypt():
-        luks_key_decrypt_process = subprocess.run(['gpg', '--decrypt', s+'/luks-key.gpg', '|', 'cryptsetup', '--key-file', luks_dictionary.keyfile, 'luksOpen', luks, name_luks ])
+        luks_key_decrypt_process = subprocess.run(['gpg', '--decrypt', s+'/luks-key.gpg', '|', 'cryptsetup', '--key-file', luks_dictionary.keyfile, 'luksOpen', luks, name_physical_volume])
 
 
 
