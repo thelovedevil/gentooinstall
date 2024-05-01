@@ -103,7 +103,7 @@ def variable_dictionary():
         dictionary = {}
         print_curses("please enter the number of entries to enter n: ")
         n = int(input_string())
-        print_curses("now enter key value pair followed by enter of each item in dictionary < press enter >")
+        print_curses("now enter key value pair followed by <: enter > of each item in dictionary <: press enter >")
         dictionary = dict(input().split() for _ in range(int(n)))
         return dictionary
 
@@ -112,7 +112,7 @@ print_curses("/ for the following few functions a menu will be filled by you wit
 print_curses("/ for the key value entries make sure to make all keys unique all values meaningful   /")                                                                                     
 print("//////////////////////////////////////////////////////////////////////////////////////////////")
 
-print_curses("you must now enter a directory name to be make for our efi boot directory")     
+print_curses("you must now enter a directory name to be made for our efi boot directory")     
 directory_list = variable_dictionary()
 print_curses(str(directory_list))
 s = menu(directory_list)[0]
@@ -183,19 +183,20 @@ def block_device_selection_two():
 luks = block_device_selection_two()
 print_curses(str(block_device_selection_list.blockdevices))
 
-print_curses(str(luks_dictionary.cipher))
-def luks_process_prefab():              
-        luks_process = subprocess.run(['cryptsetup', '--cipher', luks_dictionary.cipher, '--key-size', luks_dictionary.keysize, '--hash', luks_dictionary.hash, 'luksFormat', luks])
-
-luks_process_prefab()
-
 def gpg_tty(): 
         subprocess.run(['export', 'GPG_TTY=$(tty)'])
 
 def luks_key():
         subprocess.run('dd', 'if=/dev/urandom', 'bs=8388607', 'count=1', '|', 'gpg', '--symmetric', '--cipher-algo', 'AES256', '--output', s+'/luks-key.gpg')
- 
 
+print_curses(str(luks_dictionary.cipher))
+def luks_process_prefab():              
+        luks_process = subprocess.run(['cryptsetup', '--cipher', luks_dictionary.cipher, '--key-size', luks_dictionary.keysize, '--hash', luks_dictionary.hash, '--key-file', luks_dictionary.keyfile 'luksFormat', luks])
+
+luks_process_prefab()
+
+def luks_key_decrypt():
+        luks_key_decrypt_process = subprocess.run(['gpg', '--decrypt', s+'/luks-key.gpg', '|', 'cryptsetup', '--key-file', luks_dictionary.keyfile, 'luksOpen', luks, name_luks ])
 
 
 
