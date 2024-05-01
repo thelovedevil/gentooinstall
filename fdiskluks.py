@@ -17,6 +17,8 @@ from cursesscrollmenu import menu
 from inputastring import input_string
 from cursesprint import print_curses
 from lvm import name_physical_volume
+import lvm
+
 print_curses("testing whether booted in uefi or bios")
 
 
