@@ -139,3 +139,37 @@ def lvcreate_home():
 
 lvcreate_home()
 
+def pv_display():
+    pv_display = subprocess.check_output([ 'sudo', 'pvdisplay'])
+    print_curses(str(pv_display))
+
+pv_display()
+
+def vg_display():
+    vg_display = subprocess.check_output(['sudo', 'vgdisplay'])
+    print_curses(str(pv_display))
+
+vg_display()
+
+def lv_display():
+    lv_display = subprocess.check_ouput(['sudo', 'lvdisplay'])
+    print_curses(str(lv_display))
+
+lv_display()
+
+def vg_change():
+        subprocess.run(['vgchange', '--available', 'y'])
+
+def ls_devmapper():
+        ls_devmapper = subprocess.check_output(['ls', '/dev/mapper'])
+        print_curses(str(ls_devmapper))
+
+def mk_swap():
+    mk_swap = ["mkswap", "-L", lvcreate_swap_dictionary.name, "/dev/mapper/"+name_volume_group]
+    subprocess.run(mk_swap)
+
+mk_swap()
+
+
+
+
