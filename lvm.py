@@ -152,7 +152,7 @@ def vg_display():
 vg_display()
 
 def lv_display():
-    lv_display = subprocess.check_ouput(['sudo', 'lvdisplay'])
+    lv_display = subprocess.check_output(['sudo', 'lvdisplay'])
     print_curses(str(lv_display))
 
 lv_display()
@@ -165,10 +165,40 @@ def ls_devmapper():
         print_curses(str(ls_devmapper))
 
 def mk_swap():
-    mk_swap = ["mkswap", "-L", lvcreate_swap_dictionary.name, "/dev/mapper/"+name_volume_group]
+    mk_swap = ["mkswap", "-L", lvcreate_swap_dictionary.name, "/dev/mapper/"+name_volume_group+"-"+lvcreate_swap_dictionary.name]
     subprocess.run(mk_swap)
 
 mk_swap()
+
+def mk_ext4_root():
+    mk_ext4 = ["mkfs.ext4", "-L", lvcreate_root_dictionary.name, "/dev/mapper/"+name_volume_group+"-"+lvcreate_swap_dictionary.name]
+    subprocess.run(mk_ext4)
+
+mk_ext4_root()
+
+def mk_ext4_home():
+    mk_ext4 = ["mkfs.ext4", "-L", lvcreate_root_dictionary.name, "/dev/mapper"+name_volume_group+"-"+lvcreate_root_dictionary.name]
+    subprocess.run(mk_ext4)
+
+mk_ext4_home():
+    mk_ext4 = ["mkfs.ext4", "-m", "0", "-L", "home", "/dev/mapper/"+name_volume_group+"-"+lvcreate_home_dictionary.name]
+    subprocess.run(mk_ext4)
+
+mk_swap_on():
+    subprocess.run(["swapon", "-v", "/dev/mapper"+name_volume_group+"-"lvcreate_swap_dictionary.name])
+
+def mount_mnt_gentoo():
+    subprocess.run("mount", "-v", "-t", "ext4", "/dev/mapper/"+name_volume_group"-"lvcreate_root_dictionary.name, "/mnt/gentoo")
+
+def mkdir_home_boot_efi():
+    subprocess.run(["mkdir", "-v", "/mnt/gentoo/{home,boot,boot/efi}"])
+
+def umount_efiboot():
+    subprocess.run(["umount", "-v", "/tmp/efiboot"])
+
+
+
+
 
 
 
