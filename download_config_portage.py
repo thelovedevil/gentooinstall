@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 
 import logging
+import glob
 import os
 import sys
 import shutil
@@ -40,21 +41,6 @@ def gpg_key_fingerprint():
 
 gpg_key_fingerprint()
 
-def gpg_key_verify():
-    subprocess.run(["gpg", "--verify", "stage3-amd64-hardened-selinux-openrc-*.tar.xz.DIGESTS"])
-
-gpg_key_verify()
-
-def sha512sum_check():
-    awk = ["awk", "/SHA512 HASH/{getline;print}", "stage3-amd64-hardened-selinux-openrc-*.tar.xz.DIGESTS", "|", "sha512sum", "--check"]
-    subprocess.run(awk)
-
-sha512sum_check()
-
-def sha256sum_check():
-    subprocess.run(["sudo", "sha256sum", "--check", "stage3-amd64-hardened-selinux-openrc-*.tar.xz.sha256"])
-
-sha256sum_check()
 
 def gpg_import():
     subprocess.run(["gpg", "--import", "/usr/share/openpgp-keys/gentoo-release.asc"])
@@ -62,6 +48,34 @@ def gpg_import():
 gpg_import()
 
 def gpg_check():
+    os.chdir("/mnt/gentoo/")
     subprocess.run(["gpg", "--verify", "stage3-amd64-hardened-selinux-openrc-20240428T163427Z.tar.xz.sha256"])
 
 gpg_check()
+
+
+def sha256sum_check():
+    os.chdir("/mnt/gentoo")
+    subprocess.run(["sudo", "sha256sum", "--check", "stage3-amd64-hardened-selinux-openrc-20240428T163427Z.tar.xz.sha256"])
+
+sha256sum_check()
+
+def gpg_key_verify():
+    os.chdir("/mnt/gentoo")
+    subprocess.run(["gpg", "--verify", "stage3-amd64-hardened-selinux-openrc-20240428T163427Z.tar.xz.sha256"])
+
+gpg_key_verify()
+
+#def unpack():
+    #os.chdir("/mnt/gentoo")
+    #tar = ["tar", "xvJpf", "stage3-amd64-hardened-selinux-openrc-20240428T163427Z.tar.xz", "--xattrs-include=", "'" + glob.glob("*") + "." + glob.glob("*") + "'", "--numeric-owner"]
+    #subprocess.run(tar)
+    #subprocess.Popen('tar xvJpf stage3-amd64-hardened-selinux-openrc-20240428T163427Z.tar.xz --xattrs-include='*,.*' --numeric-owner', shell=True)
+
+def test_unpack():
+    os.chdir("/mnt/gentoo")
+    tar = "sudo tar xvJpf stage3-amd64-hardened-selinux-openrc-20240428T163427Z.tar.xz --xattrs-include='*.*' --numeric-owner"
+    subprocess.Popen(tar, shell=True, executable='/bin/bash')
+
+test_unpack()     
+unpack()
