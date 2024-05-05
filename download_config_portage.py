@@ -41,17 +41,18 @@ def gpg_key_fingerprint():
 gpg_key_fingerprint()
 
 def gpg_key_verify():
-    subprocess.run(["gpg", "verify", "stage3-amd64-hardened-selinux-openrc-*.tar.xz.DIGESTS"])
+    subprocess.run(["gpg", "--verify", "stage3-amd64-hardened-selinux-openrc-*.tar.xz.DIGESTS"])
 
 gpg_key_verify()
 
 def sha512sum_check():
-    subprocess.run(["awk", "'/SHA512'", "'HASH/{getline;print}'", "stage3-amd64-hardened-selinux-openrc-*.tar.xz.DIGESTS", "|", "sha512sum", "--check"])
+    awk = ["awk", "/SHA512 HASH/{getline;print}", "stage3-amd64-hardened-selinux-openrc-*.tar.xz.DIGESTS", "|", "sha512sum", "--check"]
+    subprocess.run(awk)
 
 sha512sum_check()
 
 def sha256sum_check():
-    subprocess.run(["sudo", "sha256sum", "--check", "stage3-amd64-hardened-selinux-openrc-20240428T163427Z.tar.xz.sha256"])
+    subprocess.run(["sudo", "sha256sum", "--check", "stage3-amd64-hardened-selinux-openrc-*.tar.xz.sha256"])
 
 sha256sum_check()
 
