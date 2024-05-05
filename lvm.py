@@ -165,36 +165,43 @@ def ls_devmapper():
         print_curses(str(ls_devmapper))
 
 def mk_swap():
-    mk_swap = ["mkswap", "-L", lvcreate_swap_dictionary.name, "/dev/mapper/"+name_volume_group+"-"+lvcreate_swap_dictionary.name]
+    mk_swap = ["mkswap", "-L", lvcreate_swap_dictionary.name, "/dev/mapper/" + name_volume_group + "-" + lvcreate_swap_dictionary.name]
     subprocess.run(mk_swap)
 
 mk_swap()
 
 def mk_ext4_root():
-    mk_ext4 = ["mkfs.ext4", "-L", lvcreate_root_dictionary.name, "/dev/mapper/"+name_volume_group+"-"+lvcreate_swap_dictionary.name]
+    mk_ext4 = ["mkfs.ext4", "-L", lvcreate_root_dictionary.name, "/dev/mapper/" + name_volume_group + "-" + lvcreate_root_dictionary.name]
     subprocess.run(mk_ext4)
 
 mk_ext4_root()
 
 def mk_ext4_home():
-    mk_ext4 = ["mkfs.ext4", "-L", lvcreate_root_dictionary.name, "/dev/mapper"+name_volume_group+"-"+lvcreate_root_dictionary.name]
+    mk_ext4 = ["mkfs.ext4", "-m", "0", "-L", "home", "/dev/mapper/"+name_volume_group + "-" + lvcreate_home_dictionary.name]
     subprocess.run(mk_ext4)
 
-mk_ext4_home():
-    mk_ext4 = ["mkfs.ext4", "-m", "0", "-L", "home", "/dev/mapper/"+name_volume_group+"-"+lvcreate_home_dictionary.name]
-    subprocess.run(mk_ext4)
+mk_ext4_home()
 
-mk_swap_on():
-    subprocess.run(["swapon", "-v", "/dev/mapper"+name_volume_group+"-"lvcreate_swap_dictionary.name])
+def mk_swap_on():
+    subprocess.run(["swapon", "-v", "/dev/mapper/"+ name_volume_group + "-" + lvcreate_swap_dictionary.name])
+
+def mkdir_mnt_gentoo():
+    subprocess.run(["sudo", "mkdir", "-v", "/mnt/gentoo/"])
+
+mkdir_mnt_gentoo()
 
 def mount_mnt_gentoo():
-    subprocess.run("mount", "-v", "-t", "ext4", "/dev/mapper/"+name_volume_group"-"lvcreate_root_dictionary.name, "/mnt/gentoo")
+    subprocess.run(["sudo", "mount", "-v", "-t", "ext4", "/dev/mapper/" + name_volume_group + "-" +lvcreate_root_dictionary.name, "/mnt/gentoo"])
+
+mount_mnt_gentoo()
 
 def mkdir_home_boot_efi():
-    subprocess.run(["mkdir", "-v", "/mnt/gentoo/{home,boot,boot/efi}"])
+    subprocess.run(["sudo", "mkdir", "-v", "/mnt/gentoo/{home,boot,boot/efi}"])
+
+mkdir_home_boot_efi()
 
 def umount_efiboot():
-    subprocess.run(["umount", "-v", "/tmp/efiboot"])
+    subprocess.run(["sudo", "umount", "-v", "/tmp/efiboot"])
 
 
 
