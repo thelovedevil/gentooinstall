@@ -16,6 +16,8 @@ from cursesscrollmenu import menu
 from inputastring import input_string
 from cursesprint import print_curses
 
+def root():
+    subprocess.run(["sudo", "su", "root"])
 
 def change_mnt_gentoo():
     os.chdir("/mnt/gentoo/")
@@ -23,11 +25,11 @@ def change_mnt_gentoo():
 change_mnt_gentoo()
 
 def wget_stage3():
-    subprocess.run(["sudo", "wget", "-c", "https://distfiles.gentoo.org/releases/amd64/autobuilds/20240428T163427Z/stage3-amd64-hardened-selinux-openrc-20240428T163427Z.tar.xz"])
-    subprocess.run(["sudo", "wget", "-c", "https://distfiles.gentoo.org/releases/amd64/autobuilds/current-stage3-amd64-hardened-selinux-openrc/stage3-amd64-hardened-selinux-openrc-20240428T163427Z.tar.xz.CONTENTS.gz"])
-    subprocess.run(["sudo", "wget", "-c", "https://distfiles.gentoo.org/releases/amd64/autobuilds/current-stage3-amd64-hardened-selinux-openrc/stage3-amd64-hardened-selinux-openrc-20240428T163427Z.tar.xz.asc"])
-    subprocess.run(["sudo", "wget", "-c", "https://distfiles.gentoo.org/releases/amd64/autobuilds/current-stage3-amd64-hardened-selinux-openrc/stage3-amd64-hardened-selinux-openrc-20240428T163427Z.tar.xz.DIGESTS"])
-    subprocess.run(["sudo", "wget", "-c", "https://distfiles.gentoo.org/releases/amd64/autobuilds/current-stage3-amd64-hardened-selinux-openrc/stage3-amd64-hardened-selinux-openrc-20240428T163427Z.tar.xz.sha256"])
+    subprocess.run(["wget", "-c", "https://distfiles.gentoo.org/releases/amd64/autobuilds/20240428T163427Z/stage3-amd64-hardened-selinux-openrc-20240428T163427Z.tar.xz"])
+    subprocess.run(["wget", "-c", "https://distfiles.gentoo.org/releases/amd64/autobuilds/current-stage3-amd64-hardened-selinux-openrc/stage3-amd64-hardened-selinux-openrc-20240428T163427Z.tar.xz.CONTENTS.gz"])
+    subprocess.run(["wget", "-c", "https://distfiles.gentoo.org/releases/amd64/autobuilds/current-stage3-amd64-hardened-selinux-openrc/stage3-amd64-hardened-selinux-openrc-20240428T163427Z.tar.xz.asc"])
+    subprocess.run(["wget", "-c", "https://distfiles.gentoo.org/releases/amd64/autobuilds/current-stage3-amd64-hardened-selinux-openrc/stage3-amd64-hardened-selinux-openrc-20240428T163427Z.tar.xz.DIGESTS"])
+    subprocess.run(["wget", "-c", "https://distfiles.gentoo.org/releases/amd64/autobuilds/current-stage3-amd64-hardened-selinux-openrc/stage3-amd64-hardened-selinux-openrc-20240428T163427Z.tar.xz.sha256"])
 
 wget_stage3()
 
@@ -56,7 +58,7 @@ gpg_check()
 
 def sha256sum_check():
     os.chdir("/mnt/gentoo")
-    subprocess.run(["sudo", "sha256sum", "--check", "stage3-amd64-hardened-selinux-openrc-20240428T163427Z.tar.xz.sha256"])
+    subprocess.run(["sha256sum", "--check", "stage3-amd64-hardened-selinux-openrc-20240428T163427Z.tar.xz.sha256"])
 
 sha256sum_check()
 
@@ -74,8 +76,11 @@ gpg_key_verify()
 
 def test_unpack():
     os.chdir("/mnt/gentoo")
-    tar = "sudo tar xvJpf stage3-amd64-hardened-selinux-openrc-20240428T163427Z.tar.xz --xattrs-include='*.*' --numeric-owner"
+    tar = "tar xvJpf stage3-amd64-hardened-selinux-openrc-20240428T163427Z.tar.xz --xattrs-include='*.*' --numeric-owner"
     subprocess.Popen(tar, shell=True, executable='/bin/bash')
 
 test_unpack()     
 unpack()
+
+
+ 
