@@ -18,6 +18,7 @@ from inputastring import input_string
 from cursesprint import print_curses
 from lvm import name_physical_volume
 import lvm
+from cursetable import dictionary_table
 
 print_curses("testing whether booted in uefi or bios")
 
@@ -34,6 +35,9 @@ check_uefi()
 def return_blockdev_name():
         process = subprocess.run("lsblk --json -o NAME,SIZE,UUID,MOUNTPOINT,PATH,FSTYPE ".split(), capture_output=True, text=True)
         return json.loads(process.stdout)
+
+dictionary = subprocess.run("lsblk --json -o NAME,SIZE,UUID,MOUNTPOINT,PATH,FSTYPE ".split(), capture_output=True, text=True)
+dictionary_table(dictionary)
 
 block_devices = return_blockdev_name()
 
