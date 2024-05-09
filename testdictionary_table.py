@@ -7,6 +7,8 @@ import json
 from cursesprint import print_curses
 import itertools
 
+process = subprocess.run("lsblk --json -o NAME,SIZE,UUID,MOUNTPOINT,PATH,FSTYPE ".split(), capture_output=True, text=True)
+
 def return_blockdev_name():
         process = subprocess.run("lsblk --json -o NAME,SIZE,UUID,MOUNTPOINT,PATH,FSTYPE ".split(), capture_output=True, text=True)
         return json.loads(process.stdout)
@@ -137,3 +139,60 @@ m = 0
 for key in dict_table.dictionary_devices:
     print(key['name'])
     m += 1
+    def index():
+        index = 0
+        list = []
+        while index < len(dict_table.dictionary_devices):
+            index += 1
+            list.append(len(dict_table.dictionary_devices[index]))
+            list.sort
+            for x in list:
+                if max(list) == len(dict_table.dictionary_devices[index].values()):
+                    maximum_of_list = max(list)
+                    return maximum_of_list
+index = index()
+print(index)
+
+for key in dict_table.dictionary_devices[0].values():
+    print(key)
+
+print("////////////////////////////////////////////////////////////")
+m = 0
+print(dict_table.dictionary_devices[m])
+key = dict_table.dictionary_devices[m]
+print(key)
+
+print("////////////////////////////////////////////////////////////")
+
+print(dictionary_dev)
+
+
+
+print("/////////////////////////////////////////////////////////////////////")
+
+def dict_generator(indict, pre=None):
+    pre = pre[:] if pre else []
+    if isinstance(indict, dict):
+        for key, value in indict.items():
+            if isinstance(value, dict):
+                for d in dict_generator(value, pre + [key]):
+                    yield d
+            elif isinstance(value, list) or isinstance(value, tuple):
+                for v in value:
+                    for d in dict_generator(v, pre + [key]):
+                        yield d
+            else:
+                yield pre + [key, value]
+    else:
+        yield pre + [indict]
+
+for x in dict_generator(dictionary_dev):
+    print (x)
+
+print("/////////////////////////////////////////////////////////////////////")
+#for key, value in block_devices['blockdevices']
+while index < len(block_devices['blockdevices']):
+    for key in block_devices['blockdevices'][index]:
+        print(block_devices['blockdevices'][index][key])
+print("?????????????????????????????????????????????????????????????????????")
+print("?????????????????????????????????????????????????????????????????????")

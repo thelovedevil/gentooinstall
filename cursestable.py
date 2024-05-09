@@ -41,22 +41,49 @@ def main(stdscr):
     x = 0
     stdscr = curses.initscr()
     m = 0
-    table = Table(stdscr, len(dict_table.dictionary_devices), len(dict_table.dictionary_devices), 10, 120, 10, spacing=1, col_names=True)
-        #stdscr.refresh()
-        #m+=1
-    m = 0
+    def index():
+        index = 0
+        list = []
+        while index < len(dict_table.dictionary_devices):
+            index += 1
+            list.append(len(dict_table.dictionary_devices[index]))
+            list.sort()
+            for x in list:
+                if max(list) == len(dict_table.dictionary_devices[index].values()):
+                    maximum_of_list = max(list)
+                    return index
+    
+    indexed = index()
+
+    table = Table(stdscr, len(dict_table.dictionary_devices), len(block_devices['blockdevices'][0]),20, 120, 20, spacing=1, col_names=True)
+
+    m = 0 
     while m < len(dict_table.dictionary_devices):
-        for n in dict_table.dictionary_devices[m]:
+        for n in dict_table.dictionary_devices[indexed].values():
             table.set_column_header("Col " + str(m + 1), m)
         m += 1
     m = 0
-    while m < len(dict_table.dictionary_devices):
+    for m in range(len(block_devices['blockdevices'])):
         n = 0
-        while n < len(dict_table.dictionary_devices):
-            for key in dict_table.dictionary_devices:
-                #if dict_table.dictionary_devices[m][key] == 
-                table.set_cell(m, n, key['name'])
-                n += 1
+        index = 0
+        key = 0
+        while n < len(block_devices['blockdevices']):
+            while index < len(block_devices['blockdevices']):
+                for key in block_devices['blockdevices'][index]:
+                    table.set_cell(m, n, block_devices['blockdevices'][index][key])
+                    n += 1
+                index += 1
+        m += 1
+
+
+    # m = 0
+    # while m < len(dict_table.dictionary_devices):
+    #     n = 0
+    #     while n < len(dict_table.dictionary_devices):
+    #         key = dict_table.dictionary_devices[m]
+    #         table.set_cell(m, n, key['name'])
+    #         n += 1
+                                 
         m += 1
     table.delete_row(2)
     while ( x != 'q'):
