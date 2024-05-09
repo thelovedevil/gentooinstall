@@ -18,7 +18,9 @@ def return_blockdev_name_two():
         process = subprocess.run("lsblk --json -o NAME,SIZE,UUID,MOUNTPOINT,PATH,FSTYPE ".split(), capture_output=True, text=True)
         return json.loads(process.stdout)
 
-hello = return_blockdev_name_two()
+dictionary_dev = return_blockdev_name_two()
+
+print("/////////////////FIIIIIIIIIIIIIIIIIIIIIIIIIRRRRRRRRRRRRRRRSTTTTTTTTTTTT?????????????????")
 
 class BlockDevice:
     def __init__(self, block_devices):
@@ -34,6 +36,23 @@ class BlockDevice:
 
         def blockdeviceiter(self):
                 return iter(self.block_device.values())
+
+class DictionaryDevice:
+    def __init__(self, dictionary_devices):
+        self.dictionary_devices = dictionary_devices.get("dictionary_devices",[])
+        for device in self.dictionary_devices:
+                for key, value in dictionary_devices.items():
+                        setattr(self, key, value)
+
+        def __iter__(self):
+            for device in self.dictionary_devices:
+                for value in self.dictionary_devices.values():
+                        yield value
+            
+        def dictionarydeviceiter(self):
+            return iter(self.dictionary_device.values())
+
+       
 
         
 dictionary_table = BlockDevice(block_devices)
@@ -65,29 +84,56 @@ for windex in range(len(dictionary_table.block_devices)):
     windex+=1  
 
 
-# for x, y in itertools.combinations(dictionary_table.block_devices, 2):
-#     print(x,y)
-#     test = str(print(y))
-#     print_variable = list(test.split() for _ in range(len(dictionary_table.block_devices)))
-#     print(print_variable)
+for x, y in itertools.combinations(dictionary_table.block_devices, 2):
+    print(x,y)
+    test = str(print(y))
+    print_variable = list(test.split() for _ in range(len(dictionary_table.block_devices)))
+    print(print_variable)
 
 
 print("///////////////////////////////////////////////////////////////////////////////////////")
 
-for (k, v) in enumerate(dictionary_table.block_devices):
-    print(k, v)
+# for (k, v) in enumerate(dictionary_table.block_devices):
+#     print(k, v)
 
-test_dictionary = curtable.dictionary_test_table(hello)
-
-print(test_dictionary.dictionary_devices)
-
-dictionary_test = curtable.block_test_table(block_devices)
-
-print(dictionary_test.block_devices)
-	
+variable_dictionary = curtable.dictionary_test_table(dictionary_dev)
+print(variable_dictionary.dictionary_devices)
 
 
+print("//////////////////////////////////////////////////////////////////////////////////////")
 
+dict_table = curtable.dictionary_test_table(block_devices)
+print(dict_table.dictionary_devices)
 
+for (k, v) in enumerate(dict_table.dictionary_devices):
+     print(k, v)
+     print(range(len(dict_table.dictionary_devices)))
+ 
+m = 0
+i = 1
 
-    
+print("GOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOODDDDDDDDDDDDDDDAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAYYYYYYYYYYYYY")
+while (m < len(dict_table.dictionary_devices)):
+    for key in dict_table.dictionary_devices[m]:
+        print(dict_table.dictionary_devices[m][key])
+    m += 1
+print("THEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEERRRRRE")
+print(dict_table.dictionary_devices)
+
+a = 0
+b = 0
+print("TEST 8:14 TRYING TO FIGURE OUT DIFFERENCE BETWEN [m] and [m]values OUTPUT AGAIN")
+m = 0
+print(dict_table.dictionary_devices[a].values())
+print(dict_table.dictionary_devices[m].values())
+print(dict_table.dictionary_devices[m])
+print("GOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOODDDDDDDDDDDDDDDAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAYYYYYYYYYYYYY")
+
+for n in dict_table.dictionary_devices[m].values():
+    print(n)
+
+print(len(dict_table.dictionary_devices[m].values()))
+m = 0
+for key in dict_table.dictionary_devices:
+    print(key['name'])
+    m += 1

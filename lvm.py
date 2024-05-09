@@ -17,12 +17,12 @@ from inputastring import input_string
 from cursesprint import print_curses
 
 def test_process():
-        subprocess.run(['sudo', 'cryptsetup', 'luksFormat', '/dev/sda'])
+        subprocess.run(['sudo', 'cryptsetup', 'luksFormat', '/dev/sdb'])
 
 test_process()
 
 def test_processes():
-        subprocess.run(['sudo', 'cryptsetup', 'luksOpen', '/dev/sda', 'gentoo'])
+        subprocess.run(['sudo', 'cryptsetup', 'luksOpen', '/dev/sdb', 'gentoo'])
 
 test_processes()
 
