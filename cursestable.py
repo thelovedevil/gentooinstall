@@ -3,6 +3,7 @@ import curses
 from curseXcel import Table
 import subprocess
 import json
+import pandas as pd
 
 
 class DictionaryDevice:
@@ -27,10 +28,9 @@ def return_blockdev_name():
         process = subprocess.run("lsblk --json -o NAME,SIZE,UUID,MOUNTPOINT,PATH,FSTYPE ".split(), capture_output=True, text=True)
         return json.loads(process.stdout)
 
+pandas_dict = return_blockdev_name()
+new_table = pd.json_normalize(pandas_dict['blockdevices'])
 
-def return_blockdev_name():
-        process = subprocess.run("lsblk --json -o NAME,SIZE,UUID,MOUNTPOINT,PATH,FSTYPE ".split(), capture_output=True, text=True)
-        return json.loads(process.stdout)
 
 block_devices = return_blockdev_name()
 
@@ -55,27 +55,22 @@ def main(stdscr):
     
     indexed = index()
 
-    table = Table(stdscr, len(dict_table.dictionary_devices), len(block_devices['blockdevices'][0]),20, 120, 20, spacing=1, col_names=True)
+    table = Table(stdscr, len(new_table), (len(new_table.columns)), 20, 100, 10, spacing=1, col_names=True)
 
     m = 0 
-    while m < len(dict_table.dictionary_devices):
-        for n in dict_table.dictionary_devices[indexed].values():
-            table.set_column_header("Col " + str(m + 1), m)
+    while m < len(new_table.columns):
+        table.set_column_header(new_table.columns[m], m)
         m += 1
     m = 0
-    for m in range(len(block_devices['blockdevices'])):
+    numpy_table = new_table.to_numpy()
+    while m < len(new_table):
         n = 0
-        index = 0
-        key = 0
-        while n < len(block_devices['blockdevices']):
-            while index < len(block_devices['blockdevices']):
-                for key in block_devices['blockdevices'][index]:
-                    table.set_cell(m, n, block_devices['blockdevices'][index][key])
-                    n += 1
-                index += 1
+        while n < len(new_table.columns):
+                table.set_cell(m, n, numpy_table[m][n])
+                n += 1
         m += 1
-
-
+    
+    
     # m = 0
     # while m < len(dict_table.dictionary_devices):
     #     n = 0
@@ -85,7 +80,6 @@ def main(stdscr):
     #         n += 1
                                  
         m += 1
-    table.delete_row(2)
     while ( x != 'q'):
         table.refresh()
         x = stdscr.getkey()
@@ -98,16 +92,12 @@ def main(stdscr):
         elif (x == 'w'):
             table.cursor_up()
     
-
-
 stdscr = curses.initscr()
 curses.noecho()
 curses.cbreak()
 stdscr.keypad(True)
-
-curses.wrapper(main)
-
 curses.nocbreak()
 stdscr.keypad(False)
 curses.echo()
 curses.endwin()
+curses.wrapper(main)

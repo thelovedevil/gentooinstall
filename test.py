@@ -1,24 +1,45 @@
 #!/usr/bin/env python3
 
-import logging
-import glob
-import os
-import sys
-import shutil
-import subprocess
-from subprocess import Popen, PIPE
-import json
-import operator
-import signal
 import curses
-import cursesscrollmenu
-from cursesscrollmenu import menu
-from inputastring import input_string
-from cursesprint import print_curses
+from curseXcel import Table
+
+def main(stdscr):
+    x = 0
+    table = Table(stdscr, 4, 6, 5, 20, 10, spacing=1, col_names=True)
+    m = 0
+    while m < 6:
+        table.set_column_header("Col " + str(m+1), m)
+        m += 1
+    m = 0
+    while m < 4:
+        n = 0
+        while n < 6:
+            table.set_cell(m, n, n+m)
+            n += 1
+        m += 1
+    table.delete_row(2)
+    while (x != 'q'):
+        table.refresh()
+        x = stdscr.getkey()
+        if (x == 'j'):
+            table.cursor_left()
+        elif (x == 'l'):
+            table.cursor_right()
+        elif (x == 'k'):
+            table.cursor_down()
+        elif (x == 'i'):
+            table.cursor_up()
+
+stdscr = curses.initscr()
+curses.noecho()
+curses.cbreak()
+stdscr.keypad(True)
 
 
-def test_wget():
-    url = "wget -c https://distfiles.gentoo.org/releases/amd64/autobuilds/current-stage3-amd64-hardened-selinux-openrc/stage3-amd64-hardened-selinux-openrc-20240428T163427Z.tar.xz.DIGESTS"
-    subprocess.Popen(url, shell=True, executable='/bin/bash')
 
-test_wget()
+curses.nocbreak()
+stdscr.keypad(False)
+curses.echo()
+curses.endwin()
+curses.wrapper(main)
+curses.endwin()
