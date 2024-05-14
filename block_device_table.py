@@ -19,6 +19,14 @@ def return_pandas():
     print(df) 
     return df
 
+<<<<<<< HEAD
+=======
+def return_pandas_dictionary(dictionary):
+    return dictionary
+
+dictionary_variable = return_pandas_dictionary()
+
+>>>>>>> main
 new_table = return_pandas()
 
 def main(stdscr):

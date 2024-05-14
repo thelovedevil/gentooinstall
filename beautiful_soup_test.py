@@ -13,7 +13,14 @@ def find_link():
         print(link['href'])
         sources_list.append(link['href'])
     df = pd.DataFrame(sources_list)
+<<<<<<< HEAD
     print(df)
 
 find_link()
+=======
+    return df
+
+sources_ = find_link()
+
+>>>>>>> main
         
