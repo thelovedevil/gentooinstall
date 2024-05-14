@@ -4,32 +4,32 @@ from curseXcel import Table
 import subprocess
 import json
 import pandas as pd
+from beautiful_soup_test import sources_
+from bs4 import BeautifulSoup, SoupStrainer
 from cursesprint import print_curses
 
 
 def return_pandas_dictionary(dictionary):
     return dictionary
 
-dictionary_variable = return_pandas_dictionary()
-
-new_table = return_pandas()
+dictionary_variable = return_pandas_dictionary(sources_)
 
 def main(stdscr):
     x = 0
     stdscr = curses.initscr()
     
 
-    table = Table(stdscr, len(new_table), (len(new_table.columns)), 20, 100, 10, spacing=1, col_names=True)
+    table = Table(stdscr, len(dictionary_variable), (len(dictionary_variable.columns)), 20, 100, 10, spacing=1, col_names=True)
 
     m = 0 
-    while m < len(new_table.columns):
-        table.set_column_header(new_table.columns[m], m)
+    while m < len(dictionary_variable.columns):
+        table.set_column_header(dictionary_variable.columns[m], m)
         m += 1
-    numpy_table = new_table.to_numpy()
+    numpy_table = dictionary_variable.to_numpy()
     m = 0
-    while m < len(new_table):
+    while m < len(dictionary_variable):
         n = 0
-        while n < (len(new_table.columns)):
+        while n < (len(dictionary_variable.columns)):
                 table.set_cell(m, n, numpy_table[m][n])
                 n += 1
            
