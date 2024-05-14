@@ -36,7 +36,19 @@ class Table():
 
     def cursor(self):
         return (self.cursor[0], self.cursor[1])
+    
+    def select(self, win):
+        key = win.getkey()
+        if key == '\n':
+            if self.col_names == True:
+                if self.cursor[0] == self.cursor[0]:
+                    if self.cursor[1] == self.cursor[1]:
+                        y = self.cursor[0]
+                        x = self.cursor[1]
+                        return self.table[y][x]
+                        win.refresh()
 
+                
     def set_cell(self, row, col, value):
         if self.col_names == True:
             row += 1

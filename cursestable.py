@@ -4,6 +4,7 @@ from curseXcel import Table
 import subprocess
 import json
 import pandas as pd
+from cursesprint import print_curses
 
 
 class DictionaryDevice:
@@ -24,12 +25,24 @@ class DictionaryDevice:
 def dictionary_test_table(dictionary_command_line):
     return DictionaryDevice(dictionary_command_line)
 
+def return_pandas():
+    process = subprocess.run("lsblk --json -o NAME,SIZE,UUID,MOUNTPOINT,PATH,FSTYPE ".split(), capture_output=True, text=True)
+    data = json.loads(process.stdout)
+    df = pd.json_normalize(data=data.get("blockdevices")).explode(column="children")
+    df = (pd 
+        .concat(objs=[df, df.children.apply(func=pd.Series)], axis=1)
+        .drop(columns=[0, "children"])
+        .fillna("")
+        .reset_index(drop=True)
+        )
+    print(df) 
+    return df
+
 def return_blockdev_name():
         process = subprocess.run("lsblk --json -o NAME,SIZE,UUID,MOUNTPOINT,PATH,FSTYPE ".split(), capture_output=True, text=True)
         return json.loads(process.stdout)
 
-pandas_dict = return_blockdev_name()
-new_table = pd.json_normalize(pandas_dict['blockdevices'])
+new_table = return_pandas()
 
 
 block_devices = return_blockdev_name()
@@ -61,25 +74,17 @@ def main(stdscr):
     while m < len(new_table.columns):
         table.set_column_header(new_table.columns[m], m)
         m += 1
-    m = 0
     numpy_table = new_table.to_numpy()
+    m = 0
     while m < len(new_table):
         n = 0
-        while n < len(new_table.columns):
+        while n < (len(new_table.columns)):
                 table.set_cell(m, n, numpy_table[m][n])
                 n += 1
+           
+           
         m += 1
-    
-    
-    # m = 0
-    # while m < len(dict_table.dictionary_devices):
-    #     n = 0
-    #     while n < len(dict_table.dictionary_devices):
-    #         key = dict_table.dictionary_devices[m]
-    #         table.set_cell(m, n, key['name'])
-    #         n += 1
-                                 
-        m += 1
+    table.refresh()
     while ( x != 'q'):
         table.refresh()
         x = stdscr.getkey()
@@ -91,6 +96,10 @@ def main(stdscr):
             table.cursor_down()
         elif (x == 'w'):
             table.cursor_up()
+        elif (x == '\n'):
+            print_curses(str(table.select(stdscr)))
+            
+            
     
 stdscr = curses.initscr()
 curses.noecho()

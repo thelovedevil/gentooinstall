@@ -17,7 +17,16 @@ def return_blockdev_name():
 def return_pandas():
     process = subprocess.run("lsblk --json -o NAME,SIZE,UUID,MOUNTPOINT,PATH,FSTYPE ".split(), capture_output=True, text=True)
     data = json.loads(process.stdout)
-    return pd.json_normalize(data['blockdevices'], meta = ['name', 'size', 'uuid', 'mountpoint', 'path', 'fstype', ['children', 'name', 'size', 'uuid', 'mountpoint', 'path', 'fstype']])
+    df = pd.json_normalize(data=data.get("blockdevices")).explode(column="children")
+    df = (pd 
+        .concat(objs=[df, df.children.apply(func=pd.Series)], axis=1)
+        .drop(columns=[0, "children"])
+        .fillna("")
+        .reset_index(drop=True)
+        )
+    print(df) 
+    return df  
+
 
 block_devices = return_blockdev_name()
 
@@ -64,3 +73,31 @@ print(new_table.values.tolist()[1][6])
 print("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
 print(json_pandas)
 print("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
+
+print("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
+print("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
+
+def test():
+    process = subprocess.run("lsblk --json -o NAME,SIZE,UUID,MOUNTPOINT,PATH,FSTYPE ".split(), capture_output=True, text=True)
+    data = json.loads(process.stdout)
+    print(data)
+
+
+test()
+
+ctest_variable = return_pandas()
+print("///////////////////////////////////////////////////////////////////////////////////////////////////////////")
+print(ctest_variable.to_numpy())
+print("///////////////////////////////////////////////////////////////////////////////////////////////////////////")
+m = 0
+n = 0
+a = ((len(new_table.columns)))
+b = ((len(new_table)))
+numpy_table = new_table.to_numpy()
+
+def haha():
+     return numpy_table[m][n]
+
+something = haha()
+
+print(something)
