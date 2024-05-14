@@ -49,6 +49,8 @@ def main(stdscr):
             table.cursor_up()
         elif (x == '\n'):
             print_curses(str(table.select(stdscr)))
+            urladdress = str(table.select(stdscr))
+        
             
             
     

@@ -19,21 +19,12 @@ def return_pandas():
     print(df) 
     return df
 
-<<<<<<< HEAD
-=======
-def return_pandas_dictionary(dictionary):
-    return dictionary
-
-dictionary_variable = return_pandas_dictionary()
-
->>>>>>> main
 new_table = return_pandas()
 
 def main(stdscr):
     x = 0
     stdscr = curses.initscr()
     
-
     table = Table(stdscr, len(new_table), (len(new_table.columns)), 20, 100, 10, spacing=1, col_names=True)
 
     m = 0 
@@ -46,8 +37,7 @@ def main(stdscr):
         n = 0
         while n < (len(new_table.columns)):
                 table.set_cell(m, n, numpy_table[m][n])
-                n += 1
-           
+                n += 1      
            
         m += 1
     table.refresh()
@@ -63,10 +53,9 @@ def main(stdscr):
         elif (x == 'w'):
             table.cursor_up()
         elif (x == '\n'):
-            print_curses(str(table.select(stdscr)))
+            a = print_curses(str(table.select(stdscr)))
+            print(a)
             
-            
-    
 stdscr = curses.initscr()
 curses.noecho()
 curses.cbreak()

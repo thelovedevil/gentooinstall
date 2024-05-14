@@ -31,7 +31,11 @@ def wget_stage3():
     subprocess.run(["wget", "-c", "https://distfiles.gentoo.org/releases/amd64/autobuilds/current-stage3-amd64-hardened-selinux-openrc/stage3-amd64-hardened-selinux-openrc-20240428T163427Z.tar.xz.DIGESTS"])
     subprocess.run(["wget", "-c", "https://distfiles.gentoo.org/releases/amd64/autobuilds/current-stage3-amd64-hardened-selinux-openrc/stage3-amd64-hardened-selinux-openrc-20240428T163427Z.tar.xz.sha256"])
 
+
 wget_stage3()
+
+def test_stage3_wget():
+    subprocess.run(["wget", "-c", urladdress])
 
 def gpg_key_recv():
     subprocess.run(["gpg", "--keyserver", "hkps://keys.gentoo.org", "--recv-keys", "13EBBDBEDE7A12775DFDB1BABB572E0E2D182910"])
