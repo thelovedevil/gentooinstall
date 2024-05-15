@@ -24,18 +24,27 @@ def change_mnt_gentoo():
 
 change_mnt_gentoo()
 
-def wget_stage3():
-    subprocess.run(["wget", "-c", "https://distfiles.gentoo.org/releases/amd64/autobuilds/20240428T163427Z/stage3-amd64-hardened-selinux-openrc-20240428T163427Z.tar.xz"])
-    subprocess.run(["wget", "-c", "https://distfiles.gentoo.org/releases/amd64/autobuilds/current-stage3-amd64-hardened-selinux-openrc/stage3-amd64-hardened-selinux-openrc-20240428T163427Z.tar.xz.CONTENTS.gz"])
-    subprocess.run(["wget", "-c", "https://distfiles.gentoo.org/releases/amd64/autobuilds/current-stage3-amd64-hardened-selinux-openrc/stage3-amd64-hardened-selinux-openrc-20240428T163427Z.tar.xz.asc"])
-    subprocess.run(["wget", "-c", "https://distfiles.gentoo.org/releases/amd64/autobuilds/current-stage3-amd64-hardened-selinux-openrc/stage3-amd64-hardened-selinux-openrc-20240428T163427Z.tar.xz.DIGESTS"])
-    subprocess.run(["wget", "-c", "https://distfiles.gentoo.org/releases/amd64/autobuilds/current-stage3-amd64-hardened-selinux-openrc/stage3-amd64-hardened-selinux-openrc-20240428T163427Z.tar.xz.sha256"])
+def wget_stage3_tar_xz():
+    print_curses("please choose url for downloading tar xz")
+    subprocess.run(["wget", "-c", "https://distfiles.gentoo.org/releases/amd64/autobuilds/current-stage3-amd64-hardened-selinux-openrc/"+str(special_address_list[0])])
+
+def wget_stage3_tar_xz_contents():
+    print_curses("please choose url for downloading contents")
+    subprocess.run(["wget", "-c", "https://distfiles.gentoo.org/releases/amd64/autobuilds/current-stage3-amd64-hardened-selinux-openrc/"+str(special_address_list[0])])
+
+def wget_stage3_tar_xz_digests():
+    print_curses("please choose url for downloading digest")
+    subprocess.run(["wget", "-c", "https://distfiles.gentoo.org/releases/amd64/autobuilds/current-stage3-amd64-hardened-selinux-openrc/"+str(special_address_list[0])])
+
+def wget_stage3_tar_xz_sha256():
+    print_curses("please choose url for downloading sha256")
+    subprocess.run(["wget", "-c", "https://distfiles.gentoo.org/releases/amd64/autobuilds/current-stage3-amd64-hardened-selinux-openrc/"+str(special_address_list[0])])
 
 
 wget_stage3()
 
 def test_stage3_wget():
-    subprocess.run(["wget", "-c", urladdress])
+    subprocess.run(["wget", "-c", url_address])
 
 def gpg_key_recv():
     subprocess.run(["gpg", "--keyserver", "hkps://keys.gentoo.org", "--recv-keys", "13EBBDBEDE7A12775DFDB1BABB572E0E2D182910"])

@@ -13,7 +13,7 @@ def return_pandas_dictionary(dictionary):
     return dictionary
 
 dictionary_variable = return_pandas_dictionary(sources_)
-
+special_address_list = []
 def main(stdscr):
     x = 0
     stdscr = curses.initscr()
@@ -49,7 +49,9 @@ def main(stdscr):
             table.cursor_up()
         elif (x == '\n'):
             print_curses(str(table.select(stdscr)))
-            url_address = str(table.select(stdscr))
+            special_address = str(table.select(stdscr))
+            special_address_list.append(special_address)
+    
         
             
             
