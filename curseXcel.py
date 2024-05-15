@@ -38,7 +38,6 @@ class Table():
         return (self.cursor[0], self.cursor[1])
     
     def select(self, win):
-        key = win.getkey()
         if self.col_names == True:
             if self.cursor[0] == self.cursor[0]:
                 if self.cursor[1] == self.cursor[1]:

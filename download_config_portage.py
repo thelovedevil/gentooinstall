@@ -15,6 +15,7 @@ import cursesscrollmenu
 from cursesscrollmenu import menu
 from inputastring import input_string
 from cursesprint import print_curses
+from url_table import special_address_list
 
 def root():
     subprocess.run(["sudo", "su", "root"])
@@ -28,23 +29,25 @@ def wget_stage3_tar_xz():
     print_curses("please choose url for downloading tar xz")
     subprocess.run(["wget", "-c", "https://distfiles.gentoo.org/releases/amd64/autobuilds/current-stage3-amd64-hardened-selinux-openrc/"+str(special_address_list[0])])
 
+wget_stage3_tar_xz()
+
 def wget_stage3_tar_xz_contents():
     print_curses("please choose url for downloading contents")
     subprocess.run(["wget", "-c", "https://distfiles.gentoo.org/releases/amd64/autobuilds/current-stage3-amd64-hardened-selinux-openrc/"+str(special_address_list[0])])
+
+wget_stage3_tar_xz_contents()
 
 def wget_stage3_tar_xz_digests():
     print_curses("please choose url for downloading digest")
     subprocess.run(["wget", "-c", "https://distfiles.gentoo.org/releases/amd64/autobuilds/current-stage3-amd64-hardened-selinux-openrc/"+str(special_address_list[0])])
 
+wget_stage3_tar_xz_digests()
+
 def wget_stage3_tar_xz_sha256():
     print_curses("please choose url for downloading sha256")
     subprocess.run(["wget", "-c", "https://distfiles.gentoo.org/releases/amd64/autobuilds/current-stage3-amd64-hardened-selinux-openrc/"+str(special_address_list[0])])
 
-
-wget_stage3()
-
-def test_stage3_wget():
-    subprocess.run(["wget", "-c", url_address])
+wget_stage3_tar_xz_sha256()
 
 def gpg_key_recv():
     subprocess.run(["gpg", "--keyserver", "hkps://keys.gentoo.org", "--recv-keys", "13EBBDBEDE7A12775DFDB1BABB572E0E2D182910"])
@@ -55,7 +58,6 @@ def gpg_key_fingerprint():
     subprocess.run(["gpg", "--fingerprint", "2D182910"])
 
 gpg_key_fingerprint()
-
 
 def gpg_import():
     subprocess.run(["gpg", "--import", "/usr/share/openpgp-keys/gentoo-release.asc"])
