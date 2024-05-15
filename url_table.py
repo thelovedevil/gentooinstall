@@ -8,7 +8,7 @@ from beautiful_soup_test import sources_
 from bs4 import BeautifulSoup, SoupStrainer
 from cursesprint import print_curses
 
-def test(stdscr, sources):
+def url_digest(stdscr, sources):
 
     def return_pandas_dictionary(sources):
         return sources
@@ -62,6 +62,6 @@ def test(stdscr, sources):
     curses.endwin()
     return (special_address_list)
 
-if __name__ == "__test__":
-    curses.wrapper(test)
+if __name__ == "__url_digest__":
+    curses.wrapper(url_digest)
     

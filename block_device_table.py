@@ -19,14 +19,18 @@ def return_pandas():
     print(df) 
     return df
 
-new_table = return_pandas()
-
-def main(stdscr):
+def block_digest(stdscr, sources):
     x = 0
     stdscr = curses.initscr()
+    special_block_list = []
+    def return_block():
+        return sources
     
+    new_table = return_block()
+
     table = Table(stdscr, len(new_table), (len(new_table.columns)), 20, 100, 10, spacing=1, col_names=True)
 
+    
     m = 0 
     while m < len(new_table.columns):
         table.set_column_header(new_table.columns[m], m)
@@ -53,15 +57,20 @@ def main(stdscr):
         elif (x == 'w'):
             table.cursor_up()
         elif (x == '\n'):
-            a = print_curses(str(table.select(stdscr)))
+            print_curses(str(table.select(stdscr)))
+            special_block = str(table.select(stdscr))
+            special_block_list.append(special_address)
+            print_curses(str(special_block_list))
             
             
-stdscr = curses.initscr()
-curses.noecho()
-curses.cbreak()
-stdscr.keypad(True)
-curses.nocbreak()
-stdscr.keypad(False)
-curses.echo()
-curses.endwin()
-curses.wrapper(main)
+    stdscr = curses.initscr()
+    curses.noecho()
+    curses.cbreak()
+    stdscr.keypad(True)
+    curses.nocbreak()
+    stdscr.keypad(False)
+    curses.echo()
+    curses.endwin()
+
+if __name__ == "__block_digest__":
+    curses.wrapper(block_digest)

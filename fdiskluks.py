@@ -17,10 +17,13 @@ from cursesscrollmenu import menu
 from inputastring import input_string
 from cursesprint import print_curses
 from lvm import name_physical_volume
-import lvm
-from cursetable import dictionary_table
+from url_table import url_digest
+from block_device_table import block_digest
 
 print_curses("testing whether booted in uefi or bios")
+
+
+subprocess.run(['fdisk', block_device_table.block_digest(stdscr, pandas_block_devices)])
 
 
 def check_uefi():
@@ -32,9 +35,22 @@ def check_uefi():
 
 check_uefi()
 
-def return_blockdev_name():
-        process = subprocess.run("lsblk --json -o NAME,SIZE,UUID,MOUNTPOINT,PATH,FSTYPE ".split(), capture_output=True, text=True)
-        return json.loads(process.stdout)
+def return_pandas():
+    process = subprocess.run("lsblk --json -o NAME,SIZE,UUID,MOUNTPOINT,PATH,FSTYPE ".split(), capture_output=True, text=True)
+    data = json.loads(process.stdout)
+    df = pd.json_normalize(data=data.get("blockdevices")).explode(column="children")
+    df = (pd 
+        .concat(objs=[df, df.children.apply(func=pd.Series)], axis=1)
+        .drop(columns=[0, "children"])
+        .fillna("")
+        .reset_index(drop=True)
+        )
+    print(df) 
+    return df
+
+stdscr = curses.initscr()
+pandas_block_devices = return_pandas()
+special_block_list = block_device_table.block_digest(stdscr, pandas_block_devices)
 
 dictionary = subprocess.run("lsblk --json -o NAME,SIZE,UUID,MOUNTPOINT,PATH,FSTYPE ".split(), capture_output=True, text=True)
 dictionary_table(dictionary)
@@ -69,12 +85,12 @@ def fdisk_process():
         print_curses("after pressing enter please enter a block device path for selection")
         block_device_selection = input_string()
         for item in block_device_selection_list.block_devices:
-                if item['path'] == block_device_selection:
+                if item['path'] == block_device_table.block_digest(stdscr, pandas_block_devices):
                         print_curses("successfully matched input string to device path")
                         print_curses(str(item))
                         print_curses(str(item['path']))
                         args = item['path']
-                        subprocess.run(['fdisk', args])
+                        subprocess.run(['fdisk', block_device_table.block_digest(stdscr, pandas_block_devices)])
                 else:
                         print_curses("no match <press enter>")
 

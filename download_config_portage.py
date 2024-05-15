@@ -20,7 +20,7 @@ import url_table
 
 #special_address_list.append(special_address)
 stdscr = curses.initscr()
-special_address_list = url_table.test(stdscr, sources_)
+special_address_list = url_table.url_digest(stdscr, sources_)
 def root():
     subprocess.run(["sudo", "su", "root"])
 
@@ -30,25 +30,21 @@ def change_mnt_gentoo():
 change_mnt_gentoo()
 
 def wget_stage3_tar_xz():
-    print_curses("please choose url for downloading tar xz")
     subprocess.run(["wget", "-c", "https://distfiles.gentoo.org/releases/amd64/autobuilds/current-stage3-amd64-hardened-selinux-openrc/"+str(special_address_list[0])])
 
 wget_stage3_tar_xz()
 
 def wget_stage3_tar_xz_contents():
-    print_curses("please choose url for downloading contents")
     subprocess.run(["wget", "-c", "https://distfiles.gentoo.org/releases/amd64/autobuilds/current-stage3-amd64-hardened-selinux-openrc/"+str(special_address_list[1])])
 
 wget_stage3_tar_xz_contents()
 
 def wget_stage3_tar_xz_digests():
-    print_curses("please choose url for downloading digest")
     subprocess.run(["wget", "-c", "https://distfiles.gentoo.org/releases/amd64/autobuilds/current-stage3-amd64-hardened-selinux-openrc/"+str(special_address_list[2])])
 
 wget_stage3_tar_xz_digests()
 
 def wget_stage3_tar_xz_sha256():
-    print_curses("please choose url for downloading sha256")
     subprocess.run(["wget", "-c", "https://distfiles.gentoo.org/releases/amd64/autobuilds/current-stage3-amd64-hardened-selinux-openrc/"+str(special_address_list[3])])
 
 wget_stage3_tar_xz_sha256()
