@@ -8,53 +8,49 @@ from beautiful_soup_test import sources_
 from bs4 import BeautifulSoup, SoupStrainer
 from cursesprint import print_curses
 
+def test(stdscr, sources):
 
-def return_pandas_dictionary(dictionary):
-    return dictionary
+    def return_pandas_dictionary(sources):
+        return sources
 
-dictionary_variable = return_pandas_dictionary(sources_)
+    dictionary_variable = return_pandas_dictionary(sources)
+    x = 0
+    stdscr = curses.initscr()
+    special_address_list = []
 
-special_address_list = []
-if __name__ == "__main__":
-    def main(stdscr):
-        x = 0
-        stdscr = curses.initscr()
-        
+    table = Table(stdscr, len(dictionary_variable), (len(dictionary_variable.columns)), 100, 100, 10, spacing=1, col_names=True)
 
-        table = Table(stdscr, len(dictionary_variable), (len(dictionary_variable.columns)), 100, 100, 10, spacing=1, col_names=True)
-
-        m = 0 
-        while m < len(dictionary_variable.columns):
-            table.set_column_header(dictionary_variable.columns[m], m)
-            m += 1
-        numpy_table = dictionary_variable.to_numpy()
-        m = 0
-        while m < len(dictionary_variable):
-            n = 0
-            while n < (len(dictionary_variable.columns)):
-                    table.set_cell(m, n, numpy_table[m][n])
-                    n += 1
+    m = 0 
+    while m < len(dictionary_variable.columns):
+        table.set_column_header(dictionary_variable.columns[m], m)
+        m += 1
+    numpy_table = dictionary_variable.to_numpy()
+    m = 0
+    while m < len(dictionary_variable):
+        n = 0
+        while n < (len(dictionary_variable.columns)):
+                table.set_cell(m, n, numpy_table[m][n])
+                n += 1
             
             
-            m += 1
+        m += 1
+    while ( x != 'q'):
         table.refresh()
-        while ( x != 'q'):
-            table.refresh()
-            x = stdscr.getkey()
-            if ( x == 'a'):
-                table.cursor_left()
-            elif ( x == 'd'):
-                table.cursor_right()
-            elif (x == 's'):
-                table.cursor_down()
-            elif (x == 'w'):
-                table.cursor_up()
-            elif (x == '\n'):
-                print_curses(str(table.select(stdscr)))
-                special_address = str(table.select(stdscr))
-                special_address_list.append(special_address)
-                
-            
+        x = stdscr.getkey()
+        if ( x == 'a'):
+            table.cursor_left()
+        elif ( x == 'd'):
+            table.cursor_right()
+        elif (x == 's'):
+            table.cursor_down()
+        elif (x == 'w'):
+            table.cursor_up()
+        elif (x == '\n'):
+            print_curses(str(table.select(stdscr)))
+            special_address = str(table.select(stdscr))
+            special_address_list.append(special_address)
+            print_curses(str(special_address_list))
+    
     
     stdscr = curses.initscr()
     curses.noecho()
@@ -64,6 +60,8 @@ if __name__ == "__main__":
     stdscr.keypad(False)
     curses.echo()
     curses.endwin()
-    curses.wrapper(main)
+    return (special_address_list)
 
-    #what the fuck
+if __name__ == "__test__":
+    curses.wrapper(test)
+    

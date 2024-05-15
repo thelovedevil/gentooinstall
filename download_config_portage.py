@@ -15,8 +15,12 @@ import cursesscrollmenu
 from cursesscrollmenu import menu
 from inputastring import input_string
 from cursesprint import print_curses
-from url_table import special_address_list
+from beautiful_soup_test import sources_
+import url_table
 
+#special_address_list.append(special_address)
+stdscr = curses.initscr()
+special_address_list = url_table.test(stdscr, sources_)
 def root():
     subprocess.run(["sudo", "su", "root"])
 
@@ -33,19 +37,19 @@ wget_stage3_tar_xz()
 
 def wget_stage3_tar_xz_contents():
     print_curses("please choose url for downloading contents")
-    subprocess.run(["wget", "-c", "https://distfiles.gentoo.org/releases/amd64/autobuilds/current-stage3-amd64-hardened-selinux-openrc/"+str(special_address_list[0])])
+    subprocess.run(["wget", "-c", "https://distfiles.gentoo.org/releases/amd64/autobuilds/current-stage3-amd64-hardened-selinux-openrc/"+str(special_address_list[1])])
 
 wget_stage3_tar_xz_contents()
 
 def wget_stage3_tar_xz_digests():
     print_curses("please choose url for downloading digest")
-    subprocess.run(["wget", "-c", "https://distfiles.gentoo.org/releases/amd64/autobuilds/current-stage3-amd64-hardened-selinux-openrc/"+str(special_address_list[0])])
+    subprocess.run(["wget", "-c", "https://distfiles.gentoo.org/releases/amd64/autobuilds/current-stage3-amd64-hardened-selinux-openrc/"+str(special_address_list[2])])
 
 wget_stage3_tar_xz_digests()
 
 def wget_stage3_tar_xz_sha256():
     print_curses("please choose url for downloading sha256")
-    subprocess.run(["wget", "-c", "https://distfiles.gentoo.org/releases/amd64/autobuilds/current-stage3-amd64-hardened-selinux-openrc/"+str(special_address_list[0])])
+    subprocess.run(["wget", "-c", "https://distfiles.gentoo.org/releases/amd64/autobuilds/current-stage3-amd64-hardened-selinux-openrc/"+str(special_address_list[3])])
 
 wget_stage3_tar_xz_sha256()
 
@@ -94,8 +98,7 @@ def test_unpack():
     tar = "tar xvJpf stage3-amd64-hardened-selinux-openrc-20240428T163427Z.tar.xz --xattrs-include='*.*' --numeric-owner"
     subprocess.Popen(tar, shell=True, executable='/bin/bash')
 
-test_unpack()     
-unpack()
+test_unpack()
 
 
  
