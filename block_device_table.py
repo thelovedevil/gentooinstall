@@ -54,7 +54,7 @@ def main(stdscr):
             table.cursor_up()
         elif (x == '\n'):
             a = print_curses(str(table.select(stdscr)))
-            print(a)
+            
             
 stdscr = curses.initscr()
 curses.noecho()

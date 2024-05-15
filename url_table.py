@@ -65,3 +65,5 @@ if __name__ == "__main__":
     curses.echo()
     curses.endwin()
     curses.wrapper(main)
+
+    #what the fuck
