@@ -59,7 +59,7 @@ def block_digest(stdscr, sources):
         elif (x == '\n'):
             print_curses(str(table.select(stdscr)))
             special_block = str(table.select(stdscr))
-            special_block_list.append(special_address)
+            special_block_list.append(special_block)
             print_curses(str(special_block_list))
             
             
@@ -71,6 +71,7 @@ def block_digest(stdscr, sources):
     stdscr.keypad(False)
     curses.echo()
     curses.endwin()
+    return (special_block_list)
 
 if __name__ == "__block_digest__":
     curses.wrapper(block_digest)

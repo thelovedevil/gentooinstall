@@ -13,25 +13,25 @@ import operator
 import signal
 import curses
 import cursesscrollmenu
+import pandas as pd
 from cursesscrollmenu import menu
 from inputastring import input_string
 from cursesprint import print_curses
-from lvm import name_physical_volume
 from url_table import url_digest
 from block_device_table import block_digest
+import numpy
 
-print_curses("testing whether booted in uefi or bios")
+stdscr = curses.initscr()
+print_curses(stdscr, "testing whether booted in uefi or bios")
 
-
-subprocess.run(['fdisk', block_device_table.block_digest(stdscr, pandas_block_devices)])
 
 
 def check_uefi():
         booted = "UEFI" 
         if os.path.exists("/sys/firmware/efi"): 
-                print_curses("booted UEFI")
+                print_curses(stdscr, "booted UEFI")
         else: 
-                print_curses("booted BIOS")
+                print_curses(stdscr, "booted BIOS")
 
 check_uefi()
 
@@ -50,52 +50,53 @@ def return_pandas():
 
 stdscr = curses.initscr()
 pandas_block_devices = return_pandas()
-special_block_list = block_device_table.block_digest(stdscr, pandas_block_devices)
+special_block_list = block_digest(stdscr, pandas_block_devices)
+
+subprocess.run(['sudo', 'fdisk', special_block_list[0]])
 
 dictionary = subprocess.run("lsblk --json -o NAME,SIZE,UUID,MOUNTPOINT,PATH,FSTYPE ".split(), capture_output=True, text=True)
-dictionary_table(dictionary)
 
-block_devices = return_blockdev_name()
+block_devices = return_pandas()
 
-print_curses("showing all available block devices")
-print_curses(str(block_devices.items()))
+print_curses(stdscr, "showing all available block devices")
+print_curses(stdscr, str(pandas_block_devices))
 
 class BlockDevice:
     def __init__(self, block_devices):
-        self.block_devices = block_devices.get("blockdevices",[])
+        self.block_devices = block_devices.get("blockdevices", [])
         for device in self.block_devices:
                 for key, value in block_devices.items():
                         setattr(self, key, value)
 
-        def __iter__(
-                self):
+        def __iter__(self):
                 for value in self.block_devices.values():
                         yield value
 
         def blockdeviceiter(self):
                 return iter(self.block_device.values())
 
-                
-block_device_selection_list = BlockDevice(block_devices)
+print_curses(str(pandas_block_devices))
+print_curses(str(pandas_block_devices.to_dict()))
+block_device_selection_list = BlockDevice(pandas_block_devices.to_dict())
 print_curses(str(block_device_selection_list.block_devices))
 
-
+print("BLOCKDEVICESELECTIONSECONDFUNCTIONCOMINGUP")
 def fdisk_process(): 
         print_curses("fdisk process about to be run on selected block device")
-        print_curses("after pressing enter please enter a block device path for selection")
-        block_device_selection = input_string()
-        for item in block_device_selection_list.block_devices:
-                if item['path'] == block_device_table.block_digest(stdscr, pandas_block_devices):
-                        print_curses("successfully matched input string to device path")
-                        print_curses(str(item))
-                        print_curses(str(item['path']))
+        print_curses("please select exactly one block device")
+        selected_device = block_digest(stdscr, pandas_block_devices)
+        for item in pandas_block_devices.to_numpy():
+                if str(item) == str(selected_device[0]):
+                        print_curses(stdscr, "successfully matched input string to device path")
+                        print_curses(stdscr, str(item))
+                        print_curses(stdscr, str(item['path']))
                         args = item['path']
-                        subprocess.run(['fdisk', block_device_table.block_digest(stdscr, pandas_block_devices)])
+                        subprocess.run(['fdisk', block_digest(stdscr, pandas_block_devices)])
                 else:
-                        print_curses("no match <press enter>")
+                        print_curses(stdscr, "no match <press enter>")
 
 def block_device_selection():
-        print_curses("please enter a block device path for block device selection < press enter >")
+        print_curses(stdscr, "please enter a block device path for block device selection < press enter >")
         block_device_selection = input_string()
         selected = {}
         for item in block_device_selection_list.block_devices:
@@ -218,6 +219,11 @@ def luks_process_prefab():
         luks_process = subprocess.run(['cryptsetup', '--cipher', luks_dictionary.cipher, '--key-size', luks_dictionary.keysize, '--hash', luks_dictionary.hash, '--key-file', luks_dictionary.keyfile, 'luksFormat', luks])
 
 luks_process_prefab()
+
+def name_physical_volume():
+    print_curses('please enter a name for a logical volume management (LVM) physical volume <: press enter >')
+    name = input_string()
+    return name
 
 name_physical_volume = name_physical_volume()
 
