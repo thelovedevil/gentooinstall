@@ -12,6 +12,6 @@ def print_curses(stdscr, print):
     scr.refresh()
     scr.getch()
     cur.endwin()    
-    if __name__ == "__print_curses__":
-        cur.wrapper(print_curses)
+if __name__ == "__print_curses__":
+    cur.wrapper(print_curses)
     

@@ -8,6 +8,7 @@ from beautiful_soup_test import sources_
 from bs4 import BeautifulSoup, SoupStrainer
 from cursesprint import print_curses
 
+
 def url_digest(stdscr, sources):
 
     def return_pandas_dictionary(sources):

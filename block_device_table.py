@@ -19,9 +19,17 @@ def return_pandas():
     print(df) 
     return df
 
+
+def main(stdscr):
+    stdscr = curses.initscr()
+    stdscr.clear()
+
 def block_digest(stdscr, sources):
     x = 0
     stdscr = curses.initscr()
+    curses.noecho()
+    curses.cbreak()
+    stdscr.keypad(True)
     special_block_list = []
     def return_block():
         return sources
@@ -57,10 +65,10 @@ def block_digest(stdscr, sources):
         elif (x == 'w'):
             table.cursor_up()
         elif (x == '\n'):
-            print_curses(str(table.select(stdscr)))
+            print_curses(stdscr, str(table.select(stdscr)))
             special_block = str(table.select(stdscr))
             special_block_list.append(special_block)
-            print_curses(str(special_block_list))
+            print_curses(stdscr, str(special_block_list))
             
             
     stdscr = curses.initscr()
@@ -70,8 +78,10 @@ def block_digest(stdscr, sources):
     curses.nocbreak()
     stdscr.keypad(False)
     curses.echo()
+    stdscr.clear()
     curses.endwin()
     return (special_block_list)
+
 
 if __name__ == "__block_digest__":
     curses.wrapper(block_digest)

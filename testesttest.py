@@ -2,18 +2,26 @@
 
 import curses as cur
 from beautiful_soup_test import sources_
+import block_device_table
+import subprocess
+
+
 
 stdscr = cur.initscr()
 
-def print_curses(stdscr, print):
-    scr = cur.initscr()
-    scr.erase()
-    scr.addstr(str(print))
-    scr.scrollok(1)
-    scr.refresh()
-    scr.getch()
-    cur.endwin()    
-    if __name__ == "__print_curses__":
-        cur.wrapper(print_curses)
+def test_list():
+    test_list = block_device_table.block_digest(stdscr, sources_)
+    return test_list
 
-print_curses(stdscr, str(sources_))
+test_list = test_list()
+
+def stty():
+    subprocess.run(['stty', 'sane'])
+
+stty()
+
+def test_list_two():
+    test_list_two = block_device_table.block_digest(stdscr, sources_)
+    return test_list_two
+
+test_list_two = test_list_two()
