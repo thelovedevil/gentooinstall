@@ -98,20 +98,20 @@ def fdisk_process():
                 else:
                         print_curses(stdscr, "no match <press enter>")
 
-def block_device_selection():
-        print_curses(stdscr, "please enter a block device path for block device selection < press enter >")
-        block_device_selection = input_string()
-        selected = {}
-        for item in block_device_selection_list.block_devices:
-                if item['path'] == block_device_selection:
-                        print("success")
-                        selected = {}
-                        print(item)
-                        print(item['path'])
-                        selected['path'] = item['path']
-                        return selected['path']
-                else:
-                        print("no matching block device found")
+# def block_device_selection():
+#         print_curses(stdscr, "please enter a block device path for block device selection < press enter >")
+#         block_device_selection = input_string()
+#         selected = {}
+#         for item in block_device_selection_list.block_devices:
+#                 if item['path'] == block_device_selection:
+#                         print("success")
+#                         selected = {}
+#                         print(item)
+#                         print(item['path'])
+#                         selected['path'] = item['path']
+#                         return selected['path']
+#                 else:
+#                         print("no matching block device found")
 
 print_curses(stdscr, "you will now be asked by an fdisk function to select a block device for paritioning")
 print_curses(stdscr, "this block device will be used for your usb key")
@@ -120,7 +120,7 @@ fdisk_process()
 print_curses(stdscr, "the selected usb key will now be formatted to fat32 using mkfs")
 print_curses(stdscr, "you'll now be asked again to enter the path to said block device for formatting")
 
-format_block_device = block_device_selection()
+format_block_device = block_digest(stdscr, pandas_block_devices)
 
 def mkfs_vfat():
         subprocess.run(['mkfs.vfat', '-F32', format_block_device])
