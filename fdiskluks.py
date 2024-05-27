@@ -41,6 +41,7 @@ check_uefi()
 
 def return_pandas():
     process = subprocess.run("lsblk --json -o NAME,SIZE,UUID,MOUNTPOINT,PATH,FSTYPE ".split(), capture_output=True, text=True)
+    print(process)
     data = json.loads(process.stdout)
     df = pd.json_normalize(data=data.get("blockdevices")).explode(column="children")
     df = (pd 
@@ -54,7 +55,6 @@ def return_pandas():
 
 stdscr = curses.initscr()
 pandas_block_devices = return_pandas()
-special_block_list = block_digest(stdscr, pandas_block_devices)
 
 
 dictionary = subprocess.run("lsblk --json -o NAME,SIZE,UUID,MOUNTPOINT,PATH,FSTYPE ".split(), capture_output=True, text=True)
@@ -94,7 +94,7 @@ def fdisk_process():
                         print_curses(stdscr, "successfully matched input string to device path")
                         print_curses(stdscr, str(item))
                         print_curses(stdscr, str(item['path']))
-                        subprocess.run(['sudo', 'fdisk', special_block_list[0]])
+                        subprocess.run(['sudo', 'fdisk', selected_device[0]])
                 else:
                         print_curses(stdscr, "no match <press enter>")
 
@@ -123,7 +123,7 @@ print_curses(stdscr, "you'll now be asked again to enter the path to said block 
 format_block_device = block_digest(stdscr, pandas_block_devices)
 
 def mkfs_vfat():
-        subprocess.run(['mkfs.vfat', '-F32', format_block_device])
+        subprocess.run(['mkfs.vfat', '-F32', format_block_device[0]])
         print_curses(stdscr, "successfully formatted devie -F32")
 
 def variable_dictionary():
