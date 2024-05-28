@@ -20,6 +20,7 @@ from cursesprint import print_curses
 from url_table import url_digest
 from block_device_table import block_digest
 import numpy
+import crypt_table_opt
 
 stdscr = curses.initscr()
 print_curses(stdscr, "testing whether booted in uefi or bios")
@@ -78,7 +79,7 @@ class BlockDevice:
 
 block_device_selection_list = BlockDevice(block_device_json_only)
 
-block_edef fdisk_process(): 
+def fdisk_process(): 
         stdscr = curses.initscr()
         print_curses(stdscr, "fdisk process about to be run on selected block device")
         print_curses(stdscr, "please select exactly one block device")

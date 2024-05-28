@@ -19,6 +19,8 @@ def return_pandas():
     print(df) 
     return df
 
+stdscr = curses.initscr()
+test = return_pandas()
 
 def main(stdscr):
     stdscr = curses.initscr()
@@ -85,3 +87,6 @@ def block_digest(stdscr, sources):
 
 if __name__ == "__block_digest__":
     curses.wrapper(block_digest)
+
+
+block_digest(stdscr, test)
