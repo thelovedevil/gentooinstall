@@ -41,7 +41,6 @@ check_uefi()
 
 def return_pandas():
     process = subprocess.run("lsblk --json -o NAME,SIZE,UUID,MOUNTPOINT,PATH,FSTYPE ".split(), capture_output=True, text=True)
-    print(process)
     data = json.loads(process.stdout)
     df = pd.json_normalize(data=data.get("blockdevices")).explode(column="children")
     df = (pd 
@@ -49,8 +48,7 @@ def return_pandas():
         .drop(columns=[0, "children"])
         .fillna("")
         .reset_index(drop=True)
-        )
-    print(df) 
+        ) 
     return df
 
 stdscr = curses.initscr()
@@ -78,13 +76,9 @@ class BlockDevice:
         def blockdeviceiter(self):
                 return iter(self.block_device.values())
 
-print_curses(stdscr, str(pandas_block_devices))
-print_curses(stdscr, str(pandas_block_devices.to_dict()))
 block_device_selection_list = BlockDevice(block_device_json_only)
-print_curses(stdscr, str(block_device_selection_list.block_devices))
 
-print("BLOCKDEVICESELECTIONSECONDFUNCTIONCOMINGUP")
-def fdisk_process(): 
+block_edef fdisk_process(): 
         stdscr = curses.initscr()
         print_curses(stdscr, "fdisk process about to be run on selected block device")
         print_curses(stdscr, "please select exactly one block device")
