@@ -27,12 +27,15 @@ def main(stdscr):
     stdscr.clear()
 
 def block_digest(stdscr, sources):
+
     x = 0
     stdscr = curses.initscr()
     curses.noecho()
     curses.cbreak()
     stdscr.keypad(True)
+    
     special_block_list = []
+
     def return_block():
         return sources
     

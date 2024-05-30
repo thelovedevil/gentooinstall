@@ -7,7 +7,6 @@ import pandas as pd
 from beautiful_soup_test import sources_
 from bs4 import BeautifulSoup, SoupStrainer
 from cursesprint import print_curses
-from testtest import test_crypt
 
 
 def url_digest(stdscr, sources):
@@ -18,6 +17,9 @@ def url_digest(stdscr, sources):
     dictionary_variable = return_pandas_dictionary(sources)
     x = 0
     stdscr = curses.initscr()
+    curses.noecho()
+    curses.cbreak()
+    stdscr.keypad(True)
     special_address_list = []
 
     table = Table(stdscr, len(dictionary_variable), (len(dictionary_variable.columns)), 100, 100, 10, spacing=1, col_names=True)

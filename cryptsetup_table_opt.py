@@ -6,7 +6,6 @@ import json
 import pandas as pd
 from bs4 import BeautifulSoup, SoupStrainer
 from cursesprint import print_curses
-from testtest import sources_testcrypt
 
 stdscr = curses.initscr()
 def test_crypt_options():
@@ -52,15 +51,20 @@ def main(stdscr):
     stdscr = curses.initscr()
     stdscr.clear()
 
-def options_digest(stdscr, sources):
+def crypt_options_digest(stdscr, sources):
 
-    def return_options_dictionary(sources):
-        return sources
-
-    dictionary_variable = return_options_dictionary(sources)
     x = 0
     stdscr = curses.initscr()
+    curses.noecho()
+    curses.cbreak()
+    stdscr.keypad(True)
+
     special_address_list = []
+
+    def return_options_dictionary():
+        return sources
+    
+    dictionary_variable = return_options_dictionary()
 
     table = Table(stdscr, len(dictionary_variable), (len(dictionary_variable.columns)), 140, 100, 15, spacing=1, col_names=True)
 
@@ -89,6 +93,8 @@ def options_digest(stdscr, sources):
             table.cursor_down()
         elif (x == 'w'):
             table.cursor_up()
+        elif (x == 'r'):
+            table.user_input(stdscr)
         elif (x == '\n'):
             print_curses(stdscr, str(table.select(stdscr)))
             special_address = str(table.select(stdscr))
@@ -103,10 +109,9 @@ def options_digest(stdscr, sources):
     curses.nocbreak()
     stdscr.keypad(False)
     curses.echo()
+    stdscr.clear()
     curses.endwin()
     return (special_address_list)
 
-if __name__ == "__options_digest__":
+if __name__ == "__crypt_options_digest__":
     curses.wrapper(url_digest)
-
-options_digest(stdscr, sources_testcrypt)

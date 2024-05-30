@@ -20,7 +20,6 @@ from cursesprint import print_curses
 from url_table import url_digest
 from block_device_table import block_digest
 import numpy
-import crypt_table_opt
 
 stdscr = curses.initscr()
 print_curses(stdscr, "testing whether booted in uefi or bios")
