@@ -7,7 +7,7 @@ import pandas as pd
 from bs4 import BeautifulSoup, SoupStrainer
 from cursesprint import print_curses
 from testtest import sources_testcrypt
-from cryptsetup_table_opt import crypt_options_digest, test_crypt_options
+from cryptsetup_table import crypt_options_digest, test_crypt_options
 
 crypt_options = test_crypt_options()
 variable_one = []
