@@ -20,6 +20,7 @@ from cursesprint import print_curses
 from url_table import url_digest
 from block_device_table import block_digest
 import numpy
+from cryptsetup_table_opt import crypt_options_digest, test_crypt_options
 
 stdscr = curses.initscr()
 print_curses(stdscr, "testing whether booted in uefi or bios")
@@ -224,8 +225,18 @@ def name_physical_volume():
 
 name_physical_volume = name_physical_volume()
 
+crypt_options = test_crypt_options()
+variable = crypt_options_digest()
+
+
+
 def luks_key_decrypt():
-        luks_key_decrypt_process = subprocess.run(['gpg', '--decrypt', s+'/luks-key.gpg', '|', 'cryptsetup', '--key-file', luks_dictionary.keyfile, 'luksOpen', luks, name_physical_volume])
+        luks_key_decrypt_process = subprocess.run(['sudo', 'gpg', '--decrypt', s+'/luks-key.gpg', '|', 'cryptsetup', variable[0], , 'luksOpen', luks, name_physical_volume])
+
+def luks_sub_prefab():
+    command = []
+    command = crypt_options_digest(stdscr, crypt_options)
+    process = subprocess.Popen(['sudo', 'cryptsetup'] + command, stdout = subprocess.PIPE, shell=False)
 
 
 

@@ -16,28 +16,36 @@ variable_three = []
 variable_four = []
 
 stdscr = curses.initscr()
-print_curses(stdscr, "now select a crypt option")
-variable_one = crypt_options_digest(stdscr, crypt_options)
-print_curses(stdscr, "good, now write an option value")
-variable_two = crypt_options_digest(stdscr, crypt_options)
-print_curses(stdscr, "now select a crypt option")
+# print_curses(stdscr, "now select a crypt option")
+# variable_one = crypt_options_digest(stdscr, crypt_options)
+# print_curses(stdscr, "good, now write an option value")
+# variable_two = crypt_options_digest(stdscr, crypt_options)
+# print_curses(stdscr, "now select a crypt option")
 
-variable_three = crypt_options_digest(stdscr, crypt_options)
-print_curses(stdscr, "good, now write an option value")
+# variable_three = crypt_options_digest(stdscr, crypt_options)
+# print_curses(stdscr, "good, now write an option value")
 
-variable_four = crypt_options_digest(stdscr, crypt_options)
-print_curses(stdscr, "now select a crypt option")
+# variable_four = crypt_options_digest(stdscr, crypt_options)
+# print_curses(stdscr, "now select a crypt option")
 
-variable_five = crypt_options_digest(stdscr, crypt_options)
-print_curses(stdscr, "good, now write an option value")
-variable_six = crypt_options_digest(stdscr, crypt_options)
-print_curses(stdscr, "now select a crypt option")
-variable_seven = crypt_options_digest(stdscr, crypt_options)
-print_curses(stdscr, "good, now write an option value")
-variable_eight = crypt_options_digest(stdscr, crypt_options)
-print_curses(stdscr, "now select a crypt option")
+# variable_five = crypt_options_digest(stdscr, crypt_options)
+# print_curses(stdscr, "good, now write an option value")
+# variable_six = crypt_options_digest(stdscr, crypt_options)
+# print_curses(stdscr, "now select a crypt option")
+# variable_seven = crypt_options_digest(stdscr, crypt_options)
+# print_curses(stdscr, "good, now write an option value")
+# variable_eight = crypt_options_digest(stdscr, crypt_options)
+# print_curses(stdscr, "now select a crypt option")
 
 def luks_process_prefab():              
         luks_process = subprocess.run(['sudo', 'cryptsetup', variable_one[0], variable_two[0], variable_three[0], variable_four[0], variable_five[0], variable_six[0], variable_seven[0], variable_eight[0], 'luksFormat', '/dev/sda'])
 
-luks_process_prefab()
+#luks_process_prefab()
+
+def luks_sub_prefab():
+    command = []
+    command = crypt_options_digest(stdscr, crypt_options)
+    process = subprocess.Popen(['sudo', 'cryptsetup'] + command, stdout = subprocess.PIPE, shell=False)
+    
+
+luks_sub_prefab()
