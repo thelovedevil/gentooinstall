@@ -99,4 +99,3 @@ def dd_options_digest(stdscr, sources):
 if __name__ == "__dd_options_digest__":
     curses.wrapper(url_digest)
 
-dd_options_digest(stdscr, sources_testcrypt)

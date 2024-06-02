@@ -28,7 +28,7 @@ def test_gpg_options():
     variable = output.split()
     print(variable)
     df = pd.DataFrame(variable)
-    df.column = ['options']
+    df.columns = ['options']
     return df
 
 sources_testcrypt = test_gpg_options()
@@ -102,4 +102,3 @@ def gpg_options_digest(stdscr, sources):
 if __name__ == "__gpg_options_digest__":
     curses.wrapper(url_digest)
 
-gpg_options_digest(stdscr, sources_testcrypt)

@@ -20,7 +20,9 @@ from cursesprint import print_curses
 from url_table import url_digest
 from block_device_table import block_digest
 import numpy
-from cryptsetup_table_opt import crypt_options_digest, test_crypt_options
+from cryptsetup_table import crypt_options_digest, test_crypt_options
+from gpg_table import test_gpg_options, gpg_options_digest
+from dd_table import test_dd_options, dd_options_digest
 
 stdscr = curses.initscr()
 print_curses(stdscr, "testing whether booted in uefi or bios")
@@ -113,7 +115,7 @@ print_curses(stdscr, "this block device will be used for your usb key")
 fdisk_process()
 
 print_curses(stdscr, "the selected usb key will now be formatted to fat32 using mkfs")
-print_curses(stdscr, "you'll now be asked again to enter the path to said block device for formatting")
+print_curses(stdscr, "from the prompt menu select the path for said device")
 
 format_block_device = block_digest(stdscr, pandas_block_devices)
 
@@ -140,6 +142,7 @@ print_curses(stdscr, str(directory_list))
 s = menu(directory_list)[0]
 print_curses(stdscr, "here is the value selected for ")
 print_curses(stdscr, s)
+
 def mkdir():
         subprocess.run(['mkdir', '-v', s])
 
@@ -190,10 +193,10 @@ print_curses("select a block device to format with cryptsetup")
 def block_device_selection_two():
         print_curses(str(block_devices.items()))
         #block_device_selection = input("select a blockdevice : \n")
-        dictionary = variable_dictionary()
-        block_device_selection = menu(dictionary)[0]
+        dictionary = block_digest(stdscr, pandas_block_devices)
+        block_device_selection = dictionary[0]
         for item in block_device_selection_list.block_devices:
-                if item['path'] == block_device_selection:
+                if item['path'] == str(block_device_selection):
                         print("success")
                         selected = {}
                         print(item)
@@ -231,7 +234,7 @@ variable = crypt_options_digest()
 
 
 def luks_key_decrypt():
-        luks_key_decrypt_process = subprocess.run(['sudo', 'gpg', '--decrypt', s+'/luks-key.gpg', '|', 'cryptsetup', variable[0], , 'luksOpen', luks, name_physical_volume])
+        luks_key_decrypt_process = subprocess.run(['sudo', 'gpg', '--decrypt', s+'/luks-key.gpg', '|', 'cryptsetup', variable[0], 'luksOpen', luks, name_physical_volume])
 
 def luks_sub_prefab():
     command = []

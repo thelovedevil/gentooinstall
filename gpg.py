@@ -9,7 +9,7 @@ from bs4 import BeautifulSoup, SoupStrainer
 from cursesprint import print_curses
 
 stdscr = curses.initscr()
-def test_dd_options():
+def test_gpg_options():
     command = ["gpg", "--help"]
     cryptsetup_process = subprocess.Popen(command, text=True, stdout=subprocess.PIPE)
     awk_command = ["awk", "{print substr($0,0,30)}"]
@@ -32,4 +32,3 @@ def test_dd_options():
     return df
 
 
-test_gpg_opt(stdscr, sources_truecrypt)
