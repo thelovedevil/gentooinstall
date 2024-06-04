@@ -47,6 +47,7 @@ def main(stdscr):
     stdscr = curses.initscr()
     stdscr.clear()
 
+
 def crypt_options_digest(stdscr, sources):
 
     x = 0
@@ -109,7 +110,6 @@ def crypt_options_digest(stdscr, sources):
     curses.endwin()
     return (special_address_list)
 
-if __name__ == "__crypt_options_digest__":
-    curses.wrapper(url_digest)
 
-crypt_options_digest(stdscr, sources_testcrypt)
+if __name__ == "__main__":
+    curses.wrapper(main)

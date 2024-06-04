@@ -6,9 +6,8 @@ import subprocess
 import json
 import pandas as pd
 from bs4 import BeautifulSoup, SoupStrainer
-import cursesprint
 
-stdscr = curses.initscr()
+
 def test_dd_options():
     command = ["cryptsetup", "--help"]
     cryptsetup_process = subprocess.Popen(command, text=True, stdout=subprocess.PIPE)
@@ -22,8 +21,7 @@ def test_dd_options():
     head_process = subprocess.Popen(head_command, text=True, stdin=sed_two_process.stdout, stdout=subprocess.PIPE)
     output, error = head_process.communicate()
     variable = output.split()
-    print(variable)
     df = pd.DataFrame(variable)
-    return df
+    return variable
 
-test_dd_options() 
+test_dd_options()

@@ -16,7 +16,7 @@ import cursesscrollmenu
 import pandas as pd
 from cursesscrollmenu import menu
 from inputastring import input_string
-from cursesprint import print_curses
+import cursesprint
 from url_table import url_digest
 from block_device_table import block_digest
 import numpy
@@ -126,7 +126,7 @@ def mkfs_vfat():
 def variable_dictionary():
         dictionary = {}
         print_curses(stdscr, "please enter the number of entries to enter n: ")
-        n = int(input_string())
+        n = int(input())
         print_curses(stdscr, "now enter key value pair followed by <: enter > of each item in dictionary <: press enter >")
         dictionary = dict(input().split() for _ in range(int(n)))
         return dictionary
@@ -163,7 +163,7 @@ n = 4
 luksDictionary = dict(input().split() for _ in range(n))
 print_curses(str(luksDictionary))
 
-print_curses("please enter values for a luks dictionary of prefabricated key values for formatting input")
+print_curses(stdscr, "please enter values for a luks dictionary of prefabricated key values for formatting input")
 luksDictionaryPrefab = {
         "cipher": "null",
         "keysize": "null",
@@ -188,7 +188,7 @@ luks_dictionary = LuksContainer(luksDictionaryPrefab)
 
 print_curses(stdscr, str(block_device_selection_list.blockdevices))
 
-print_curses("select a block device to format with cryptsetup")
+print_curses(stdscr, "select a block device to format with cryptsetup")
 
 def block_device_selection_two():
         print_curses(str(block_devices.items()))

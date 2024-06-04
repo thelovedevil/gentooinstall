@@ -15,4 +15,3 @@ def print_curses(stdscr, print):
 if __name__ == "__print_curses__":
     cur.wrapper(print_curses)
     
-    
