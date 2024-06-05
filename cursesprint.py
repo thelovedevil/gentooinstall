@@ -13,5 +13,5 @@ def print_curses(stdscr, print):
     scr.getch()
     cur.endwin()    
 if __name__ == "__print_curses__":
-    cur.wrapper(print_curses)
+    cur.wrapper(print_curses)   
     

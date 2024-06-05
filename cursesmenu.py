@@ -11,7 +11,6 @@ class Menu(object):
         self.panel = panel.new_panel(self.window)
         self.panel.hide()
         panel.update_panels()
-
         self.position = 0
         self.items = items
         self.items.append(("exit", "exit"))
@@ -58,7 +57,7 @@ class Menu(object):
         self.window.clear()
         self.panel.hide()
         panel.update_panels()
-        curses.doupdate()
+        curses.doupdate()d
 
 
 class MyApp(object):
