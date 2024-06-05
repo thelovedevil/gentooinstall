@@ -7,8 +7,8 @@ import json
 import pandas as pd
 from bs4 import BeautifulSoup, SoupStrainer
 from cursesprint import print_curses
+from cursedprint import CursedPrint
 
-stdscr = curses.initscr()
 def test_gpg_options():
     command = ["gpg", "--help"]
     cryptsetup_process = subprocess.Popen(command, text=True, stdout=subprocess.PIPE)
@@ -28,7 +28,12 @@ def test_gpg_options():
     variable = output.split()
     print(variable)
     df = pd.DataFrame(variable)
-    df.column = ['options']
+    df.columns = ['options']
+    app = CursedPrint()
+    app.print_curses("hello")
     return df
+    
+
+test_gpg_options()
 
 

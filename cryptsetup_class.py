@@ -5,7 +5,7 @@ import subprocess
 import json
 import pandas as pd
 from bs4 import BeautifulSoup, SoupStrainer
-from cursesprint import print_curses
+from cursedprint import CursedPrint
 
 def test_crypt_options():
         command = ["cryptsetup", "--help"]
@@ -89,14 +89,14 @@ class CryptTable():
         curses.noecho()
         curses.cbreak()
         self.screen.keypad(True)
-        curses.nocbreak()
-        self.screen.keypad(False)
-        curses.echo()
+        
 
     def crypt_options_digest(self, sources):
         x = 0
+        stdscr = curses.initscr()
         curses.noecho()
         curses.cbreak()
+        stdscr.keypad(True)
         self.screen.keypad(True)
 
         special_address_list = []
@@ -136,13 +136,31 @@ class CryptTable():
             elif (x == 'r'):
                 table.user_input(stdscr)
             elif (x == '\n'):
-                print_curses(stdscr, str(table.select(stdscr)))
+                table_sources = table.select(stdscr)
+                print_app = CursedPrint()
+                print_app.start()
+                print_app.start_print()
+                print_app.print_curses(table_sources)
+                #print_curses(stdscr, str(table.select(stdscr)))
                 special_address = str(table.select(stdscr))
                 special_address_list.append(special_address)
-                print_curses(stdscr, str(special_address_list))
+                print_app.print_curses(special_address_list)
+                #print_curses(stdscr, str(special_address_list))
         
+        stdscr = curses.initscr()
+        curses.noecho()
+        curses.cbreak()
+        stdscr.keypad(True)
+        curses.nocbreak()
+        stdscr.keypad(False)
+        #curses.echo()
+        stdscr.clear()
+        curses.endwin()
+        return (special_address_list)
         
 if __name__ == "__main__": 
     app = CryptTable()
     app.start()
     app.crypt_options_digest(sources)
+    
+    

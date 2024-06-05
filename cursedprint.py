@@ -52,11 +52,14 @@ class CursedPrint():
         curses.wrapper(self.print_curses)
 
     def print_curses(self, variable):
-        self.screen.erase()
+        self.screen.clear()
         self.screen.addstr(str(variable))
-        self.screen.scrollok(1)
+        #self.screen.scrollok(1)
         self.screen.refresh()
         self.screen.getch()
+        curses.noecho()
+        curses.cbreak()
+        stdscr.keypad(True)
 
 if __name__ == "__main__":
     app = CursedPrint()

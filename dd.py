@@ -10,7 +10,7 @@ import cursesprint
 
 stdscr = curses.initscr()
 def test_dd_options():
-    command = ["cryptsetup", "--help"]
+    command = ["dd", "--help"]
     cryptsetup_process = subprocess.Popen(command, text=True, stdout=subprocess.PIPE)
     awk_command = ["awk", "{print substr($0,3,15)}"]
     awk_process = subprocess.Popen(awk_command, text=True, stdin=cryptsetup_process.stdout, stdout=subprocess.PIPE)
