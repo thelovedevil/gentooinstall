@@ -2,6 +2,10 @@
 
 import curses
 from curses import panel
+from dd_class_table import dd_sources, Dd_Table
+from cryptsetup_class import sources, Crypt_Table
+from cursedprint import CursedPrint
+from cursesmenu import CursesMenu
 
 
 class Menu(object):
@@ -57,7 +61,7 @@ class Menu(object):
         self.window.clear()
         self.panel.hide()
         panel.update_panels()
-        curses.doupdate()d
+        curses.doupdate()
 
 
 class MyApp(object):
@@ -65,12 +69,23 @@ class MyApp(object):
         self.screen = stdscreen
         curses.curs_set(0)
 
+        dd = Dd_Table()
+        dd.start()
+
+        crypt = Crypt_Table()
+        crypt.start()
+        
         submenu_items = [("beep", curses.beep), ("flash", curses.flash)]
         submenu = Menu(submenu_items, self.screen)
+        digest_items = [("dd", dd.dd_options_digest(dd_sources)), ("crypt", crypt.crypt_options_digest(sources))]
+        #digest_items = [("dd", curses.beep), ("crypt", curses.flash)]
+        digest_submenu = Menu(digest_items, self.screen)
+        
 
         main_menu_items = [
             ("beep", curses.beep),
             ("flash", curses.flash),
+            ("other", digest_submenu.display),
             ("submenu", submenu.display),
         ]
         main_menu = Menu(main_menu_items, self.screen)
@@ -79,3 +94,4 @@ class MyApp(object):
 
 if __name__ == "__main__":
     curses.wrapper(MyApp)
+    

@@ -76,7 +76,7 @@ def test_crypt_options():
 
 sources_testcrypt = test_crypt_options()
 
-class CryptTable():
+class Crypt_Table():
     def __init__(self):
         self.screen = None
 
@@ -153,13 +153,13 @@ class CryptTable():
         stdscr.keypad(True)
         curses.nocbreak()
         stdscr.keypad(False)
-        #curses.echo()
+        curses.echo()
         stdscr.clear()
         curses.endwin()
         return (special_address_list)
         
 if __name__ == "__main__": 
-    app = CryptTable()
+    app = Crypt_Table()
     app.start()
     app.crypt_options_digest(sources)
     

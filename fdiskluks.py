@@ -23,9 +23,15 @@ import numpy
 from cryptsetup_table import crypt_options_digest, test_crypt_options
 from gpg_table import test_gpg_options, gpg_options_digest
 from dd_table import test_dd_options, dd_options_digest
+from cursedprint import CursedPrint
+
+print_app = CursedPrint()
+print_app.start()
+print_app.start_print()
+
 
 stdscr = curses.initscr()
-print_curses(stdscr, "testing whether booted in uefi or bios")
+print_app.print_curses("testing whether booted in uefi or bios")
 
 def return_blockdev_name():
         process = subprocess.run("lsblk --json -o NAME,SIZE,UUID,MOUNTPOINT,PATH,FSTYPE ".split(), capture_output=True, text=True)
@@ -36,9 +42,9 @@ block_device_json_only = return_blockdev_name()
 def check_uefi():
         booted = "UEFI" 
         if os.path.exists("/sys/firmware/efi"): 
-                print_curses(stdscr, "booted UEFI")
+                print_app.print_curses("booted UEFI")
         else: 
-                print_curses(stdscr, "booted BIOS")
+                print_app.print_curses("booted BIOS")
 
 check_uefi()
 
@@ -62,8 +68,8 @@ dictionary = subprocess.run("lsblk --json -o NAME,SIZE,UUID,MOUNTPOINT,PATH,FSTY
 
 block_devices = return_pandas()
 
-print_curses(stdscr, "showing all available block devices")
-print_curses(stdscr, str(pandas_block_devices))
+print_app.print_curses("showing all available block devices")
+print_app.print_curses(str(pandas_block_devices))
 
 class BlockDevice:
     def __init__(self, block_devices):
@@ -83,20 +89,20 @@ block_device_selection_list = BlockDevice(block_device_json_only)
 
 def fdisk_process(): 
         stdscr = curses.initscr()
-        print_curses(stdscr, "fdisk process about to be run on selected block device")
-        print_curses(stdscr, "please select exactly one block device")
+        print_app.print_curses("fdisk process about to be run on selected block device")
+        print_app.print_curses("please select exactly one block device")
         selected_device = block_digest(stdscr, pandas_block_devices)
         for item in block_device_selection_list.block_devices:
                 if item['path'] == str(selected_device[0]):
-                        print_curses(stdscr, "successfully matched input string to device path")
-                        print_curses(stdscr, str(item))
-                        print_curses(stdscr, str(item['path']))
+                        print_app.print_curses("successfully matched input string to device path")
+                        print_app.print_curses(str(item))
+                        print_app.print_curses(str(item['path']))
                         subprocess.run(['sudo', 'fdisk', selected_device[0]])
                 else:
-                        print_curses(stdscr, "no match <press enter>")
+                        print_app.print_curses("no match <press enter>")
 
 # def block_device_selection():
-#         print_curses(stdscr, "please enter a block device path for block device selection < press enter >")
+#        print_app.print_curses("please enter a block device path for block device selection < press enter >")
 #         block_device_selection = input_string()
 #         selected = {}
 #         for item in block_device_selection_list.block_devices:
@@ -110,38 +116,38 @@ def fdisk_process():
 #                 else:
 #                         print("no matching block device found")
 
-print_curses(stdscr, "you will now be asked by an fdisk function to select a block device for paritioning")
-print_curses(stdscr, "this block device will be used for your usb key")
+print_app.print_curses("you will now be asked by an fdisk function to select a block device for paritioning")
+print_app.print_curses("this block device will be used for your usb key")
 fdisk_process()
 
-print_curses(stdscr, "the selected usb key will now be formatted to fat32 using mkfs")
-print_curses(stdscr, "from the prompt menu select the path for said device")
+print_app.print_curses("the selected usb key will now be formatted to fat32 using mkfs")
+print_app.print_curses("from the prompt menu select the path for said device")
 
 format_block_device = block_digest(stdscr, pandas_block_devices)
 
 def mkfs_vfat():
         subprocess.run(['mkfs.vfat', '-F32', format_block_device[0]])
-        print_curses(stdscr, "successfully formatted devie -F32")
+        print_app.print_curses("successfully formatted devie -F32")
 
 def variable_dictionary():
         dictionary = {}
-        print_curses(stdscr, "please enter the number of entries to enter n: ")
+        print_app.print_curses("please enter the number of entries to enter n: ")
         n = int(input())
-        print_curses(stdscr, "now enter key value pair followed by <: enter > of each item in dictionary <: press enter >")
+        print_app.print_curses("now enter key value pair followed by <: enter > of each item in dictionary <: press enter >")
         dictionary = dict(input().split() for _ in range(int(n)))
         return dictionary
 
 print("//////////////////////////////////////////////////////////////////////////////////////////////")
-print_curses(stdscr, "/ for the following few functions a menu will be filled by you with key value entries /")
-print_curses(stdscr, "/ for the key value entries make sure to make all keys unique all values meaningful   /")                                                                                     
+print_app.print_curses("/ for the following few functions a menu will be filled by you with key value entries /")
+print_app.print_curses("/ for the key value entries make sure to make all keys unique all values meaningful   /")                                                                                     
 print("//////////////////////////////////////////////////////////////////////////////////////////////")
 
-print_curses(stdscr, "you must now enter a directory name to be made for our efi boot directory")     
+print_app.print_curses("you must now enter a directory name to be made for our efi boot directory")     
 directory_list = variable_dictionary()
-print_curses(stdscr, str(directory_list))
+print_app.print_curses(str(directory_list))
 s = menu(directory_list)[0]
-print_curses(stdscr, "here is the value selected for ")
-print_curses(stdscr, s)
+print_app.print_curses("here is the value selected for ")
+print_app.print_curses(s)
 
 def mkdir():
         subprocess.run(['mkdir', '-v', s])
@@ -152,18 +158,18 @@ mkdir()
 def mount():
         subprocess.run(['mount', '-v', '-t', s])
 
-print_curses(stdscr, "enter the main drive to parition")
+print_app.print_curses("enter the main drive to parition")
 
 fdisk_process()
 
-print_curses(stdscr, "please enter values for a luks dictionary of custom key value pairs for formatting input")
-print_curses(stdscr, "you will now fill created class luksContainer with correct --cipher --keysize --hash --keyfile options")
+print_app.print_curses("please enter values for a luks dictionary of custom key value pairs for formatting input")
+print_app.print_curses("you will now fill created class luksContainer with correct --cipher --keysize --hash --keyfile options")
 
 n = 4
 luksDictionary = dict(input().split() for _ in range(n))
-print_curses(str(luksDictionary))
+print_app.print_curses(str(luksDictionary))
 
-print_curses(stdscr, "please enter values for a luks dictionary of prefabricated key values for formatting input")
+print_app.print_curses("please enter values for a luks dictionary of prefabricated key values for formatting input")
 luksDictionaryPrefab = {
         "cipher": "null",
         "keysize": "null",
@@ -176,7 +182,7 @@ for key, value in luksDictionaryPrefab.items():
                                 luksDictionaryPrefab[key]=input()
                                 print(luksDictionaryPrefab)
                         
-print_curses(stdscr, str(luksDictionaryPrefab))
+print_app.print_curses(str(luksDictionaryPrefab))
  
 class LuksContainer:
         def __init__(self, luksDictionary):
@@ -186,12 +192,12 @@ class LuksContainer:
 
 luks_dictionary = LuksContainer(luksDictionaryPrefab)
 
-print_curses(stdscr, str(block_device_selection_list.blockdevices))
+print_app.print_curses(str(block_device_selection_list.blockdevices))
 
-print_curses(stdscr, "select a block device to format with cryptsetup")
+print_app.print_curses("select a block device to format with cryptsetup")
 
 def block_device_selection_two():
-        print_curses(str(block_devices.items()))
+        print_app.print_curses(str(block_devices.items()))
         #block_device_selection = input("select a blockdevice : \n")
         dictionary = block_digest(stdscr, pandas_block_devices)
         block_device_selection = dictionary[0]
@@ -207,7 +213,7 @@ def block_device_selection_two():
                         print("no matching block device found")
 
 luks = block_device_selection_two()
-print_curses(stdscr, str(block_device_selection_list.blockdevices))
+print_app.print_curses(str(block_device_selection_list.blockdevices))
 
 def gpg_tty(): 
         subprocess.run(['export', 'GPG_TTY=$(tty)'])
@@ -215,16 +221,16 @@ def gpg_tty():
 def luks_key():
         subprocess.run('dd', 'if=/dev/urandom', 'bs=8388607', 'count=1', '|', 'gpg', '--symmetric', '--cipher-algo', 'AES256', '--output', s+'/luks-key.gpg')
 
-print_curses(stdscr, str(luks_dictionary.cipher))
+print_app.print_curses(str(luks_dictionary.cipher))
 def luks_process_prefab():              
         luks_process = subprocess.run(['cryptsetup', '--cipher', luks_dictionary.cipher, '--key-size', luks_dictionary.keysize, '--hash', luks_dictionary.hash, '--key-file', luks_dictionary.keyfile, 'luksFormat', luks])
 
 luks_process_prefab()
 
 def name_physical_volume():
-    print_curses(stdscr, 'please enter a name for a logical volume management (LVM) physical volume <: press enter >')
-    name = input_string()
-    return name
+print_app.print_curses('please enter a name for a logical volume management (LVM) physical volume <: press enter >')
+name = input_string()
+return name
 
 name_physical_volume = name_physical_volume()
 
@@ -238,7 +244,7 @@ def luks_key_decrypt():
 
 def luks_sub_prefab():
     command = []
-    command = crypt_options_digest(stdscr, crypt_options)
+    command = crypt_options_digest(crypt_options)
     process = subprocess.Popen(['sudo', 'cryptsetup'] + command, stdout = subprocess.PIPE, shell=False)
 
 

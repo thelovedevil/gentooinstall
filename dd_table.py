@@ -79,16 +79,10 @@ def dd_options_digest(stdscr, sources):
         elif (x == 'r'):
             table.user_input(stdscr)
         elif (x == '\n'):
-                table_sources = table.select(stdscr)
-                print_app = CursedPrint()
-                print_app.start()
-                print_app.start_print()
-                print_app.print_curses(table_sources)
-                #print_curses(stdscr, str(table.select(stdscr)))
-                special_address = str(table.select(stdscr))
-                special_address_list.append(special_address)
-                print_app.print_curses(special_address_list)
-                #print_curses(stdscr, str(special_address_list))
+            print_curses(stdscr, str(table.select(stdscr)))
+            special_address = str(table.select(stdscr))
+            special_address_list.append(special_address)
+            print_curses(stdscr, str(special_address_list))
     
     
     stdscr = curses.initscr()

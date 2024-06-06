@@ -29,7 +29,7 @@ def test_dd_options():
 
 test_dd_options()
 
-sources = test_dd_options()
+dd_sources = test_dd_options()
 
 class Dd_Table():
     def __init__ (self):
@@ -116,5 +116,5 @@ class Dd_Table():
 if __name__ == "__main__":
     app = Dd_Table()
     app.start()
-    app.dd_options_digest(sources)
+    app.dd_options_digest(dd_sources)
 
