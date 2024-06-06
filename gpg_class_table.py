@@ -34,7 +34,7 @@ def test_gpg_options():
 
 sources = test_gpg_options()
 
-class GPG_Table():
+class GpG_Table():
     def __init__(self):
         self.screen = None
     
@@ -118,7 +118,7 @@ class GPG_Table():
         return (special_address_list)
 
 if __name__ == "__main__":
-    app = GPG_Table()
+    app = GpG_Table()
     app.start()
     app.gpg_options_digest(sources)
 
