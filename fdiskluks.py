@@ -199,18 +199,8 @@ print_app.print_curses("select a block device to format with cryptsetup")
 def block_device_selection_two():
         print_app.print_curses(str(block_devices.items()))
         #block_device_selection = input("select a blockdevice : \n")
-        dictionary = block_digest(stdscr, pandas_block_devices)
+        dictionary = block_dev.block_digest(pandas_block_devices)
         block_device_selection = dictionary[0]
-        for item in block_device_selection_list.block_devices:
-                if item['path'] == str(block_device_selection):
-                        print("success")
-                        selected = {}
-                        print(item)
-                        print(item['path'])
-                        selected['path'] = item['path']
-                        return selected['path']
-                else:
-                        print("no matching block device found")
 
 luks = block_device_selection_two()
 print_app.print_curses(str(block_device_selection_list.blockdevices))
