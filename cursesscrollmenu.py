@@ -118,4 +118,3 @@ def menu(dictionary):
 
     curses.endwin()
     exit()
-    

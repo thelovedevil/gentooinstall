@@ -12,7 +12,6 @@ block_dev.start()
 print_app = CursedPrint()
 print_app.start()
 
-
 def return_pandas():
     process = subprocess.run("lsblk --json -o NAME,SIZE,UUID,MOUNTPOINT,PATH,FSTYPE ".split(), capture_output=True, text=True)
     data = json.loads(process.stdout)
@@ -27,9 +26,10 @@ def return_pandas():
 
 pandas_block_devices = return_pandas()
 
-def fdisk_process(): 
-        print_app.print_curses("fdisk process about to be run on selected block device")
-        print_app.print_curses("please select exactly one block device")
-        selected_device = block_dev.block_digest(pandas_block_devices)
-        subprocess.run(['sudo', 'fdisk', selected_device[0]])
-fdisk_process()
+format_block_device = block_dev.block_digest(pandas_block_devices)
+
+def mkfs_vfat():
+        subprocess.run(['mkfs.vfat', '-F32', format_block_device[0]])
+        print_app.print_curses("successfully formatted devie -F32")
+
+mkfs_vfat()
