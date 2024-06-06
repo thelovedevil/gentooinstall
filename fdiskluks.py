@@ -212,6 +212,7 @@ def luks_key():
         subprocess.run('dd', 'if=/dev/urandom', 'bs=8388607', 'count=1', '|', 'gpg', '--symmetric', '--cipher-algo', 'AES256', '--output', s+'/luks-key.gpg')
 
 print_app.print_curses(str(luks_dictionary.cipher))
+
 def luks_process_prefab():              
         luks_process = subprocess.run(['cryptsetup', '--cipher', luks_dictionary.cipher, '--key-size', luks_dictionary.keysize, '--hash', luks_dictionary.hash, '--key-file', luks_dictionary.keyfile, 'luksFormat', luks])
 
