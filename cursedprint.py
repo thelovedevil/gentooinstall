@@ -38,6 +38,7 @@ def test_crypt_options():
 sources = test_crypt_options()
 
 stdscr = curses.initscr()
+
 class CursedPrint():
     def __init__(self):
         self.screen = None

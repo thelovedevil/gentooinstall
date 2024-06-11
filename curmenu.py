@@ -41,6 +41,16 @@ command_item_five = CommandItem(
     f"python create_efi.py"
 )
 
+command_item_six = CommandItem(
+    "Overwrite Drive Create Luks Key and Cryptsetup",
+    f"python options_input_test.py"
+)
+
+command_item_seven = CommandItem(
+    "Create LVM Data Structure On Disk", 
+    f"python lvm_class.py"
+)
+
 submenu = CursesMenu.make_selection_menu([f"item{x}" for x in(1, 20)])
 submenu_item = SubmenuItem("Long Selection SubMenu", submenu=submenu, menu=menu)
 
@@ -68,11 +78,23 @@ submenu_mkefidir = CursesMenu("Create EFI Directory", "Create EFI")
 submenu_mkefidir.items.append(command_item_five)
 submenu_item_mkefidir = SubmenuItem("Create EFI Directory", submenu=submenu_mkefidir, menu=menu)
 
+submenu_key_crypt = CursesMenu("Wipe Disk With Pseudo Random Data Create Key File and Cryptsetup", "Pseudo Key Crypt")
+submenu_key_crypt.items.append(command_item_six)
+submenu_item_key_crypt = SubmenuItem("Wipe Disk Create Key File & Set Cryptsetup", submenu=submenu_key_crypt, menu=menu)
+
+submenu_lvm_crypt = CursesMenu("Create Lvm Structure", "LVM Structure Creation")
+submenu_lvm_crypt.items.append(command_item_seven)
+submenu_item_lvm_crypt = SubmenuItem("LVM Structure Creation", submenu=submenu_lvm_crypt, menu=menu)
+
 submenu_four = CursesMenu("Part Four Submenu", "Part Four")
 submenu_four.items.append(submenu_item_fdisk)
 submenu_four.items.append(submenu_item_mkfsvfat)
 submenu_four.items.append(submenu_item_mkefidir)
+submenu_four.items.append(submenu_item_key_crypt)
+submenu_four.items.append(submenu_item_lvm_crypt)
 submenu_item_four = SubmenuItem("Part Four Submenu", submenu=submenu_four, menu=menu)
+
+
 
 
 
