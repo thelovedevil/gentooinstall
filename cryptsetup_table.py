@@ -114,4 +114,3 @@ def crypt_options_digest(stdscr, sources):
 if __name__ == "__main__":
     curses.wrapper(main)
 
-crypt_options_digest(stdscr, sources_testcrypt)

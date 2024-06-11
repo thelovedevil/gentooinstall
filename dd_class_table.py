@@ -7,6 +7,7 @@ import pandas as pd
 from bs4 import BeautifulSoup, SoupStrainer
 from cursesprint import print_curses
 from cursedprint import CursedPrint
+import dd_class_table
 
 stdscr = curses.initscr()
 def test_dd_options():

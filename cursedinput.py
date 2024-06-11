@@ -1,26 +1,38 @@
 #!/usr/bin/env python3
 
-import curses as cur
+import curses
 
-def input_string():
+stdscr = curses.initscr()
 
-    prompt = "Enter a string: "
+class Input():
 
-    screen = cur.initscr()
-    rows,cols = screen.getmaxyx()
+    def __init__(self):
+        self.screen = None
 
-    screen.addstr(rows//2,(cols-len(prompt))// 2, prompt)
-    bs = screen.getstr() #read the user input as a bytestring
-
-    screen.addstr(cur.LINES-2,0,
-        "You entered: %s" % bs.decode('utf-8'))
-    
-    return bs.decode(encoding='utf-8')
+    def start(self):
+        curses.wrapper(self.main)
         
-    screen.getch()
+    def main(self, stdscr):
+        self.screen = stdscr
+        self.screen.clear()
 
+    def input_string(self):
+        prompt = "Please Enter Your Information: "
+        curses.echo()
+        stdscr = curses.initscr()
+        screen = stdscr
+        rows,cols = screen.getmaxyx()
+        screen.addstr(rows//2,(cols-len(prompt))// 2, prompt)
+        bs = screen.getstr() #read the user input as a bytestring
+        screen.addstr(curses.LINES-2,0,
+            "You entered: %s" % bs.decode('utf-8'))
+        return bs.decode(encoding='utf-8')  
+        screen.getch()
 
-    cur.endwin()
+if __name__ == "__main__":
+    app = Input()
+    app.start()
+    app.input_string()
 
 
 
