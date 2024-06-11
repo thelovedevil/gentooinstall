@@ -92,12 +92,7 @@ submenu_four.items.append(submenu_item_mkfsvfat)
 submenu_four.items.append(submenu_item_mkefidir)
 submenu_four.items.append(submenu_item_key_crypt)
 submenu_four.items.append(submenu_item_lvm_crypt)
-submenu_item_four = SubmenuItem("Part Four Submenu", submenu=submenu_four, menu=menu)
-
-
-
-
-
+submenu_item_four = SubmenuItem("LUKS LVM ", submenu=submenu_four, menu=menu)
 
 menu.items.append(item1)
 menu.items.append(function_item)

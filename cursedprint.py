@@ -53,6 +53,8 @@ class CursedPrint():
         curses.wrapper(self.print_curses)
 
     def print_curses(self, variable):
+        curses.init_pair(1, curses.COLOR_WHITE, curses.COLOR_RED)
+        self.screen.bkgd('0', curses.color_pair(1))
         self.screen.clear()
         self.screen.addstr(str(variable))
         #self.screen.scrollok(1)
@@ -61,6 +63,8 @@ class CursedPrint():
         curses.noecho()
         curses.cbreak()
         stdscr.keypad(True)
+    
+        
 
 if __name__ == "__main__":
     app = CursedPrint()
