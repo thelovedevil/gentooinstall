@@ -8,164 +8,215 @@ import numpy as np
 import os, sys
 
 
-def test_crypt_options():
-    command = ["cryptsetup", "--help"]
-    cryptsetup_process = subprocess.Popen(command, text=True, stdout=subprocess.PIPE)
-    awk_command = ["awk", "{print substr($0,3,30)}"]
-    awk_process = subprocess.Popen(awk_command, text=True, stdin=cryptsetup_process.stdout, stdout=subprocess.PIPE)
-    sed_one_command = ["sed", "s/,/:/"]
-    sed_one_process = subprocess.Popen(sed_one_command, text=True, stdin=awk_process.stdout, stdout=subprocess.PIPE)
-    sed_two_command = ["sed", "1, 4d"]
-    sed_two_process = subprocess.Popen(sed_two_command, text=True, stdin=sed_one_process.stdout, stdout=subprocess.PIPE)
-    head_command = ["head", "-n-54"]
-    head_process = subprocess.Popen(head_command, text=True, stdin=sed_two_process.stdout, stdout=subprocess.PIPE)
-    sed_three_command = ["sed", "-e", "s/-[?a-zA-Z]: / /g"]
-    sed_three_process = subprocess.Popen(sed_three_command, text=True, stdin=head_process.stdout, stdout=subprocess.PIPE)
-    sed_four_command = ["sed", "-e", "s/=[a-zA-Z]*/ /g"]
-    sed_four_process = subprocess.Popen(sed_four_command, text=True, stdin=sed_three_process.stdout, stdout=subprocess.PIPE)
-    # print(cryptsetup_process.stdout)
-    # print(awk_process)
-    # print(sed_one_process)
-    # print(sed_two_process)
-    # print(head_process)
-    output, error = sed_four_process.communicate()
-    variable = output.split()
-    df = pd.DataFrame(variable)
-    pattern = r'(\D\D:+)'
-    df.columns = ["options"]
-    match = df["options"].str.extract(pattern)
-    pattern_two = r'(\S\S+)'
-    match_two = df['options'].str.extract(pattern_two)
-    frames = [df['options'].str.extract(pattern), df['options'].str.extract(pattern_two)]
-    return df
+class Menu:
+    def __init__(self, items):
+        self.items = items
+        self.current_idx = 0
 
-sources = test_crypt_options()
-stdscr = curses.initscr()
-
-class CursedPrint():
-    def __init__(self):
-        self.screen = None
-
-    def start(self):
-        curses.wrapper(self.main)
-
-    def main(self, stdscr):
-        self.screen = stdscr
-        self.screen.scrollok(0)
+    def draw_menu(self, stdscr):
+        h, w = stdscr.getmaxyx()
+        for idx, row in enumerate(self.items):
+            x = 1
+            y = idx + 1
+            if idx == self.current_idx:
+                stdscr.attron(curses.color_pair(1))
+                stdscr.addstr(y, x, row)
+                stdscr.attroff(curses.color_pair(1))
+            else:
+                stdscr.addstr(y, x, row)
+        stdscr.refresh()
     
-    def start_print(self):
-        curses.wrapper(self.print_curses)
-
-    def ascii_art(self, jpeg):
-
-
-        ascii_chars = "@@@%%%###***+++===---:::...!!!/// "
-
-        def map_luminosity_to_ascii(luminosity_matrix, ascii_chars):
-            # Normalize luminosity values to the range of the ASCII characters
-            normalized_luminosity = (luminosity_matrix - luminosity_matrix.min()) / (luminosity_matrix.max() - luminosity_matrix.min())
-            indices = (normalized_luminosity * (len(ascii_chars) - 1)).astype(int)
-            ascii_matrix = np.array([[ascii_chars[idx] for idx in row] for row in indices])
-            return ascii_matrix
+    def handle_input(self, key):
+        if key == curses.KEY_UP:
+            self.current_idx = (self.current_idx - 1) % len(self.items)
+        elif key == curses.KEY_DOWN:
+            self.current_idx = (self.current_idx + 1) % len(self.items)
+        elif key == curses.KEY_ENTER or key in [10, 13]:
+            return self.current_idx
+        return None
 
 
-        
-        # base_width = 128
-        # img = Image.open('/home/adrian/Downloads/asuka_original.jpg')
-        # wpercent = (base_width / float(img.size[0]))
-        # hsize = int((float(img.size[1]) * float(wpercent)))
-        # img = img.resize((base_width, hsize), Image.Resampling.LANCZOS)
-        # img.save('/home/adrian/Downloads/asuka_original_resized.jpg')
+class AsciiArt:
+    # stdscr.scrollok(0)
+    # curses.curs_set(0)
+    # curses.init_pair(1, curses.COLOR_WHITE, curses.COLOR_RED)
+    # pad = curses.newpad(100, 100)
+    # pad_position = 0
+
+    # # Menu Items
+    # menu_items = ["A", "B", "C", "EXIT"]
+    # current_row_idx = 0
 
 
+    ascii_chars = "@@@%%%###***+++===---:::...!!!/// "
+
+    def __init__(self, image_path):
+        self.image_path = image_path
+        self.start_row = 0
+        self.start_col = 0
+        self.art_matrix = self.convert_ascii(image_path)
+        self.art_height, self.art_width = self.art_matrix.shape
+
+    # def map_luminosity_to_ascii(luminosity_matrix, ascii_chars):
+    def convert_ascii(self, image_path):
         size = 100, 100
-
-        im = Image.open(jpeg)
+        im = Image.open(image_path)
         im.thumbnail(size, Image.Resampling.LANCZOS)
-        im.save(jpeg + "original_resized.jpg")       
-
-        img = Image.open(jpeg + "original_resized.jpg")
+        im.save(image_path + "original_resized.jpg")       
+        img = Image.open(image_path + "original_resized.jpg")
         pixel_matrix = np.array(img)
-
         luminosity_matrix = 0.21 * pixel_matrix[:, :, 0] + 0.72 * pixel_matrix[:, :, 1] + 0.07 * pixel_matrix[:, :, 2]
+        # Normalize luminosity values to the range of the ASCII characters
+        normalized_luminosity = (luminosity_matrix - luminosity_matrix.min()) / (luminosity_matrix.max() - luminosity_matrix.min())
+        indices = (normalized_luminosity * (len(self.ascii_chars) - 1)).astype(int)
+        ascii_matrix = np.array([[self.ascii_chars[idx] for idx in row] for row in indices])
+        return ascii_matrix
+            
 
 
-        ascii_matrix = map_luminosity_to_ascii(luminosity_matrix, ascii_chars)
 
-        def print_ascii_art(ascii_matrix):
-            for row in ascii_matrix:
-                print(str("".join(row)))
 
-        #string_ascii = print_ascii_art(ascii_matrix)
+    # ascii_matrix = map_luminosity_to_ascii(luminosity_matrix, ascii_chars)
 
+
+    
+    # base_width = 128
+    # img = Image.open('/home/adrian/Downloads/asuka_original.jpg')
+    # wpercent = (base_width / float(img.size[0]))
+    # hsize = int((float(img.size[1]) * float(wpercent)))
+    # img = img.resize((base_width, hsize), Image.Resampling.LANCZOS)
+    # img.save('/home/adrian/Downloads/asuka_original_resized.jpg')
+
+
+    # size = 100, 100
+
+    # im = Image.open(jpeg)
+    # im.thumbnail(size, Image.Resampling.LANCZOS)
+    # im.save(jpeg + "original_resized.jpg")       
+
+    # img = Image.open(jpeg + "original_resized.jpg")
+    # pixel_matrix = np.array(img)
+
+    # luminosity_matrix = 0.21 * pixel_matrix[:, :, 0] + 0.72 * pixel_matrix[:, :, 1] + 0.07 * pixel_matrix[:, :, 2]
+
+
+    # ascii_matrix = map_luminosity_to_ascii(luminosity_matrix, ascii_chars)
+
+
+    #string_ascii = print_ascii_art(ascii_matrix)
+
+    
+
+
+
+    
+
+    # Get the dimensions of the window
+
+    # art_height, art_width = ascii_matrix.shape
+
+    # start_row = 0
+    # start_col = 0
+
+
+    # stdscr.clear()
+    # while True:
         
+    # draw_menu(stdscr, current_row_idx, menu_items)
+    def draw_menu(self, stdscr):
+        pad = curses.newpad(self.art_height, self.art_width)
+        # Draw the portion of the ASCII art that fits the screen
+        for i in range(min(curses.LINES - 2, self.art_height - self.start_row)):
+            for j in range(min(curses.COLS - 20, self.art_width - self.start_col)):
+                pad.addch(i, j, self.art_matrix[self.start_row + i, self.start_col + j])
+        
+        pad.refresh(0,0, 1,100, curses.LINES - 2, curses.COLS - 1)
 
+        # Get user input for scrolling
+        key = stdscr.getch()
 
-        height, width = stdscr.getmaxyx()
+    def handle_input(self, key):
+        if key == curses.KEY_UP and self.start_row > 0:
+            self.start_row -= 1
+        elif key == curses.KEY_DOWN and self.start_row < self.art_height - (curses.LINES - 2):
+            self.start_row += 1
+        elif key == curses.KEY_LEFT and self.start_col > 0:
+            self.start_col -= 1
+        elif key == curses.KEY_RIGHT and self.start_col < self.art_width - (curses.COLS - 20):
+            self.start_col += 1
 
-
-        start_row = 0
-        start_col = -50
-
-        # Get the dimensions of the window
-        height, width = stdscr.getmaxyx()
-
-        while True:
-            stdscr.clear()
-            
-            # Draw the portion of the ASCII art that fits the screen
-            for i in range(min(height, ascii_matrix.shape[0] - start_row)):
-                for j in range(min(width, ascii_matrix.shape[1] - start_col)):
-                    stdscr.addch(i, j, ascii_matrix[start_row + i, start_col + j])
-            
-            stdscr.refresh()
-
-            # Get user input for scrolling
-            key = stdscr.getch()
-            
-            if key == curses.KEY_UP and start_row > 0:
-                start_row -= 1
-            elif key == curses.KEY_DOWN and start_row < ascii_matrix.shape[0] - height:
-                start_row += 1
-            elif key == curses.KEY_LEFT and start_col > 0:
-                start_col -= 1
-            elif key == curses.KEY_RIGHT and start_col < ascii_matrix.shape[1] - width:
-                start_col += 1
-            elif key == ord('q'):
-                break
+        # if key == curses.KEY_UP and start_row > 0:
+        #     start_row -= 1
+        # elif key == curses.KEY_DOWN and start_row < art_height - (curses.LINES - 2):
+        #     start_row += 1
+        # elif key == curses.KEY_LEFT and start_col > 0:
+        #     start_col -= 1
+        # elif key == curses.KEY_RIGHT and start_col < art_width - (curses.COLS - 20):
+        #     start_col += 1
+        # elif key == curses.KEY_UP:
+        #     current_row_idx = (current_row_idx - 1) % len(menu_items)
+        # elif key == curses.KEY_DOWN:
+        #     current_row_idx = (current_row_idx + 1) % len(menu_items)
+        # elif key == curses.KEY_ENTER or key in [10, 13]:
+        #     if current_row_idx == len(menu_items) - 1:
+        #         break
+        # elif key == ord('q'):
+        #     break
 # ///////////////////////////////////////////////////////////////////
 #         art_height, art_width = ascii_matrix.shape
 
 #         start_y = (height - art_height) // 2
 #         start_x = (width - art_width) // 2
-        
+    
 #         for i in range(art_height):
 #             for j in range(art_width):
 #                 stdscr.addstr(start_y + i, start_x + j, ascii_matrix[i, j])
-        
+    
 #         self.screen.refresh()
-       
+    
 #         self.screen.getch()
-        
+    
 # ////////////////////////////////////////////////////////////////////////////////////
 
-    def print_curses(self, variable):
-        curses.init_pair(1, curses.COLOR_WHITE, curses.COLOR_RED)
-        self.screen.bkgd(' ', curses.color_pair(1))
-        self.screen.clear()
-        self.screen.addstr(str(variable))
-        #self.screen.scrollok(1)
-        self.screen.refresh()
-        self.screen.getch()
-        curses.noecho()
-        curses.cbreak()
-        stdscr.keypad(True)
+    # curses.init_pair(1, curses.COLOR_WHITE, curses.COLOR_RED)
+    # self.screen.bkgd(' ', curses.color_pair(1))
+    # self.screen.clear()
+    # self.screen.addstr(str(variable))
+    # #self.screen.scrollok(1)
+    # self.screen.refresh()
+    # self.screen.getch()
+    # curses.noecho()
+    # curses.cbreak()
+    # stdscr.keypad(True)
+
     
-        
+def main(stdscr):
+    curses.curs_set(0)
+    curses.init_pair(1, curses.COLOR_WHITE, curses.COLOR_RED)
+
+    menu_items = ["A", "B", "C", "EXIT"]
+    menu = Menu(menu_items)
+    art = AsciiArt("/home/adrian/Documents/gentooinstall/asuka_original_resized.jpg")
+    # curses.wrapper(ascii_art, "/home/adrian/Documents/gentooinstall/asuka_original_resized.jpg")
+
+    while True:
+        stdscr.clear()
+        menu.draw_menu(stdscr)
+        art.draw_menu(stdscr)
+
+        key = stdscr.getch()
+        selected_idx = menu.handle_input(key)
+        art.handle_input(key)
+
+        if selected_idx is not None:
+            if menu.items[selected_idx] == 'EXIT':
+                break
+        # Add functionality for other menu items here
+
 
 if __name__ == "__main__":
-    app = CursedPrint()
-    app.start()
-    app.print_curses(sources)
-    app.ascii_art("/home/adrian/Documents/gentooinstall/asuka_original_resized.jpg")
-    app.start()
+    curses.wrapper(main)
+# app = CursedPrint()
+# app.start()
+# app.ascii_art("/home/adrian/Documents/gentooinstall/asuka_original_resized.jpg")
+# app.start()
