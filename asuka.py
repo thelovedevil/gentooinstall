@@ -15,7 +15,8 @@ def map_luminosity_to_ascii(luminosity_matrix, ascii_chars):
 
 def print_ascii_art(ascii_matrix):
     for row in ascii_matrix:
-        print("".join(row))
+        print(str("".join(row)))
+
 
 # base_width = 128
 # img = Image.open('/home/adrian/Downloads/asuka_original.jpg')
@@ -42,4 +43,11 @@ print(luminosity_matrix)
 
 ascii_matrix = map_luminosity_to_ascii(luminosity_matrix, ascii_chars)
 
+string_ascii = print_ascii_art(ascii_matrix) 
+
 print_ascii_art(ascii_matrix)
+
+for y, line in enumerate(ascii_matrix, 2):
+    print(ascii_matrix)
+
+  
