@@ -195,23 +195,28 @@ def main(stdscr):
     curses.init_pair(1, curses.COLOR_WHITE, curses.COLOR_RED)
 
     menu_items = ["A", "B", "C", "EXIT"]
-    menu = Menu(menu_items)
+    # menu = Menu(menu_items)
+    menu = CursesMenu(title="Menu", subtitle="Select an option", width=curses.COLS // 2)
     art = AsciiArt("/home/adrian/Documents/gentooinstall/asuka_original_resized.jpg")
     # curses.wrapper(ascii_art, "/home/adrian/Documents/gentooinstall/asuka_original_resized.jpg")
 
     while True:
         stdscr.clear()
-        menu.draw_menu(stdscr)
+        menu.draw()
         art.draw_menu(stdscr)
 
         key = stdscr.getch()
-        selected_idx = menu.handle_input(key)
+        menu.process_user_input(key)
+        # selected_idx = menu.handle_input(key)
         art.handle_input(key)
 
-        if selected_idx is not None:
-            if menu.items[selected_idx] == 'EXIT':
-                break
+        # if selected_idx is not None:
+        #     if menu.items[selected_idx] == 'EXIT':
+        #         break
         # Add functionality for other menu items here
+
+        if menu.should_exit:
+            break
 
 
 if __name__ == "__main__":
