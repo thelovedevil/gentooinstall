@@ -11,6 +11,7 @@ import threading
 import time
 from collections import defaultdict
 from typing import TYPE_CHECKING, Any, cast
+from utils import null_input_factory
 
 from deprecated import deprecated
 
@@ -79,12 +80,16 @@ class CursesMenu:
         show_exit_item: bool = True,
         zero_pad: bool = False,
         _debug_screens: bool = False,
+        width: int = 0,
+        ascii_art: AsciiArt = None,
+
     ) -> None:
         """Initialize the menu."""
         self.title = title
         self.subtitle = subtitle
         self.zero_pad = zero_pad
         self.width = width
+        self.ascii_art = ascii_art
 
         self.screen: Window | None = None
 
@@ -139,7 +144,15 @@ class CursesMenu:
         self.user_input_handlers.update(
             {k: self.go_to for k in map(ord, map(str, range(1, 10)))},
         )
-
+        self.user_input_handlers.update(
+            {
+                ord("w"): self.ascii_art_input,
+                ord("s"): self.ascii_art_input,
+                ord("a"): self.ascii_art_input,
+                ord("d"): self.ascii_art_input,
+            },
+        )
+        
         self._debug_screens = _debug_screens
 
     @classmethod
@@ -296,11 +309,23 @@ class CursesMenu:
         curses.curs_set(0)
         CursesMenu.stdscr.refresh()
         self.draw()
+        
 
         self._running.set()
         while self._running.wait() is not False and not self.should_exit:
             CursesMenu.currently_active_menu = self
+            
+
+
+            #draw ascii art
+
+            if self.ascii_art:
+                self.ascii_art.draw_menu(CursesMenu.stdscr)
+            
             self.process_user_input()
+            
+
+            
         self.clear_screen()
         self._running.clear()
 
@@ -315,6 +340,7 @@ class CursesMenu:
         Adds border, title and subtitle, and items, then refreshes the screen.
         """
         assert self.screen is not None
+        self.screen.clear()
         self.screen.border()
         self.screen.addstr(2, 2, self.title, curses.A_STANDOUT)
         self.screen.addstr(4, 2, self.subtitle, curses.A_BOLD)
@@ -376,6 +402,11 @@ class CursesMenu:
 
         self.screen.refresh(top_row, 0, 0, 0, screen_rows - 1, self.width - 1)
 
+    def ascii_art_input(self, user_input):
+        if self.ascii_art:
+                self.ascii_art.handle_input(user_input)
+        
+
     def process_user_input(self) -> int:
         """
         Get and then handle the user's input.
@@ -383,7 +414,15 @@ class CursesMenu:
         :return: The character the user input.
         """
         user_input = self.get_input()
-        self.user_input_handlers[user_input](user_input)
+        # if user_input in [curses.KEY_UP, curses.KEY_DOWN, curses.KEY_LEFT, curses.KEY_RIGHT]:
+        #     self.user_input_handlers[user_input](user_input)
+        if user_input in [ord("w"), ord("s"), ord("a"), ord("d")]:
+            self.ascii_art_input(user_input)
+        #     if self.ascii_art:
+        #         self.ascii_art.handle_input(user_input)
+        else:
+            self.user_input_handlers[user_input](user_input)
+
         return user_input
 
     # noinspection PyMethodMayBeStatic
