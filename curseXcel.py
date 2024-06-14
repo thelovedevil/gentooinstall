@@ -1,5 +1,4 @@
 import curses
-import asuka_print
 
 class Table():
     def __init__(self, win, rows, cols, cell, width, height, col_names=None, spacing=None):

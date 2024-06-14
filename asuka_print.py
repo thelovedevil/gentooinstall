@@ -14,6 +14,7 @@ from PIL import Image
 import numpy as np
 import os, sys
 from ascii_asuka_any import AsciiArt
+from asuka_crypt_test import Crypt_Table, sources
 
 
 stdscr = curses.initscr()
@@ -29,6 +30,7 @@ class AsukaPrint():
     def main(self, stdscr):
         self.screen = stdscr
         self.screen.scrollok(0)
+        self.print_curses(string)
         
 
 
@@ -36,11 +38,10 @@ class AsukaPrint():
     
 
     def print_curses(self, variable):
+        
         curses.init_pair(1, curses.COLOR_RED, curses.COLOR_BLACK)
         self.screen.bkgd(' ', curses.color_pair(1))
         self.screen.clear()
-
-        self.ascii_art.draw_menu(self.screen)
         
 
         #Print returned information left side of the console
@@ -55,14 +56,20 @@ class AsukaPrint():
         self.screen.refresh()
 
         while True:
+            self.screen.scrollok(0)
             self.ascii_art.draw_menu(self.screen)
             key = self.screen.getch()
 
             if key == ord('q'):
-                break
+                for i, line in enumerate(lines):
+                    self.screen.addstr(i + 1, 1, line[:max_width])  
             elif key in [curses.KEY_UP, curses.KEY_DOWN, curses.KEY_LEFT, curses.KEY_RIGHT]:
                 self.ascii_art.handle_input(key)
+                self.screen.clear()
                 self.ascii_art.draw_menu(self.screen)
+                for i, line in enumerate(lines):
+                    self.screen.addstr(i + 1, 1, line[:max_width])
+                self.screen.refresh()
 
         #self.screen.addstr(str(variable))
         #self.screen.scrollok(1)
@@ -110,10 +117,6 @@ class AsciiArt:
         ascii_matrix = np.array([[self.ascii_chars[idx] for idx in row] for row in indices])
         return ascii_matrix
             
-
-
-
-
    
 
     # stdscr.clear()
@@ -143,11 +146,10 @@ class AsciiArt:
         elif key == ord("a") and self.start_col < self.art_width - (curses.COLS - 20):
             self.start_col += 1
 
-
+string = "be thee not afraid for you are loved"
 
 if __name__ == "__main__":
     app = AsukaPrint()
     app.start()
-    #app.print_curses(string)
-    #app.print_curses()
+    app.print_curses(string)
     #app.start()
