@@ -6,6 +6,7 @@ import json
 import pandas as pd
 from bs4 import BeautifulSoup, SoupStrainer
 from cursedprint import CursedPrint
+from asuka_print import AsukaPrint
 
 def test_crypt_options():
         command = ["cryptsetup", "--help"]
@@ -106,7 +107,7 @@ class Crypt_Table():
         
         dictionary_variable = return_options_dictionary()
 
-        table = Table(stdscr, len(dictionary_variable), (len(dictionary_variable.columns)), 140, 100, 15, spacing=1, col_names=True)
+        table = Table(stdscr, len(dictionary_variable), (len(dictionary_variable.columns)), 50, 100, 15, spacing=1, col_names=True)
 
         m = 0 
         while m < len(dictionary_variable.columns):
@@ -137,10 +138,13 @@ class Crypt_Table():
                 table.user_input(stdscr)
             elif (x == '\n'):
                 table_sources = table.select(stdscr)
-                print_app = CursedPrint()
-                print_app.start()
-                print_app.start_print()
-                print_app.print_curses(table_sources)
+                #print_app = CursedPrint()
+                #print_app.start()
+                #print_app.start_print()
+                #print_app.print_curses(table_sources)
+                asuka = AsukaPrint()
+                asuka.start()
+                asuka.print_curses(table_sources)
                 #print_curses(stdscr, str(table.select(stdscr)))
                 special_address = str(table.select(stdscr))
                 special_address_list.append(special_address)
