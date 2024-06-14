@@ -152,7 +152,7 @@ class Crypt_Table():
         dictionary_variable = return_options_dictionary()
 
         table = Table(stdscr, len(dictionary_variable), (len(dictionary_variable.columns)), 70, 100, 15, spacing=1, col_names=True)
-        ascii_art = AsciiArt("/home/adrian/Documents/gentooinstall/asuka_original_resized.jpg")
+        ascii_art = AsciiArt("/home/adrian/Downloads/keiko.jpg")
 
         m = 0 
         while m < len(dictionary_variable.columns):
