@@ -7,6 +7,7 @@ import json
 import pandas as pd
 from cursedinput import Input
 from cursesscrollmenu import menu
+import moby_dick
 
 input_app = Input()
 input_app.start()
@@ -19,22 +20,22 @@ print_app.start()
 
 def variable_dictionary():
         dictionary = {}
-        print_app.print_curses("please enter the number of entries to enter n: ")
+        string = moby_dick.entries()
+        print_app.print_curses(string)
         n = input_app.input_string()
-        print_app.print_curses("now enter key value pair followed by <: enter > of each item in dictionary <: press enter >")
+        string_two = moby_dick.key_value()
+        print_app.print_curses(string_two)
         dictionary = dict(input_app.input_string().split() for _ in range(int(n)))
         return dictionary
 
-print_app.print_curses("///////////////////////////////////////////////////////////////////////////////////////////////////////////////////")
-print_app.print_curses("/ for the following few functions a menu will be filled by you with key value entries /")
-print_app.print_curses("for the key value entries make sure to make all keys unique all values meaningful")
-print_app.print_curses("//////////////////////////////////////////////////////////////////////////////////////////////")
-
-print_app.print_curses("you must now enter a directory name to be made for our efi boot directory")     
+string = moby_dick.following()
+print_app.print_curses(string)
 directory_list = variable_dictionary()
 print_app.print_curses(str(directory_list))
 s = menu(directory_list)[0]
-print_app.print_curses("here is the value selected for ")
+
+value_selected_for = moby_dick.value_selected()
+print_app.print_curses(value_selected_for)
 print_app.print_curses(s)
 
 def mkdir():

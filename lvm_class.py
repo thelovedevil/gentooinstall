@@ -10,6 +10,7 @@ from cursesprint import print_curses
 from cursedinput import Input
 from cursedprint import CursedPrint
 from block_device_class_table import Block_Table, return_pandas
+import moby_dick
 
 block_sources = return_pandas()
 
@@ -24,19 +25,18 @@ blockdevice_app.start()
 
 def block_options_input():
     dictionary = {}
-    print_app.print_curses("filling in block_options process")
-    print_app.print_curses("please enter the number of entries to enter n:")
-    print_app.print_curses("enter range of list to create:<: as of now you may only create one list >")
+    string = moby_dick.block_options()
+    print_app.print_curses(string)
     n = int(input_app.input_string())
 
     for i in range(n):
-        print_app.print_curses("enter options by scrolling, selecting with enter, then looping back through by progressively selecting enter to the menu")
-        print_app.print_curses("be careful not to enter options you do not need.")
-        print_app.print_curses("in as well 'q' is the option to quit once all menu items have been selected")
+        string = moby_dick.instructions()
+        print_app.print_curses(string)
         option = []
         option = blockdevice_app.block_digest(block_sources)
         value = []
-        print_app.print_curses("enter the value for that option in the same manner by pressing r filling and selecting with enter")
+        string_two = moby_dick.enter_value()
+        print_app.print_curses(string_two)
         value = blockdevice_app.block_digest(block_sources)
         final = [j for i in zip(option, value) for j in i]
         print(final)
@@ -47,14 +47,15 @@ block_command = block_options_input()
 print(block_command)
 
 def name_physical_volume(): 
-    print_app.print_curses('please enter again the name for your logical volume management (LVM) physical volume <: press enter >')
+    string = moby_dick.physical_volume()
+    print_app.print_curses(string)
     name = input_app.input_string()
     return name   
 
-def name_physical_volume():
-    print_app.print_curses('please enter a name for a logical volume management (LVM) physical volume <: press enter >')
-    name = input_app.input_string()
-    return name
+# def name_physical_volume():
+#     print_app.print_curses('please enter a name for a logical volume management (LVM) physical volume <: press enter >')
+#     name = input_app.input_string()
+#     return name
 
 name_physical_volume = name_physical_volume()
 
@@ -64,7 +65,8 @@ def pvcreate_process():
 pvcreate_process()
 
 def name_volume_group():
-    print_app.print_curses('please enter a name for the volume group to lie within the physical volume <: press enter >')
+    string = moby_dick.volume_group()
+    print_app.print_curses(string)
     name = input_app.input_string()
     return name
 

@@ -16,6 +16,7 @@ from dd_class_table import Dd_Table, test_dd_options
 from gpg_class_table import GpG_Table, test_gpg_options
 import create_efi
 from block_device_class_table import Block_Table, return_pandas
+import moby_dick
 
 input_app = Input()
 input_app.start()
@@ -41,19 +42,21 @@ block_sources = return_pandas()
 
 def block_options_input():
     dictionary = {}
-    print_app.print_curses("filling in block_options process")
-    print_app.print_curses("please enter the number of entries to enter n:")
-    print_app.print_curses("enter range of list to create:<: as of now you may only create one list >")
+    # print_app.print_curses("filling in block_options process")
+    # print_app.print_curses("please enter the number of entries to enter n:")
+    # print_app.print_curses("enter range of list to create:<: as of now you may only create one list >")
+    string = moby_dick.block_options()
+    print_app.print_curses(string)
     n = int(input_app.input_string())
 
     for i in range(n):
-        print_app.print_curses("enter options by scrolling, selecting with enter, then looping back through by progressively selecting enter to the menu")
-        print_app.print_curses("be careful not to enter options you do not need.")
-        print_app.print_curses("in as well 'q' is the option to quit once all menu items have been selected")
+        string = moby_dick.instructions()
+        print_app.print_curses(string)
         option = []
         option = blockdevice_app.block_digest(block_sources)
         value = []
-        print_app.print_curses("enter the value for that option in the same manner by pressing r filling and selecting with enter")
+        string = moby_dick.enter_value()
+        print_app.print_curses(string)
         value = blockdevice_app.block_digest(block_sources)
         final = [j for i in zip(option, value) for j in i]
         print(final)
@@ -61,19 +64,18 @@ def block_options_input():
 
 def crypt_options_input():
     dictionary = {}
-    print_app.print_curses("filling in crypt_options process")
-    print_app.print_curses("please enter the number of entries to enter n:")
-    print_app.print_curses("enter range of list to create:<: as of now you may only create one list >")
+    string = moby_dick.crypt_options()
+    print_app.print_curses(strings)
     n = int(input_app.input_string())
 
     for i in range(n):
-        print_app.print_curses("enter options by scrolling, selecting with enter, then looping back through by progressively selecting enter to the menu")
-        print_app.print_curses("be careful not to enter options you do not need.")
-        print_app.print_curses("in as well 'q' is the option to quit once all menu items have been selected")
+        string = moby_dick.instructions()
+        print_app.print_curses(string)
         option = []
         option = crypt_app.crypt_options_digest(crypt_sources)
         value = []
-        print_app.print_curses("enter the value for that option in the same manner by pressing r filling and selecting with enter")
+        string_two = moby_dick.enter_value()
+        print_app.print_curses(string_two)
         value = crypt_app.crypt_options_digest(crypt_sources)
         final = [j for i in zip(option, value) for j in i]
         print(final)
@@ -83,19 +85,18 @@ dd_sources = test_dd_options()
 
 def overwrite_options_input():
     dictionary = {}
-    print_app.print_curses("filling in overwrite_options process")
-    print_app.print_curses("please enter the number of entries to enter n:")
-    print_app.print_curses("in other words enter range of list to create:<: as of now you may only create one list, enter (1) >")
+    string = moby_dick.overwrite_options()
+    print_app.print_curses(string)
     n = int(input_app.input_string())
 
     for i in range(n):
-        print_app.print_curses("enter options by scrolling, selecting with enter, then looping back through by progressively selecting enter to the menu")
-        print_app.print_curses("be careful not to enter options you do not need.")
-        print_app.print_curses("in as well 'q' is the option to quit once all menu items have been selected")
+        string = moby_dick.instructions()
+        print_app.print_curses(string)
         option = []
         option = dd_app.dd_options_digest(dd_sources)
         value = []
-        print_app.print_curses("enter the value for that option in the same manner by pressing r filling and selecting with enter")
+        string_two = moby_dick.enter_value()
+        print_app.print_curses(string_two)
         value = dd_app.dd_options_digest(dd_sources)
         final = [j for i in zip(option, value) for j in i]
         prepend = lambda x: "="+x
@@ -107,19 +108,18 @@ def overwrite_options_input():
 
 def dd_options_input():
     dictionary = {}
-    print_app.print_curses("filling in dd_options process")
-    print_app.print_curses("please enter the number of entries to enter n:")
-    print_app.print_curses("in other words enter range of list to create <: as of now you may only create one list >")
+    string = moby_dick.dd_options()
+    print_app.print_curses(string)
     n = int(input_app.input_string())
 
     for i in range(n):
-        print_app.print_curses("enter options by scrolling, selecting with enter, then looping back through by progressively selecting enter to the menu")
-        print_app.print_curses("be careful not to enter options you do not need.")
-        print_app.print_curses("in as well 'q' is the option to quit once all menu items have been selected")
+        string = moby_dick.instructions()
+        print_app.print_curses(string)
         option = []
         option = dd_app.dd_options_digest(dd_sources)
         value = []
-        print_app.print_curses("enter the value for that option in the same manner by pressing r filling and selecting with enter")
+        string_two = moby_dick.enter_value()
+        print_app.print_curses(string_two)
         value = dd_app.dd_options_digest(dd_sources)
         final = [j for i in zip(option, value) for j in i]
         prepend = lambda x: "="+x
@@ -133,20 +133,18 @@ gpg_sources = test_gpg_options()
 
 def gpg_options_input():
     dictionary = {}
-    print_app.print_curses("filling in gpg_options process")
-    print_app.print_curses("!!! gpg_options must be written in for accuracy using 'r' command !!!")
-    print_app.print_curses("please enter the number of entries to enter n:")
-    print_app.print_curses("in other words enter range of list to create: < should only need value (1) >")
+    string = moby_dick.gpg_options()
+    print_app.print_curses(string)
     n = int(input_app.input_string())
 
     for i in range(n):
-        print_app.print_curses("enter options by scrolling, selecting with enter, then looping back through by progressively selecting enter to the menu")
-        print_app.print_curses("be careful not to enter options you do not need.")
-        print_app.print_curses("in as well 'q' is the option to quit once all menu items have been selected")
+        string = moby_dick.instructions()
+        print_app.print_curses(string)
         option = []
         option = gpg_app.gpg_options_digest(gpg_sources)
         value = []
-        print_app.print_curses("enter the value for that option in the same manner by pressing r filling and selecting with enter")
+        string_two = moby_dick.enter_value()
+        print_app.print_curses(string_two)
         value = gpg_app.gpg_options_digest(gpg_sources)
         final = [j for i in zip(option, value) for j in i]
         print(final)
@@ -154,25 +152,26 @@ def gpg_options_input():
 
 def key_file_input():
     dictionary = {}
-    print_app.print_curses("now entering key file input from prior cryptsetup keyfile")
-    print_app.print_curses("simply enter the same value as used for prior key file")
-    print_app.print_curses("please enter the number of entries to enter n:")
-    print_app.print_curses("in other words enter range of list to create: < should only need value (1) >")
+    string = moby_dick.key_file()
+    print_app.print_curses(string)
     n = int(input_app.input_string())
 
     for i in range(n):
-        print_app.print_curses("enter options by scrolling selecting with enter then looping back through and selecting again")
+        string_two = moby_dick.instructions()
+        print_app.print_curses(string)
         option = []
         option = gpg_app.gpg_options_digest(crypt_sources)
         value = []
-        print_app.print_curses("enter the value for that option in the same manner by pressing r filling and selecting with enter")
+        string_two = moby_dick.enter_value()
+        print_app.print_curses(string_two)
         value = gpg_app.gpg_options_digest(crypt_sources)
         final = [j for i in zip(option, value) for j in i]
         print(final)
         return final
 
 def name_physical_volume():
-    print_app.print_curses('lastly please enter a name for a logical volume management (LVM) physical volume <: press enter >')
+    string = moby_dick.physical_volume()
+    print_app.print_curses(string)
     name = input_app.input_string()
     return name    
 

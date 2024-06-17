@@ -129,4 +129,122 @@ def output_crime():
     ると思っていたのだろう。けれども、残念なことに、僕には箱の中のヒツジを見る目
     がない。たぶん、僕は少し大人たちに似ているのだろう。そうなる必要があったのだ
     '''
-    return the_little_prince
+    return crime_punishment
+
+def following():
+    for_the_following = '''for the following few functions a menu will be
+    filled by you with key value entries. 
+    for the key value entries make 
+    sure to make all keys unique all values meaningful 
+    '''
+    return for_the_following
+
+def entries():
+    number_entries = ''' enter the number of entries to be made '''
+    return number_entries
+
+def key_value():
+    key_value_pair = ''' now enter key value pair followed by <: enter >
+    of each item in dictionary '''
+    return key_value_pair
+
+def value_selected():
+    value_selected_for = ''' here is the value selected for '''
+    return value_selected_for
+
+def block_options():
+    block_options = ''' filling in block options process
+    please enter the number of entries n
+    n being the range of list to create
+    < as of now only one list is possible to create >
+    '''
+    return block_options
+
+def instructions():
+    instructions = ''' now enter options...
+    you enter options by scrolling and selecting
+    select via using enter consecutively 
+    then pressing multiple times 
+    one loops back through
+    until the beginning
+    then press q
+    '''
+    return instructions
+
+def enter_value():
+    value = '''enter the value for that option in the
+    same manner by pressing r filling and selecting 
+    with enter
+    '''
+
+def crypt_options():
+    crypt_options = ''' filling in crypt options process
+    please enter the number of entries n
+    n being the range of list to create
+    < as of now only one list is possible to create >
+    '''
+    return crypt_options
+
+def overwrite_options():
+    crypt_options = ''' filling in overwrite options process
+    please enter the number of entries n
+    n being the range of list to create
+    < as of now only one list is possible to create >
+    '''
+    return overwrite_options
+
+def dd_options():
+    dd_options = ''' filling in dd options process
+    please enter the number of entries n
+    n being the range of list to create
+    < as of now only one list is possible to create >
+    '''
+    return dd_options
+
+def gpg_options():
+    gpg_options = ''' filling in gpg options process
+    please enter the number of entries n
+    n being the range of list to create
+    < as of now only one list is possible to create >
+    '''
+    return gpg_options
+
+def key_file():
+    key_file = ''' "now entering key file input from prior cryptsetup keyfile
+    simply enter the same value as used for prior key file
+    please enter the number of entries to enter n:
+    in other words enter range of list to create: < should only need value (1) >
+    '''
+    return key_file
+
+def physical_volume():
+    name = '''lastly please enter a name for a logical volume management
+    (LVM) physical volume <: press enter >
+    '''
+    return name
+
+def volume_group():
+    volume_group = ''' please enter a name for the volume group to lie 
+    within the physical volume <: press enter >
+    '''
+    return volume_group
+
+def lvm_instructions():
+    lvm_instructions = '''please enter values for the size and name 
+    respectively of your swap partition <: press enter > the format 
+    should be of the following. <: press enter > size should be 
+    suffixed with M or G as Megs or Gigs respective ie. 10G for 10 
+    Gigabytes <: press enter >name is simply written as a simple 
+    input string. <: press enter >the extents options may be left 
+    null or simply skipped by pressing enter, it will be used later 
+    <: press enter >hajime (begin) <: press enter >
+    '''
+    return lvm_instructions
+
+def sec_lvm_instructions():
+    sec_lvm_instructions = '''the last dictionary may skip size. <: press enter > ")
+lastly we will fill in our home directory. <: press enter >
+here we shall use the extents option with your input. <: press enter >
+note the format for extents is some 'NUM'%FREE i.e. 95%FREE <: press enter >
+this is done to variably fill the remaining harddrive space on disk in order to fill either all or some. <: press enter >
+hajime (begin) <: press enter >

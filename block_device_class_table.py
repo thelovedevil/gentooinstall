@@ -113,7 +113,7 @@ class Block_Table():
                     n += 1      
             
             m += 1
-        while ( x != 'q'):
+        while ( x != ord('q')):
             table.refresh()
             ascii_art.draw_menu(stdscr)
             x = stdscr.getch()
@@ -138,11 +138,10 @@ class Block_Table():
             #     table.cursor_down()
             # elif (x == 'w'):
             #     table.cursor_up()
-            elif (x == '\n'):
+            elif (x == ord('\n')):
                 table_sources = table.select(stdscr)
                 print_app = CursedPrint()
                 print_app.start()
-                print_app.start_print()
                 print_app.print_curses(table_sources)
                 #print_curses(stdscr, str(table.select(stdscr)))
                 special_address = str(table.select(stdscr))

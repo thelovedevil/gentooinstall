@@ -102,7 +102,7 @@ class CursedPrint():
         self.screen.clear()
         self.screen.keypad(True)
         self.print_rows, self.print_cols = self.screen.getmaxyx()
-        self.print_pad = curses.newpad(self.print_rows, self.print_cols // 2)
+        self.print_pad = curses.newpad(self.print_rows, self.print_cols // 2 )
         self.screen.keypad(True)
     
 
@@ -115,14 +115,14 @@ class CursedPrint():
         lines = str(variable).split('\n')
         max_line_length = max(len(line) for line in lines)
         self.print_rows = len(lines)
-        self.print_cols = max(max_line_length, self.print_cols // 2) 
+        self.print_cols = max(max_line_length, 130) 
         self.print_pad = curses.newpad(self.print_rows, self.print_cols)
 
         wrapped_lines = []
         for line in lines:
-            wrapped_lines.extend(textwrap.wrap(line, width=self.print_cols - 1))
+            wrapped_lines.extend(textwrap.wrap(line, width=self.print_cols))
 
-        for i, line in enumerate(lines):
+        for i, line in enumerate(wrapped_lines):
             self.print_pad.addstr(i, 0, line, curses.color_pair(1))
         
         while(x != ord('q')):
