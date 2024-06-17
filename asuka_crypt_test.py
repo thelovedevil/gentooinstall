@@ -10,8 +10,6 @@ from PIL import Image
 import numpy as np
 
 
-
-
 def test_crypt_options():
         command = ["cryptsetup", "--help"]
         cryptsetup_process = subprocess.Popen(command, text=True, stdout=subprocess.PIPE)
@@ -171,7 +169,6 @@ class Crypt_Table():
         while ( x != 'q'):
             table.refresh()
             ascii_art.draw_menu(stdscr)
-
             x = stdscr.getch()
             if ( x == curses.KEY_LEFT):
                 table.cursor_left()
@@ -187,7 +184,7 @@ class Crypt_Table():
             # #     table.cursor_right()
             # # elif (x == ord('s')):
             #     table.cursor_down()
-            elif (x in [ord('w'), ord('r'), ord('d'), ord('s')]):
+            elif (x in [ord('w'), ord('a'), ord('d'), ord('s')]):
                 if ascii_art: 
                     ascii_art.handle_input(x)
             elif (x == ord('r')):
