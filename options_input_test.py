@@ -171,7 +171,7 @@ def key_file_input():
 
 def name_physical_volume():
     string = moby_dick.physical_volume()
-    print_app.print_curses(string)
+    print_app.print_curses(s)
     name = input_app.input_string()
     return name    
 

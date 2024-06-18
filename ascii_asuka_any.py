@@ -129,7 +129,7 @@ class AsciiArt:
         pad = curses.newpad(self.art_height, self.art_width)
         # Draw the portion of the ASCII art that fits the screen
         for i in range(min(curses.LINES - 2, self.art_height - self.start_row)):
-            for j in range(min(curses.COLS - 50, self.art_width - self.start_col)):
+            for j in range(min(curses.COLS - 20, self.art_width - self.start_col)):
                 pad.addch(i, j, self.art_matrix[self.start_row + i, self.start_col + j])
         
         pad.refresh(0,0, 1,100, curses.LINES - 2, curses.COLS - 1)

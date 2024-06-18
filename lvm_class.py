@@ -11,6 +11,7 @@ from cursedinput import Input
 from cursedprint import CursedPrint
 from block_device_class_table import Block_Table, return_pandas
 import moby_dick
+from cursedprint_white import CursedPrintWhite\
 
 block_sources = return_pandas()
 
@@ -19,6 +20,9 @@ input_app.start()
 
 print_app = CursedPrint()
 print_app.start()
+
+print_app_white = CursedPrintWhite()
+print_app_white.start()
 
 blockdevice_app = Block_Table()
 blockdevice_app.start()
@@ -78,7 +82,7 @@ def vgcreate_process():
 vgcreate_process()
 
 def proc_meminfo():
-    memory = subprocess.check_output(['grep', 'MemTotal', '/proc/meminfo'])
+    memory = subprocess.run(['grep', 'MemTotal', '/proc/meminfo'], check=True, capture_output=True, text=True).stdout
     print_app.print_curses(memory)
 
 proc_meminfo()
@@ -94,13 +98,9 @@ lvcreate_swap_prefab = {
     "name": "null",
     "extents": "null",
 }
+lvm_string = moby_dick.lvm_instructions()
 
-print_app.print_curses("please enter values for the size and name respectively of your swap partition <: press enter >")
-print_app.print_curses("the format should be of the following. <: press enter >")
-print_app.print_curses("size should be suffixed with M or G as Megs or Gigs respective ie. 10G for 10 Gigabytes <: press enter >")
-print_app.print_curses("name is simply written as a simple input string. <: press enter > ")
-print_app.print_curses("the extents options may be left null or simply skipped by pressing enter, it will be used later <: press enter >")
-print_app.print_curses("hajime (begin) <: press enter >")
+print_app.print_curses(lvm_string)
 
 for key, value in lvcreate_swap_prefab.items():
                         if value == "null":
@@ -114,9 +114,9 @@ for key, value in lvcreate_swap_prefab.items():
 
 lvcreate_swap_dictionary = Lvcreate_Container(lvcreate_swap_prefab)
 
-print_app.print_curses("now please do the same for your root portion of the volume group you've named within your physical volume <: press enter >")
-print_app.print_curses("size suffixed with M or G followed by category name again followed by extents which may be skipped <: press enter >")
-print_app.print_curses("hajime (begin) <: press enter >")
+lvm_string_two = moby_dick.sec_lvm_instructions()
+
+print_app.print_curses(lvm_string_two)
 
 lvcreate_root_prefab = {
     "size": "null",
@@ -132,12 +132,9 @@ for key, value in lvcreate_root_prefab.items():
 
 lvcreate_root_dictionary = Lvcreate_Container(lvcreate_root_prefab)
 
-print_app.print_curses("the last dictionary may skip size. <: press enter > ")
-print_app.print_curses("lastly we will fill in our home directory. <: press enter > ")
-print_app.print_curses("here we shall use the extents option with your input. <: press enter > ")
-print_app.print_curses("note the format for extents is some 'NUM'%FREE i.e. 95%FREE <: press enter >")
-print_app.print_curses("this is done to variably fill the remaining harddrive space on disk in order to fill either all or some. <: press enter >")
-print_app.print_curses("hajime (begin) <: press enter >")
+lvm_string_three = moby_dick.third_lvm_instructions()
+
+print_app.print_curses(lvm_string_two)
 
 lvcreate_home_prefab = {
     "size": "null",
@@ -170,20 +167,20 @@ def lvcreate_home():
 lvcreate_home()
 
 def pv_display():
-    pv_display = subprocess.check_output([ 'sudo', 'pvdisplay'])
-    print_app.print_curses(str(pv_display))
+    pv_display = subprocess.run([ 'sudo', 'pvdisplay'], check=True, capture_output=True, text=True).stdout
+    print_app_white.print_curses(str(pv_display))
 
 pv_display()
 
 def vg_display():
-    vg_display = subprocess.check_output(['sudo', 'vgdisplay'])
-    print_app.print_curses(str(pv_display))
+    vg_display = subprocess.run(['sudo', 'vgdisplay'], check=True, capture_output=True, text=True).stdout
+    print_app_white.print_curses(str(pv_display))
 
 vg_display()
 
 def lv_display():
-    lv_display = subprocess.check_output(['sudo', 'lvdisplay'])
-    print_app.print_curses(str(lv_display))
+    lv_display = subprocess.run(['sudo', 'lvdisplay'], check=True, capture_output=True, text=True).stdout
+    print_app_white.print_curses(str(lv_display))
 
 lv_display()
 
@@ -191,8 +188,8 @@ def vg_change():
         subprocess.run(['vgchange', '--available', 'y'])
 
 def ls_devmapper():
-        ls_devmapper = subprocess.check_output(['ls', '/dev/mapper'])
-        print_app.print_curses(str(ls_devmapper))
+        ls_devmapper = subprocess.run(['ls', '/dev/mapper'], check=True, capture_output=True, text=True).stdout
+        print_app_white.print_curses(str(ls_devmapper))
 
 def mk_swap():
     mk_swap = ["mkswap", "-L", lvcreate_swap_dictionary.name, "/dev/mapper/" + name_volume_group[0] + "-" + lvcreate_swap_dictionary.name]

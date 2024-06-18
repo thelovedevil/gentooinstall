@@ -85,7 +85,7 @@ class AsciiArt:
             self.start_col += 1
 
 
-class CursedPrint():
+class CursedPrintWhite():
     def __init__(self):
         self.screen = None
         self.print_pad = None
@@ -102,20 +102,20 @@ class CursedPrint():
         self.screen.clear()
         self.screen.keypad(True)
         self.print_rows, self.print_cols = self.screen.getmaxyx()
-        self.print_pad = curses.newpad(self.print_rows, self.print_cols)
+        self.print_pad = curses.newpad(self.print_rows, self.print_cols // 2 )
         self.screen.keypad(True)
     
 
     def print_curses(self, variable):
-        ascii_art = AsciiArt("/home/adrian/Downloads/botansmile.jpg")
+        ascii_art = AsciiArt("/home/adrian/Downloads/yukinablush.jpg")
         x = 0
-        curses.init_pair(1, curses.COLOR_RED, curses.COLOR_BLACK)
+        curses.init_pair(1, curses.COLOR_BLACK, curses.COLOR_WHITE)
         self.screen.bkgd(' ', curses.color_pair(1))
 
         lines = str(variable).split('\n')
         max_line_length = max(len(line) for line in lines)
         self.print_rows = len(lines)
-        self.print_cols = max(max_line_length, 70 ) 
+        self.print_cols = max(max_line_length, 130) 
         self.print_pad = curses.newpad(self.print_rows, self.print_cols)
 
         wrapped_lines = []
@@ -128,13 +128,13 @@ class CursedPrint():
         while(x != ord('q')):
             self.screen.refresh()
             ascii_art.draw_menu(self.screen)
-            self.print_pad.refresh(self.print_start_row, 0, 0, 0, min(len(wrapped_lines), curses.LINES - 2), curses.COLS - 1)
+            self.print_pad.refresh(self.print_start_row, 0, 0, 0, min(len(wrapped_lines), curses.LINES - 2), min(self.print_cols, self.print_cols // 2))
 
             x = self.screen.getch()
 
             if (x == curses.KEY_UP and self.print_start_row > 0):
                 self.print_start_row -= 1
-            elif (x == curses.KEY_DOWN and self.print_start_row < len(wrapped_lines) - min(self.print_rows, curses.LINES - 1)):
+            elif (x == curses.KEY_DOWN and self.print_start_row < len(wrapped_lines) - min(self.print_rows, curses.LINES - 3)):
                 self.print_start_row += 1
         
             ascii_art.handle_input(x)
@@ -149,6 +149,6 @@ class CursedPrint():
 string = output_crime()   
 sources = string
 if __name__ == "__main__":
-    app = CursedPrint()
+    app = CursedPrintWhite()
     app.start()
     app.print_curses(sources)
