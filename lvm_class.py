@@ -64,7 +64,7 @@ def name_physical_volume():
 name_physical_volume = name_physical_volume()
 
 def pvcreate_process():
-    subprocess.run(['sudo', 'pvcreate', '/dev/mapper/'+ name_physical_volume[0]])
+    subprocess.run(['sudo', 'pvcreate', '/dev/mapper/'+name_physical_volume])
 
 pvcreate_process()
 
@@ -77,7 +77,7 @@ def name_volume_group():
 name_volume_group = name_volume_group()
 
 def vgcreate_process():
-    subprocess.run(['sudo', 'vgcreate', name_volume_group[0], '/dev/mapper/'+ name_physical_volume[0]])
+    subprocess.run(['sudo', 'vgcreate', name_volume_group, '/dev/mapper/'+name_physical_volume])
 
 vgcreate_process()
 

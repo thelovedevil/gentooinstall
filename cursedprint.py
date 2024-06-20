@@ -109,7 +109,7 @@ class CursedPrint():
     def print_curses(self, variable):
         ascii_art = AsciiArt("/home/adrian/Downloads/botansmile.jpg")
         x = 0
-        curses.init_pair(1, curses.COLOR_RED, curses.COLOR_BLACK)
+        curses.init_pair(1, curses.COLOR_CYAN, curses.COLOR_BLACK)
         self.screen.bkgd(' ', curses.color_pair(1))
 
         lines = str(variable).split('\n')

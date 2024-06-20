@@ -17,7 +17,7 @@ class Input():
         self.screen.clear()
 
     def input_string(self):
-        prompt = "Please Enter Your Information: "
+        prompt = "entry: "
         curses.echo()
         x = self.screen.getstr()
         while (x != ord('\n')):
@@ -27,7 +27,7 @@ class Input():
             screen.addstr(rows//2,(cols-len(prompt))// 2, prompt)
             bs = screen.getstr() #read the user input as a bytestring
             screen.addstr(curses.LINES-2,0,
-                "You entered: %s" % bs.decode('utf-8'))
+                "entered: %s" % bs.decode('utf-8'))
             return bs.decode(encoding='utf-8')  
             screen.getch()
 

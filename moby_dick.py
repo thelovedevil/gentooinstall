@@ -129,12 +129,13 @@ def output_crime():
     ると思っていたのだろう。けれども、残念なことに、僕には箱の中のヒツジを見る目
     がない。たぶん、僕は少し大人たちに似ているのだろう。そうなる必要があったのだ
     '''
-    return crime_punishment
+    return the_little_prince
 
 def following():
     for_the_following = '''
     【 for the following few functions a menu will be filled by you with key value entries. 】 
     【 for the key value entries make sure to make all keys unique all values meaningful.   】
+    -----------------------------------------------------------------------------------------  
     僕が６歳のころ、『自然界の中で起こる本当の話』という原生林について書いてい
     る本の中に、すばらしい絵を見つけた。それは１匹の動物を飲みこもうとしている大
     蛇ボアの絵だった。これがその絵を写したものだ。
@@ -178,6 +179,8 @@ def following():
 def entries():
     number_entries = ''' 
     【 enter the number of entries to be made 】
+    ----------------------------------------------------------------------
+   
     こうして、僕は６年前に、飛行機がサハラ砂漠に不時着するまで、心から話をする
     相手が見つからないまま、一人で生きてきた。不時着というのは、飛行機のエンジン
     のどこかが壊れたのだ。整備士も乗客もいないので、難しい修理を一人でやるしかな
@@ -248,7 +251,8 @@ def entries():
 def key_value():
     key_value_pair = ''' 
     【 now enter key value pair followed by <: enter > 】
-    【 of each item in dictionary                      】
+    ------------------------------------------------------------------------
+
         王子さまがどこから来たのかわかるまでには、ずいぶん時間がかかった。王子さま
     はかなり多くの質問をするのに、僕がたずねることはまるで聞こえていない様子だっ
     たのだ。少しずつすべてが明らかになっていったのは、たまたま王子さまが言った言
@@ -299,6 +303,9 @@ def key_value():
 def value_selected():
     value_selected_for = ''' 
     【 here is the value selected for 】
+    ------------------------------------------------------------------------
+
+
         こうして僕はとても重要な２つ目のことを知った。王子さまの故郷の星は、なんと
     一軒の家とほとんど変わらないくらいの大きさだ、ということだ。
     といっても、僕は大して驚きはしなかった。地球や木星、火星、金星のように名前
@@ -371,6 +378,9 @@ def block_options():
     【 please enter the number of entries n              】
     【 n being the range of list to create               】
     【 < as of now only one list is possible to create > 】
+    ------------------------------------------------------------------------
+
+
         毎日話をするうちに、僕は王子さまの星のことや、王子さまがその星を出てきたこ
     と、王子さまが旅をしていたことなどを知るようになっていった。王子さまの考えて
     いることが、ふと言葉に現れるにつれて少しずつわかってきたのだ。そんなこんなで
@@ -441,6 +451,9 @@ def instructions():
     【 you enter options by scrolling and selecting select via using enter consecutively 】 
     【 then pressing multiple times one loops back through until the beginning           】
     【 then press q                                                                      】
+    --------------------------------------------------------------------------------------
+
+
     ああ、小さな王子さま！ こうして少しずつ、ささやかで悲しい君の人生の秘密を
     僕は理解していった ･･･。長いあいだ、心をなぐさめることといえば、日が沈むのを
     静かに眺めることだけだったんだね。このことを知ったのは４日目の朝、君がこう言っ
@@ -471,6 +484,9 @@ def enter_value():
     【 enter the value for that option in the          】
     【 same manner by pressing r filling and selecting 】 
     【 with enter                                      】
+    ----------------------------------------------------------------------
+
+
     ５日目に、またいつものようにヒツジのおかげで、王子さまの秘密が一つ明らかに
     なった。ずっと黙って自分の星のことを考えているうちに、聞きたいことができたの
     か、いきなり何の前触れもなく、僕にたずねてきたのだ。
@@ -547,6 +563,9 @@ def crypt_options():
     【 please enter the number of entries n              】
     【 n being the range of list to create               】
     【 < as of now only one list is possible to create > 】
+    ------------------------------------------------------------------------
+
+
         まもなく僕はこの花のことをよく知るようになった。王子さまの星では、それまで
     花はとても単純なつくりのものばかりだった。花びらは一重で、場所もまったくとら
     ず、誰のじゃまにもならなかった。ある朝、草に混じって姿を現して、夜には静かに
@@ -620,6 +639,9 @@ def overwrite_options():
     【 please enter the number of entries n              】
     【 n being the range of list to create               】
     【 < as of now only one list is possible to create > 】
+    ------------------------------------------------------------------------
+
+
         星から出ていくのに、王子さまはきっと渡り鳥の群れを利用したのだろう。旅立ち
     の朝、王子さまは自分の星を完璧に片付けた。ていねいに活火山のそうじをした。星
     には活火山が二つあって、これらは朝、朝食を温めるのにとても便利だった。また、
@@ -666,6 +688,9 @@ def dd_options():
     【 please enter the number of entries n              】
     【 n being the range of list to create               】
     【 < as of now only one list is possible to create > 】
+    --------------------------------------------------------------------------
+
+
         王子さまは、小惑星 325、326、327、328、329、330 のあたりまでやってきた。そ
     こで見聞を広めるために、それらの星を訪問しはじめた。
     最初の星には王様が住んでいた。王様は紫色の服に白いオコジョの毛皮をまとって、
@@ -779,6 +804,9 @@ def gpg_options():
     【 please enter the number of entries n              】
     【 n being the range of list to create               】
     【 < as of now only one list is possible to create > 】
+    ---------------------------------------------------------------------
+
+
     ２番目の星にはうぬぼれ屋が住んでいた。
     「ああ！ 私を称える者がやってきたな！」と、王子さまを見かけると遠くから大声
     で言った。
@@ -816,6 +844,9 @@ def key_file():
     【 simply enter the same value as used for prior key file                       】
     【 please enter the number of entries to enter n:                               】
     【 in other words enter range of list to create: < should only need value (1) > 】
+    ---------------------------------------------------------------------------------
+
+
     次の星には酒びたりの男が住んでいた。その星を訪れたのはほんの短い時間だった
     が、それでも王子さまはひどく気が沈んでしまった。
     「そこで何をしているの？」と、王子さまは酒びたりの男に聞いた。男はずらりと並
@@ -839,6 +870,9 @@ def physical_volume():
     name = '''
     【 lastly please enter a name for a logical volume management 】
     【 (LVM) physical volume <: press enter >                     】
+    ------------------------------------------------------------------------------
+
+
         4 番目の星は実業家の星だった。実業家は仕事に没頭していたので、王子さまがやっ
     てきても顔も上げなかった。
     「こんにちは。たばこの火が消えていますよ」と、王子さまが言った。
@@ -928,6 +962,8 @@ def volume_group():
     volume_group = ''' 
     【 please enter a name for the volume group to lie 】
     【 within the physical volume <: press enter >     】
+    ----------------------------------------------------------------------
+
 
     ５番目の星はとても変わった星だった。たずねた星の中でいちばん小さな星だった。
     街灯が一つと点灯夫が一人いて、それでいっぱいだったのだ。住む人がいなくて家一
@@ -999,7 +1035,9 @@ def lvm_instructions():
     【 Gigabytes <: press enter >name is simply written as a simple    】
     【 input string. <: press enter >the extents options may be left   】
     【 null or simply skipped by pressing enter, it will be used later 】
-    【 <: press enter >hajime (begin) <: press enter >                 】
+    【 <: press enter >hajime (begin) <:  q >                          】
+   ------------------------------------------------------------------------
+
 
      ６番目の星は前の星より 10 倍も大きな星だった。そこには大きな本を何冊も書い
     ているおじいさんが住んでいた。
@@ -1085,6 +1123,8 @@ def sec_lvm_instructions():
     【 of the volume group you've named within your physical volume <: press enter >") 】 
     【 size suffixed with M or G followed by category name again followed by extents   】
     【 which may be skipped <: press enter >") hajime (begin) <: press enter >")       】
+    ------------------------------------------------------------------------------------
+
 
      こうしたわけで、7 番目の星は地球だった。
     地球はどこにでもあるような普通の星ではないのだ！ 王様は 111 人もいるし （も
@@ -1112,6 +1152,8 @@ def third_lvm_instructions():
     【 note the format for extents is some 'NUM'%FREE i.e. 95%FREE <: press enter >    】
     【 this is done to variably fill the remaining harddrive space on disk in order to 】
     【 fill either all or some. <: press enter > hajime (begin) <: press enter >       】
+   -------------------------------------------------------------------------------------
+
 
         人は気のきいたことを言おうとすると、事実から少しそれることもある。点灯夫に
     ついて僕が言ったことは、全部が本当だというわけではない。だから地球を知らない
