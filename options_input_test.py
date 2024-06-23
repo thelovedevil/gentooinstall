@@ -54,11 +54,11 @@ def block_options_input():
         option = []
         option = blockdevice_app.block_digest(block_sources)
         value = []
-        string = moby_dick.enter_value()
-        print_app.print_curses(string)
+        string_two = moby_dick.enter_value()
+        print_app.print_curses(string_two)
         value = blockdevice_app.block_digest(block_sources)
         final = [j for i in zip(option, value) for j in i]
-        print(final)
+        print_app.print_curses(final)
         return final
 
 def crypt_options_input():

@@ -104,12 +104,19 @@ class CursedPrint():
             curses.start_color()
         self.main(self.screen)
 
+    def stop(self):
+        curses.nocbreak()
+        self.screen.keypad(False)
+        curses.echo()
+        curses.endwin()
+
     def main(self, stdscr):
         # self.screen = stdscr
         self.screen.clear()
         # self.screen.keypad(True)
         self.print_rows, self.print_cols = self.screen.getmaxyx()
         self.print_pad = curses.newpad(self.print_rows, self.print_cols)
+        self.screen.keypad(True)
         # self.screen.keypad(True)
     
 

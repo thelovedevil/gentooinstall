@@ -577,6 +577,7 @@ def enter_value():
     追いつき、ふたたび気持ちが通じあうようになれるのか、僕にはわからなかった。
     これほどまでに不可解なところなのだ、涙の国というものは。
     '''
+    return value
 
 def crypt_options():
     crypt_options = ''' 

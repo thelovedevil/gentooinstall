@@ -71,14 +71,30 @@ class Block_Table():
         self.screen = None
 
     def start(self):
-        curses.wrapper(self.main)
+        # curses.wrapper(self.main)
+        
+
+        try:
+            self.screen = curses.initscr()
+            curses.noecho()
+            curses.cbreak()
+            self.screen.keypad(True)
+            self.main(self.screen)
+        finally:
+
+            self.screen.keypad(False)
+            curses.nocbreak()
+            curses.echo()
+            curses.endwin()
+
+
 
     def main(self, stdscr):
         self.screen = stdscr
         self.screen.clear()
-        curses.noecho()
-        curses.cbreak()
-        self.screen.keypad(True)
+        # curses.noecho()
+        # curses.cbreak()
+        # self.screen.keypad(True)
         self.block_digest(sources)
 
     def block_digest(self, sources):
@@ -150,14 +166,15 @@ class Block_Table():
                 #print_curses(stdscr, str(special_address_list))
                 
                 
-        stdscr = curses.initscr()
-        curses.noecho()
-        curses.cbreak()
-        stdscr.keypad(True)
-        curses.nocbreak()
-        stdscr.keypad(False)
-        curses.echo()
-        stdscr.clear()
+        # stdscr = curses.initscr()
+        # curses.noecho()
+        # curses.cbreak()
+        # stdscr.keypad(True)
+        # curses.nocbreak()
+        # stdscr.keypad(False)
+        # curses.noecho()
+        # stdscr.clear()
+        
         
         return (special_address_list)
 

@@ -125,7 +125,20 @@ class Crypt_Table():
         self.screen = None
 
     def start(self):
-        curses.wrapper(self.main)
+        #curses.wrapper(self.main)
+        
+        try:
+            self.screen = curses.initscr()
+            curses.noecho()
+            curses.cbreak()
+            self.screen.keypad(True)
+            self.main(self.screen)
+        finally:
+
+            self.screen.keypad(False)
+            curses.nocbreak()
+            curses.echo()
+            curses.endwin()
 
     def main(self, stdscr):
         self.screen = stdscr
@@ -204,15 +217,15 @@ class Crypt_Table():
                 if ascii_art: 
                     ascii_art.handle_input(x)
         
-        stdscr = curses.initscr()
-        curses.noecho()
-        curses.cbreak()
-        stdscr.keypad(True)
-        curses.nocbreak()
-        stdscr.keypad(False)
-        curses.echo()
-        stdscr.clear()
-        curses.endwin()
+        # stdscr = curses.initscr()
+        # curses.noecho()
+        # curses.cbreak()
+        # stdscr.keypad(True)
+        # curses.nocbreak()
+        # stdscr.keypad(False)
+        # curses.echo()
+        # stdscr.clear()
+
         return (special_address_list)
         
 if __name__ == "__main__": 

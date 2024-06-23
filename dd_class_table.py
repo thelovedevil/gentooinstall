@@ -79,7 +79,21 @@ class Dd_Table():
         self.screen = None
     
     def start(self):
-        curses.wrapper(self.main)
+        #curses.wrapper(self.main)
+        
+        try:
+            self.screen = curses.initscr()
+            curses.noecho()
+            curses.cbreak()
+            self.screen.keypad(True)
+            self.main(self.screen)
+
+        finally:
+
+            self.screen.keypad(False)
+            curses.nocbreak()
+            curses.echo()
+            curses.endwin()
 
     def main(self, stdscr):
         self.screen = stdscr
@@ -88,6 +102,7 @@ class Dd_Table():
         curses.cbreak()
         self.screen.keypad(True)
         self.dd_options_digest(dd_sources)
+        
 
     def dd_options_digest(self, sources):
 
@@ -158,15 +173,14 @@ class Dd_Table():
                     ascii_art.handle_input(x)
         
         
-        stdscr = curses.initscr()
-        curses.noecho()
-        curses.cbreak()
-        stdscr.keypad(True)
-        curses.nocbreak()
-        stdscr.keypad(False)
-        curses.echo()
-        stdscr.clear()
-        curses.endwin()
+        # stdscr = curses.initscr()
+        # curses.noecho()
+        # curses.cbreak()
+        # stdscr.keypad(True)
+        # curses.nocbreak()
+        # stdscr.keypad(False)
+        # curses.echo()
+        # stdscr.clear()
 
         return (special_address_list)
 
