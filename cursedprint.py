@@ -94,16 +94,23 @@ class CursedPrint():
         self.print_start_row = 0
 
     def start(self):
-        curses.wrapper(self.main)
+        # curses.wrapper(self.main)
+        # curses.noecho()
+        self.screen = curses.initscr()
         curses.noecho()
+        curses.cbreak()
+        self.screen.keypad(True)
+        if curses.has_colors():
+            curses.start_color()
+        self.main(self.screen)
 
     def main(self, stdscr):
-        self.screen = stdscr
+        # self.screen = stdscr
         self.screen.clear()
-        self.screen.keypad(True)
+        # self.screen.keypad(True)
         self.print_rows, self.print_cols = self.screen.getmaxyx()
         self.print_pad = curses.newpad(self.print_rows, self.print_cols)
-        self.screen.keypad(True)
+        # self.screen.keypad(True)
     
 
     def print_curses(self, variable):
@@ -128,7 +135,11 @@ class CursedPrint():
         while(x != ord('q')):
             self.screen.refresh()
             ascii_art.draw_menu(self.screen)
-            self.print_pad.refresh(self.print_start_row, 0, 0, 0, min(len(wrapped_lines), curses.LINES - 2), curses.COLS - 1)
+
+            max_start_row = max(0, len(wrapped_lines) - (curses.LINES - 2))
+            self.print_start_row = min(self.print_start_row, max_start_row)
+
+            self.print_pad.refresh(self.print_start_row, 0, 0, 0, min(len(wrapped_lines), curses.LINES - 2), max(len(line), curses.COLS - 1))
 
             x = self.screen.getch()
 

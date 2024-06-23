@@ -6,12 +6,11 @@ from subprocess import Popen, PIPE
 import curses
 import cursesscrollmenu
 from cursesscrollmenu import menu
-from cursesprint import print_curses
 from cursedinput import Input
 from cursedprint import CursedPrint
 from block_device_class_table import Block_Table, return_pandas
 import moby_dick
-from cursedprint_white import CursedPrintWhite\
+from cursedprint_white import CursedPrintWhite
 
 block_sources = return_pandas()
 
@@ -25,30 +24,30 @@ print_app_white = CursedPrintWhite()
 print_app_white.start()
 
 blockdevice_app = Block_Table()
-blockdevice_app.start()
+#blockdevice_app.start()
 
-def block_options_input():
-    dictionary = {}
-    string = moby_dick.block_options()
-    print_app.print_curses(string)
-    n = int(input_app.input_string())
+# def block_options_input():
+#     dictionary = {}
+#     string = moby_dick.block_options()
+#     print_app.print_curses(string)
+#     n = int(input_app.input_string())
 
-    for i in range(n):
-        string = moby_dick.instructions()
-        print_app.print_curses(string)
-        option = []
-        option = blockdevice_app.block_digest(block_sources)
-        value = []
-        string_two = moby_dick.enter_value()
-        print_app.print_curses(string_two)
-        value = blockdevice_app.block_digest(block_sources)
-        final = [j for i in zip(option, value) for j in i]
-        print(final)
-        return final
+#     for i in range(n):
+#         string = moby_dick.instructions()
+#         print_app.print_curses(string)
+#         option = []
+#         option = blockdevice_app.block_digest(block_sources)
+#         value = []
+#         string_two = moby_dick.enter_value()
+#         print_app.print_curses(string_two)
+#         value = blockdevice_app.block_digest(block_sources)
+#         final = [j for i in zip(option, value) for j in i]
+#         print(final)
+#         return final
 
-block_command = []
-block_command = block_options_input()
-print(block_command)
+# block_command = []
+# block_command = block_options_input()
+# print(block_command)
 
 def name_physical_volume(): 
     string = moby_dick.physical_volume()
@@ -174,7 +173,7 @@ pv_display()
 
 def vg_display():
     vg_display = subprocess.run(['sudo', 'vgdisplay'], check=True, capture_output=True, text=True).stdout
-    print_app_white.print_curses(str(pv_display))
+    print_app_white.print_curses(str(_display))
 
 vg_display()
 
@@ -192,25 +191,25 @@ def ls_devmapper():
         print_app_white.print_curses(str(ls_devmapper))
 
 def mk_swap():
-    mk_swap = ["mkswap", "-L", lvcreate_swap_dictionary.name, "/dev/mapper/" + name_volume_group[0] + "-" + lvcreate_swap_dictionary.name]
+    mk_swap = ["mkswap", "-L", lvcreate_swap_dictionary.name, "/dev/mapper/" + name_volume_group + "-" + lvcreate_swap_dictionary.name]
     subprocess.run(mk_swap)
 
 mk_swap()
 
 def mk_ext4_root():
-    mk_ext4 = ["mkfs.ext4", "-L", lvcreate_root_dictionary.name, "/dev/mapper/" + name_volume_group[0] + "-" + lvcreate_root_dictionary.name]
+    mk_ext4 = ["mkfs.ext4", "-L", lvcreate_root_dictionary.name, "/dev/mapper/" + name_volume_group + "-" + lvcreate_root_dictionary.name]
     subprocess.run(mk_ext4)
 
 mk_ext4_root()
 
 def mk_ext4_home():
-    mk_ext4 = ["mkfs.ext4", "-m", "0", "-L", "home", "/dev/mapper/"+ name_volume_group[0] + "-" + lvcreate_home_dictionary.name]
+    mk_ext4 = ["mkfs.ext4", "-m", "0", "-L", "home", "/dev/mapper/"+ name_volume_group + "-" + lvcreate_home_dictionary.name]
     subprocess.run(mk_ext4)
 
 mk_ext4_home()
 
 def mk_swap_on():
-    subprocess.run(["swapon", "-v", "/dev/mapper/"+ name_volume_group[0] + "-" + lvcreate_swap_dictionary.name])
+    subprocess.run(["swapon", "-v", "/dev/mapper/"+ name_volume_group + "-" + lvcreate_swap_dictionary.name])
 
 def mkdir_mnt_gentoo():
     subprocess.run(["sudo", "mkdir", "-v", "/mnt/gentoo/"])
@@ -218,7 +217,7 @@ def mkdir_mnt_gentoo():
 mkdir_mnt_gentoo()
 
 def mount_mnt_gentoo():
-    subprocess.run(["sudo", "mount", "-v", "-t", "ext4", "/dev/mapper/" + name_volume_group[0] + "-" + lvcreate_root_dictionary.name, "/mnt/gentoo"])
+    subprocess.run(["sudo", "mount", "-v", "-t", "ext4", "/dev/mapper/" + name_volume_group + "-" + lvcreate_root_dictionary.name, "/mnt/gentoo"])
 
 mount_mnt_gentoo()
 

@@ -83,10 +83,11 @@ class Dd_Table():
 
     def main(self, stdscr):
         self.screen = stdscr
-        self.screen.clear()
+        self.screen.clear
         curses.noecho()
         curses.cbreak()
         self.screen.keypad(True)
+        self.dd_options_digest(dd_sources)
 
     def dd_options_digest(self, sources):
 
@@ -166,10 +167,10 @@ class Dd_Table():
         curses.echo()
         stdscr.clear()
         curses.endwin()
+
         return (special_address_list)
 
 if __name__ == "__main__":
     app = Dd_Table()
     app.start()
-    app.dd_options_digest(dd_sources)
 

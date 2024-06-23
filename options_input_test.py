@@ -5,11 +5,10 @@ import subprocess
 import json
 import pandas as pd
 from bs4 import BeautifulSoup, SoupStrainer
-from cursesprint import print_curses
 from testtest import sources_testcrypt
 from cryptsetup_table import crypt_options_digest, test_crypt_options
 import itertools
-from cryptsetup_class import Crypt_Table
+from cryptsetup_class_table import Crypt_Table
 from cursedprint import CursedPrint
 from cursedinput import Input
 from dd_class_table import Dd_Table, test_dd_options
@@ -19,22 +18,22 @@ from block_device_class_table import Block_Table, return_pandas
 import moby_dick
 
 input_app = Input()
-input_app.start()
+#input_app.start()
 
 blockdevice_app = Block_Table()
-blockdevice_app.start()
+#blockdevice_app.start()
 
 crypt_app = Crypt_Table()
-crypt_app.start()
+#crypt_app.start()
 
 print_app = CursedPrint()
 print_app.start()
 
 dd_app = Dd_Table()
-dd_app.start()
+#dd_app.start()
 
 gpg_app = GpG_Table()
-gpg_app.start()
+#pg_app.start()
 
 crypt_sources = test_crypt_options()
 

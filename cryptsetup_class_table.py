@@ -7,6 +7,8 @@ import pandas as pd
 from bs4 import BeautifulSoup, SoupStrainer
 from cursedprint import CursedPrint
 from asuka_print import AsukaPrint
+from PIL import Image
+import numpy as np
 
 def test_crypt_options():
         command = ["cryptsetup", "--help"]
@@ -77,6 +79,47 @@ def test_crypt_options():
 
 sources_testcrypt = test_crypt_options()
 
+
+class AsciiArt:
+    ascii_chars = "@@@@@%%%%%#####*****+++++=====-----:::::.....!!!!!///// "
+
+    def __init__(self, image_path):
+        self.image_path = image_path
+        self.start_row = 0
+        self.start_col = 0
+        self.art_matrix = self.convert_ascii(image_path)
+        self.art_height, self.art_width = self.art_matrix.shape
+
+    def convert_ascii(self, image_path):
+        size = 150, 150
+        im = Image.open(image_path)
+        im.thumbnail(size, Image.Resampling.LANCZOS)
+        im.save(image_path + "original_resized.jpg")      
+        img = Image.open(image_path + "original_resized.jpg")
+        pixel_matrix = np.array(img)
+        luminosity_matrix = 0.21 * pixel_matrix[:, :, 0] + 0.72 * pixel_matrix[:, :, 1] + 0.07 * pixel_matrix[:, :, 2]
+        normalized_luminosity = (luminosity_matrix - luminosity_matrix.min()) / (luminosity_matrix.max() - luminosity_matrix.min())
+        indices = (normalized_luminosity * (len(self.ascii_chars) - 1)).astype(int)
+        ascii_matrix = np.array([[self.ascii_chars[idx] for idx in row] for row in indices])
+        return ascii_matrix
+
+    def draw_menu(self, stdscr):
+        pad = curses.newpad(self.art_height, self.art_width)
+        for i in range(min(curses.LINES - 2, self.art_height - self.start_row)):
+            for j in range(min(curses.COLS - 20, self.art_width - self.start_col)):
+                pad.addch(i, j, self.art_matrix[self.start_row + i, self.start_col + j])
+        pad.refresh(0, 0, 1, 75, curses.LINES - 2, curses.COLS - 1)
+
+    def handle_input(self, key):
+        if key == ord("w") and self.start_row > 0:
+            self.start_row -= 1
+        elif key == ord("s") and self.start_row < self.art_height - (curses.LINES - 2):
+            self.start_row += 1
+        elif key == ord("d") and self.start_col > 0:
+            self.start_col -= 1
+        elif key == ord("a") and self.start_col < self.art_width - (curses.COLS - 20):
+            self.start_col += 1
+
 class Crypt_Table():
     def __init__(self):
         self.screen = None
@@ -90,6 +133,7 @@ class Crypt_Table():
         curses.noecho()
         curses.cbreak()
         self.screen.keypad(True)
+        self.crypt_options_digest(sources_testcrypt)
         
 
     def crypt_options_digest(self, sources):
@@ -107,7 +151,8 @@ class Crypt_Table():
         
         dictionary_variable = return_options_dictionary()
 
-        table = Table(stdscr, len(dictionary_variable), (len(dictionary_variable.columns)), 140, 100, 15, spacing=1, col_names=True)
+        table = Table(stdscr, len(dictionary_variable), (len(dictionary_variable.columns)), 70, 100, 15, spacing=1, col_names=True)
+        ascii_art = AsciiArt("/home/adrian/Downloads/keiko.jpg")
 
         m = 0 
         while m < len(dictionary_variable.columns):
@@ -123,30 +168,41 @@ class Crypt_Table():
                 
                 
             m += 1
-        while ( x != 'q'):
+        while ( x != ord('q')):
             table.refresh()
-            x = stdscr.getkey()
-            if ( x == 'a'):
+            ascii_art.draw_menu(stdscr)
+            x = stdscr.getch()
+            if ( x == curses.KEY_LEFT):
                 table.cursor_left()
-            elif ( x == 'd'):
+            elif ( x == curses.KEY_RIGHT):
                 table.cursor_right()
-            elif (x == 's'):
+            elif (x == curses.KEY_DOWN):
                 table.cursor_down()
-            elif (x == 'w'):
-                table.cursor_up()
-            elif (x == 'r'):
+            elif (x == curses.KEY_UP):
+                table.cursor_up()            
+            # if ( x == 'a'):
+            #     table.cursor_left()
+            # elif ( x == 'd'):
+            #     table.cursor_right()
+            # elif (x == 's'):
+            #     table.cursor_down()
+            # elif (x == 'w'):
+            #     table.cursor_up()
+            elif (x == ord('r')):
                 table.user_input(stdscr)
-            elif (x == '\n'):
+            elif (x == ord('\n')):
                 table_sources = table.select(stdscr)
                 print_app = CursedPrint()
                 print_app.start()
-                print_app.start_print()
                 print_app.print_curses(table_sources)
                 #print_curses(stdscr, str(table.select(stdscr)))
                 special_address = str(table.select(stdscr))
                 special_address_list.append(special_address)
                 print_app.print_curses(special_address_list)
                 #print_curses(stdscr, str(special_address_list))
+            elif (x in [ord('w'), ord('a'), ord('d'), ord('s')]):
+                if ascii_art: 
+                    ascii_art.handle_input(x)
         
         stdscr = curses.initscr()
         curses.noecho()
@@ -162,7 +218,6 @@ class Crypt_Table():
 if __name__ == "__main__": 
     app = Crypt_Table()
     app.start()
-    app.crypt_options_digest(sources)
     
     
     

@@ -19,7 +19,6 @@ def return_pandas():
         .fillna("")
         .reset_index(drop=True)
         )
-    print(df) 
     return df
 
 stdscr = curses.initscr()
@@ -80,6 +79,7 @@ class Block_Table():
         curses.noecho()
         curses.cbreak()
         self.screen.keypad(True)
+        self.block_digest(sources)
 
     def block_digest(self, sources):
         x = 0
@@ -158,7 +158,6 @@ class Block_Table():
         stdscr.keypad(False)
         curses.echo()
         stdscr.clear()
-        curses.endwin()
         
         return (special_address_list)
 
@@ -166,4 +165,3 @@ class Block_Table():
 if __name__ == "__main__":
     app = Block_Table()
     app.start()
-    app.block_digest(sources)

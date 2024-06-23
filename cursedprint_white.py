@@ -94,16 +94,24 @@ class CursedPrintWhite():
         self.print_start_row = 0
 
     def start(self):
-        curses.wrapper(self.main)
+        # curses.wrapper(self.main)
+        # curses.noecho()
+        self.screen = curses.initscr()
         curses.noecho()
+        curses.cbreak()
+        self.screen.keypad(True)
+        if curses.has_colors():
+            curses.start_color()
+        self.main(self.screen)
+        
 
     def main(self, stdscr):
-        self.screen = stdscr
+        # self.screen = stdscr
         self.screen.clear()
-        self.screen.keypad(True)
+        self.screen.refresh()
+        # self.screen.keypad(True)
         self.print_rows, self.print_cols = self.screen.getmaxyx()
         self.print_pad = curses.newpad(self.print_rows, self.print_cols // 2 )
-        self.screen.keypad(True)
     
 
     def print_curses(self, variable):
@@ -145,6 +153,8 @@ class CursedPrintWhite():
             curses.noecho()
             curses.cbreak()
             self.screen.keypad(True)
+            curses.endwin()
+
 
 string = output_crime()   
 sources = string
