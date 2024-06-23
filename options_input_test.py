@@ -16,6 +16,8 @@ from gpg_class_table import GpG_Table, test_gpg_options
 import create_efi
 from block_device_class_table import Block_Table, return_pandas
 import moby_dick
+from cursedprint_cyanred import CursedPrintCyanRed
+from cursedprint_white import CursedPrintWhite
 
 input_app = Input()
 #input_app.start()
@@ -28,6 +30,12 @@ crypt_app = Crypt_Table()
 
 print_app = CursedPrint()
 print_app.start()
+
+print_appcyanred = CursedPrintCyanRed()
+print_appcyanred.start()
+
+print_appwhite = CursedPrintWhite()
+print_appwhite.start()
 
 dd_app = Dd_Table()
 #dd_app.start()
@@ -50,31 +58,31 @@ def block_options_input():
 
     for i in range(n):
         string = moby_dick.instructions()
-        print_app.print_curses(string)
+        print_appcyanred.print_curses(string)
         option = []
         option = blockdevice_app.block_digest(block_sources)
         value = []
         string_two = moby_dick.enter_value()
-        print_app.print_curses(string_two)
+        print_appcyanred.print_curses(string_two)
         value = blockdevice_app.block_digest(block_sources)
         final = [j for i in zip(option, value) for j in i]
-        print_app.print_curses(final)
+        print_appcyanred.print_curses(final)
         return final
 
 def crypt_options_input():
     dictionary = {}
     string = moby_dick.crypt_options()
-    print_app.print_curses(strings)
+    print_appcyanred.print_curses(strings)
     n = int(input_app.input_string())
 
     for i in range(n):
         string = moby_dick.instructions()
-        print_app.print_curses(string)
+        print_appcyanred.print_curses(string)
         option = []
         option = crypt_app.crypt_options_digest(crypt_sources)
         value = []
         string_two = moby_dick.enter_value()
-        print_app.print_curses(string_two)
+        print_appcyanred.print_curses(string_two)
         value = crypt_app.crypt_options_digest(crypt_sources)
         final = [j for i in zip(option, value) for j in i]
         print(final)
@@ -85,17 +93,17 @@ dd_sources = test_dd_options()
 def overwrite_options_input():
     dictionary = {}
     string = moby_dick.overwrite_options()
-    print_app.print_curses(string)
+    print_appwhite.print_curses(string)
     n = int(input_app.input_string())
 
     for i in range(n):
         string = moby_dick.instructions()
-        print_app.print_curses(string)
+        print_appwhite.print_curses(string)
         option = []
         option = dd_app.dd_options_digest(dd_sources)
         value = []
         string_two = moby_dick.enter_value()
-        print_app.print_curses(string_two)
+        print_appwhite.print_curses(string_two)
         value = dd_app.dd_options_digest(dd_sources)
         final = [j for i in zip(option, value) for j in i]
         prepend = lambda x: "="+x
@@ -133,18 +141,18 @@ gpg_sources = test_gpg_options()
 def gpg_options_input():
     dictionary = {}
     string = moby_dick.gpg_options()
-    print_app.print_curses(string)
+    print_appwhite.print_curses(string)
     n = int(input_app.input_string())
 
     for i in range(n):
         string = moby_dick.instructions()
-        print_app.print_curses(string)
+        print_appwhite.print_curses(string)
         option = []
         option = gpg_app.gpg_options_digest(gpg_sources)
         value = []
         string_two = moby_dick.enter_value()
         print_app.print_curses(string_two)
-        value = gpg_app.gpg_options_digest(gpg_sources)
+        value = gpg_appwhite.gpg_options_digest(gpg_sources)
         final = [j for i in zip(option, value) for j in i]
         print(final)
         return final

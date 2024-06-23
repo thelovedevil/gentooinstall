@@ -5,12 +5,17 @@ import subprocess
 from block_device_class_table import Block_Table
 import json
 import pandas as pd
+import moby_dick
+from cursedprint_invred CursedPrintInvRed
 
 block_dev = Block_Table()
-block_dev.start()
 
 print_app = CursedPrint()
 print_app.start()
+
+print_appinvred = CursedPrintInvRed()
+print_appinvred.start()
+
 
 
 def return_pandas():
@@ -28,8 +33,8 @@ def return_pandas():
 pandas_block_devices = return_pandas()
 
 def fdisk_process(): 
-        print_app.print_curses("fdisk process about to be run on selected block device")
-        print_app.print_curses("please select exactly one block device")
+        string = moby_dick.fdisk_process()
+        print_app.print_curses(string)
         selected_device = block_dev.block_digest(pandas_block_devices)
-        subprocess.run(['sudo', 'fdisk', selected_device[0]])
+        subprocess.run(['sudo', 'cfdisk', selected_device[0]])
 fdisk_process()

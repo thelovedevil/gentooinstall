@@ -7,7 +7,7 @@ from PIL import Image
 import numpy as np
 import os, sys
 from curses import panel
-from cryptsetup_class import sources, Crypt_Table
+from cryptsetup_class_table import sources, Crypt_Table
 from curses_menu import CursesMenu
 from cursesmenu.items import FunctionItem, SubmenuItem, CommandItem, MenuItem
 

@@ -7,7 +7,6 @@ import json
 import pandas as pd
 
 block_dev = Block_Table()
-block_dev.start()
 
 print_app = CursedPrint()
 print_app.start()

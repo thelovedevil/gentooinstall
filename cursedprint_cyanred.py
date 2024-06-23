@@ -85,7 +85,7 @@ class AsciiArt:
             self.start_col += 1
 
 
-class CursedPrintWhite():
+class CursedPrintCyanRed():
     def __init__(self):
         self.screen = None
         self.print_pad = None
@@ -103,27 +103,34 @@ class CursedPrintWhite():
         if curses.has_colors():
             curses.start_color()
         self.main(self.screen)
-        
+
+    def stop(self):
+        curses.nocbreak()
+        self.screen.keypad(False)
+        curses.echo()
+        curses.endwin()
 
     def main(self, stdscr):
         # self.screen = stdscr
         self.screen.clear()
-        self.screen.refresh()
         # self.screen.keypad(True)
         self.print_rows, self.print_cols = self.screen.getmaxyx()
-        self.print_pad = curses.newpad(self.print_rows, self.print_cols // 2 )
+        self.print_pad = curses.newpad(self.print_rows, self.print_cols)
+        self.screen.keypad(True)
+        # self.screen.keypad(True)
     
 
     def print_curses(self, variable):
-        ascii_art = AsciiArt("/home/adrian/Downloads/yukinablush.jpg")
+        ascii_art = AsciiArt("/home/adrian/Downloads/keiko.jpg")
         x = 0
-        curses.init_pair(1, curses.COLOR_CYAN, curses.COLOR_WHITE)
+        curses.start_color()
+        curses.init_pair(1, curses.COLOR_MAGENTA, curses.COLOR_CYAN)
         self.screen.bkgd(' ', curses.color_pair(1))
 
         lines = str(variable).split('\n')
         max_line_length = max(len(line) for line in lines)
         self.print_rows = len(lines)
-        self.print_cols = max(max_line_length, 130) 
+        self.print_cols = max(max_line_length, 70 ) 
         self.print_pad = curses.newpad(self.print_rows, self.print_cols)
 
         wrapped_lines = []
@@ -136,13 +143,17 @@ class CursedPrintWhite():
         while(x != ord('q')):
             self.screen.refresh()
             ascii_art.draw_menu(self.screen)
-            self.print_pad.refresh(self.print_start_row, 0, 0, 0, min(len(wrapped_lines), curses.LINES - 2), min(self.print_cols, self.print_cols // 2))
+
+            max_start_row = max(0, len(wrapped_lines) - (curses.LINES - 2))
+            self.print_start_row = min(self.print_start_row, max_start_row)
+
+            self.print_pad.refresh(self.print_start_row, 0, 0, 0, min(len(wrapped_lines), curses.LINES - 2), max(len(line), curses.COLS - 1))
 
             x = self.screen.getch()
 
             if (x == curses.KEY_UP and self.print_start_row > 0):
                 self.print_start_row -= 1
-            elif (x == curses.KEY_DOWN and self.print_start_row < len(wrapped_lines) - min(self.print_rows, curses.LINES - 3)):
+            elif (x == curses.KEY_DOWN and self.print_start_row < len(wrapped_lines) - min(self.print_rows, curses.LINES - 1)):
                 self.print_start_row += 1
         
             ascii_art.handle_input(x)
@@ -153,12 +164,10 @@ class CursedPrintWhite():
             curses.noecho()
             curses.cbreak()
             self.screen.keypad(True)
-            curses.endwin()
-
 
 string = output_crime()   
 sources = string
 if __name__ == "__main__":
-    app = CursedPrintWhite()
+    app = CursedPrintCyanRed()
     app.start()
     app.print_curses(sources)
