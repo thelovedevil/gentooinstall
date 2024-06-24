@@ -167,6 +167,6 @@ class CursedPrintCyanBlack():
 string = output_crime()   
 sources = string
 if __name__ == "__main__":
-    app = CursedPrintCyan()
+    app = CursedPrintCyanBlack()
     app.start()
     app.print_curses(sources)

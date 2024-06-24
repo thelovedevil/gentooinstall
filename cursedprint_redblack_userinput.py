@@ -85,7 +85,7 @@ class AsciiArt:
             self.start_col += 1
 
 
-class CursedPrintRedWhiteUserInput():
+class CursedPrintCyanBlackUserInput():
     def __init__(self):
         self.screen = None
         self.print_pad = None
@@ -122,9 +122,9 @@ class CursedPrintRedWhiteUserInput():
     
 
     def print_curses(self, variable):
-        ascii_art = AsciiArt("/home/adrian/Downloads/genkai.jpg")
+        ascii_art = AsciiArt("/home/adrian/Downloads/foxgirl.jpg")
         x = 0
-        curses.init_pair(1, curses.COLOR_WHITE, curses.COLOR_RED)
+        curses.init_pair(1, curses.COLOR_RED, curses.COLOR_BLACK)
         self.screen.bkgd(' ', curses.color_pair(1))
 
         lines = str(variable).split('\n')
@@ -139,16 +139,16 @@ class CursedPrintRedWhiteUserInput():
                 wrapped_lines.extend(textwrap.wrap(line, width=self.print_cols))
             else:
                 wrapped_lines.append(line)
-
+            
 
         for i, line in enumerate(wrapped_lines):
             if i == 0:
                 line = line[:self.print_cols - 10]
             self.print_pad.addstr(i + 2, 0, line.ljust(self.print_cols - 10), curses.color_pair(1))
-        
+
         prompt = "entry: "
         input_str = ""
-
+        
         while(x != ord('q')):
             self.screen.refresh()
             ascii_art.draw_menu(self.screen)
@@ -159,7 +159,7 @@ class CursedPrintRedWhiteUserInput():
             self.print_pad.refresh(self.print_start_row, 0, 2, 0, min(len(wrapped_lines) + 2, curses.LINES - 2), max(len(line), curses.COLS - 1))
 
             self.print_pad.addstr(0, 0, prompt + input_str.ljust(self.max_input_length), curses.color_pair(1))
-            self.print_pad.refresh(0, 0, 0, 0, 1, self.print_cols - 1) 
+            self.print_pad.refresh(0, 0, 0, 0, 1, self.print_cols - 1)            
 
             x = self.screen.getch()
 
@@ -177,10 +177,11 @@ class CursedPrintRedWhiteUserInput():
             else:
                 if len(input_str) < self.max_input_length:
                     input_str += chr(x)
-            # if (x == curses.KEY_UP and self.print_start_row > 0):
-            #     self.print_start_row -= 1
-            # elif (x == curses.KEY_DOWN and self.print_start_row < len(wrapped_lines) - min(self.print_rows, curses.LINES - 1)):
-            #     self.print_start_row += 1
+
+            if (x == curses.KEY_UP and self.print_start_row > 0):
+                self.print_start_row -= 1
+            elif (x == curses.KEY_DOWN and self.print_start_row < len(wrapped_lines) - min(self.print_rows, curses.LINES - 1)):
+                self.print_start_row += 1
         
             ascii_art.handle_input(x)
             self.screen.clear()
@@ -194,6 +195,6 @@ class CursedPrintRedWhiteUserInput():
 string = output_crime()   
 sources = string
 if __name__ == "__main__":
-    app = CursedPrintRedWhiteUserInput()
+    app = CursedPrintCyanBlackUserInput()
     app.start()
     app.print_curses(sources)
