@@ -85,7 +85,7 @@ class AsciiArt:
             self.start_col += 1
 
 
-class CursedPrint():
+class CursedPrintCyanRedGenkai():
     def __init__(self):
         self.screen = None
         self.print_pad = None
@@ -121,9 +121,10 @@ class CursedPrint():
     
 
     def print_curses(self, variable):
-        ascii_art = AsciiArt("/home/adrian/Downloads/botansmile.jpg")
+        ascii_art = AsciiArt("/home/adrian/Downloads/genkai.jpg")
         x = 0
-        curses.init_pair(1, curses.COLOR_BLACK, curses.COLOR_WHITE)
+        curses.start_color()
+        curses.init_pair(1, curses.COLOR_MAGENTA, curses.COLOR_CYAN)
         self.screen.bkgd(' ', curses.color_pair(1))
 
         lines = str(variable).split('\n')
@@ -167,6 +168,6 @@ class CursedPrint():
 string = output_crime()   
 sources = string
 if __name__ == "__main__":
-    app = CursedPrint()
+    app = CursedPrintCyanRedGenkai()
     app.start()
     app.print_curses(sources)

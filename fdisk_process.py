@@ -6,7 +6,7 @@ from block_device_class_table import Block_Table
 import json
 import pandas as pd
 import moby_dick
-from cursedprint_invred CursedPrintInvRed
+from cursedprint_invred import CursedPrintInvRed
 
 block_dev = Block_Table()
 
@@ -15,6 +15,8 @@ print_app.start()
 
 print_appinvred = CursedPrintInvRed()
 print_appinvred.start()
+
+
 
 
 

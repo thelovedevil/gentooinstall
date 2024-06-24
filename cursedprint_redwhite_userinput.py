@@ -85,13 +85,14 @@ class AsciiArt:
             self.start_col += 1
 
 
-class CursedPrint():
+class CursedPrintRedWhiteUserInput():
     def __init__(self):
         self.screen = None
         self.print_pad = None
         self.print_rows = 0
         self.print_cols = 0
         self.print_start_row = 0
+        self.max_input_length = 50
 
     def start(self):
         # curses.wrapper(self.main)
@@ -121,39 +122,64 @@ class CursedPrint():
     
 
     def print_curses(self, variable):
-        ascii_art = AsciiArt("/home/adrian/Downloads/botansmile.jpg")
+        ascii_art = AsciiArt("/home/adrian/Downloads/genkai.jpg")
         x = 0
-        curses.init_pair(1, curses.COLOR_BLACK, curses.COLOR_WHITE)
+        curses.init_pair(1, curses.COLOR_WHITE, curses.COLOR_RED)
         self.screen.bkgd(' ', curses.color_pair(1))
 
         lines = str(variable).split('\n')
         max_line_length = max(len(line) for line in lines)
         self.print_rows = len(lines)
         self.print_cols = max(max_line_length, 70 ) 
-        self.print_pad = curses.newpad(self.print_rows, self.print_cols)
+        self.print_pad = curses.newpad(self.print_rows + 2, self.print_cols)
 
         wrapped_lines = []
         for line in lines:
-            wrapped_lines.extend(textwrap.wrap(line, width=self.print_cols))
+            if len(line) > self.print_cols - 10:
+                wrapped_lines.extend(textwrap.wrap(line, width=self.print_cols))
+            else:
+                wrapped_lines.append(line)
 
         for i, line in enumerate(wrapped_lines):
-            self.print_pad.addstr(i, 0, line, curses.color_pair(1))
+            if i == 0:
+                line = line[:self.print_cols - 10]
+            self.print_pad.addstr(i + 2, 0, line.ljust(self.print_cols - 10), curses.color_pair(1))
         
+        prompt = "entry: "
+        input_str = ""
+
         while(x != ord('q')):
             self.screen.refresh()
             ascii_art.draw_menu(self.screen)
 
-            max_start_row = max(0, len(wrapped_lines) - (curses.LINES - 2))
+            max_start_row = max(0, len(wrapped_lines) - (curses.LINES - 4))
             self.print_start_row = min(self.print_start_row, max_start_row)
 
-            self.print_pad.refresh(self.print_start_row, 0, 0, 0, min(len(wrapped_lines), curses.LINES - 2), max(len(line), curses.COLS - 1))
+            self.print_pad.refresh(self.print_start_row, 0, 2, 0, min(len(wrapped_lines) + 2, curses.LINES - 2), max(len(line), curses.COLS - 1))
+
+            self.print_pad.addstr(0, 0, prompt + input_str.ljust(self.max_input_length), curses.color_pair(1))
+            self.print_pad.refresh(0, 0, 0, 0, 1, self.print_cols - 1) 
 
             x = self.screen.getch()
 
-            if (x == curses.KEY_UP and self.print_start_row > 0):
+            if x == ord("\n"):
+                input_str = ""
+            elif x == curses.KEY_BACKSPACE or x == 127:
+                if len(input_str) > 0:
+                    input_str = input_str[:-1]
+                    self.print_pad.addstr(0, len(prompt), " " * (self.max_input_length - len(prompt) - len(input_str)), curses.color_pair(1))
+                    self.print_pad.refresh(0, 0, 0, 0, 1, self.print_cols - 1)
+            elif x == curses.KEY_UP and self.print_start_row > 0:
                 self.print_start_row -= 1
-            elif (x == curses.KEY_DOWN and self.print_start_row < len(wrapped_lines) - min(self.print_rows, curses.LINES - 1)):
-                self.print_start_row += 1
+            elif (x == curses.KEY_DOWN and self.print_start_row < len(wrapped_lines) - min(self.print_rows, curses.LINES-3)):
+                self.print_start_row +=1
+            else:
+                if len(input_str) < self.max_input_length:
+                    input_str += chr(x)
+            # if (x == curses.KEY_UP and self.print_start_row > 0):
+            #     self.print_start_row -= 1
+            # elif (x == curses.KEY_DOWN and self.print_start_row < len(wrapped_lines) - min(self.print_rows, curses.LINES - 1)):
+            #     self.print_start_row += 1
         
             ascii_art.handle_input(x)
             self.screen.clear()
@@ -167,6 +193,6 @@ class CursedPrint():
 string = output_crime()   
 sources = string
 if __name__ == "__main__":
-    app = CursedPrint()
+    app = CursedPrintRedWhiteUserInput()
     app.start()
     app.print_curses(sources)

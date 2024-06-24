@@ -59,6 +59,8 @@ from cursesscrollmenu import menu
 import moby_dick
 from cursedprint_invred import CursedPrintInvRed
 from cursedprint_redwhite import CursedPrintRedWhite
+from cursedprint_cyanredgenkai import CursedPrintCyanRedGenkai
+from cursedprint_redwhite_userinput import CursedPrintRedWhiteUserInput
 
 print_app = CursedPrint()
 print_app.start()
@@ -71,13 +73,19 @@ print_appinvred.start()
 print_appredwhite = CursedPrintRedWhite()
 print_appredwhite.start()
 
+print_appcyanredgenkai = CursedPrintCyanRedGenkai()
+print_appcyanredgenkai.start()
+
+print_appuserinput = CursedPrintRedWhiteUserInput()
+print_appuserinput.start()
+
 def variable_dictionary():
     dictionary = {}
     string = moby_dick.entries()
-    print_app.print_curses(string)
+    print_appredwhite.print_curses(string)
     n = input_app.input_string()
     string_two = moby_dick.key_value()
-    print_app.print_curses(string_two)
+    print_appuserinput.print_curses(string_two)
     dictionary = dict(input_app.input_string().split() for _ in range(int(n)))
     return dictionary
 
@@ -105,10 +113,10 @@ def mkdir():
 def mount():
     directory_list = variable_dictionary()
     s = menu(directory_list)[0]
-    print_appredwhite.print_curses(str(directory_list))
+    print_appcyanredgenkai.print_curses(str(directory_list))
     
     subprocess.run(['sudo', 'mount', '-v', '-t', s])
-    print_appredwhite.print_curses("mount run")
+    print_appcyanredgenkai.print_curses("mount run")
 
 
 if __name__ == "__main__":
