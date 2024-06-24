@@ -18,6 +18,7 @@ from block_device_class_table import Block_Table, return_pandas
 import moby_dick
 from cursedprint_cyanred import CursedPrintCyanRed
 from cursedprint_white import CursedPrintWhite
+from cursedprint_cyan import CursedPrintCyan
 
 input_app = Input()
 #input_app.start()
@@ -36,6 +37,9 @@ print_appcyanred.start()
 
 print_appwhite = CursedPrintWhite()
 print_appwhite.start()
+
+print_appcyan = CursedPrintCyan()
+print_appcyan.start()
 
 dd_app = Dd_Table()
 #dd_app.start()
@@ -160,17 +164,17 @@ def gpg_options_input():
 def key_file_input():
     dictionary = {}
     string = moby_dick.key_file()
-    print_app.print_curses(string)
+    print_appcyan.print_curses(string)
     n = int(input_app.input_string())
 
     for i in range(n):
         string_two = moby_dick.instructions()
-        print_app.print_curses(string)
+        print_appcyan.print_curses(string)
         option = []
         option = gpg_app.gpg_options_digest(crypt_sources)
         value = []
         string_two = moby_dick.enter_value()
-        print_app.print_curses(string_two)
+        print_appcyan.print_curses(string_two)
         value = gpg_app.gpg_options_digest(crypt_sources)
         final = [j for i in zip(option, value) for j in i]
         print(final)
@@ -178,7 +182,7 @@ def key_file_input():
 
 def name_physical_volume():
     string = moby_dick.physical_volume()
-    print_app.print_curses(s)
+    print_appcyan.print_curses(s)
     name = input_app.input_string()
     return name    
 

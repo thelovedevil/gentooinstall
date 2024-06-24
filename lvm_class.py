@@ -11,6 +11,8 @@ from cursedprint import CursedPrint
 from block_device_class_table import Block_Table, return_pandas
 import moby_dick
 from cursedprint_white import CursedPrintWhite
+from cursedprint_cyanblack import CursedPrintCyanBlack
+from cursedprint_redblack import CursedPrintRedBlack
 
 block_sources = return_pandas()
 
@@ -22,6 +24,12 @@ print_app.start()
 
 print_app_white = CursedPrintWhite()
 print_app_white.start()
+
+print_appredblack = CursedPrintRedBlack()
+print_appredblack.start()
+
+print_appcyanblack = CursedPrintCyanBlack()
+print_appcyanblack.start()
 
 blockdevice_app = Block_Table()
 #blockdevice_app.start()
@@ -51,7 +59,7 @@ blockdevice_app = Block_Table()
 
 def name_physical_volume(): 
     string = moby_dick.physical_volume()
-    print_app.print_curses(string)
+    print_appcyanblack.print_curses(string)
     name = input_app.input_string()
     return name   
 
@@ -69,7 +77,7 @@ pvcreate_process()
 
 def name_volume_group():
     string = moby_dick.volume_group()
-    print_app.print_curses(string)
+    print_appredblack.print_curses(string)
     name = input_app.input_string()
     return name
 
@@ -99,7 +107,7 @@ lvcreate_swap_prefab = {
 }
 lvm_string = moby_dick.lvm_instructions()
 
-print_app.print_curses(lvm_string)
+print_appcyanblack.print_curses(lvm_string)
 
 for key, value in lvcreate_swap_prefab.items():
                         if value == "null":
@@ -115,7 +123,7 @@ lvcreate_swap_dictionary = Lvcreate_Container(lvcreate_swap_prefab)
 
 lvm_string_two = moby_dick.sec_lvm_instructions()
 
-print_app.print_curses(lvm_string_two)
+print_appredblack.print_curses(lvm_string_two)
 
 lvcreate_root_prefab = {
     "size": "null",
@@ -173,7 +181,7 @@ pv_display()
 
 def vg_display():
     vg_display = subprocess.run(['sudo', 'vgdisplay'], check=True, capture_output=True, text=True).stdout
-    print_app_white.print_curses(str(_display))
+    print_app_white.print_curses(str(vg_display))
 
 vg_display()
 
