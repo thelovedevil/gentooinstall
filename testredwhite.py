@@ -85,13 +85,6 @@ class AsciiArt:
         elif key == ord("a") and self.start_col < self.art_width - (curses.COLS - 20):
             self.start_col += 1
 
-
-
-
-    
-
-
-
 class CursedPrintRedWhiteUserInput():
     def __init__(self):
         self.screen = None
@@ -100,12 +93,9 @@ class CursedPrintRedWhiteUserInput():
         self.print_rows = 0
         self.print_cols = 0
         self.print_start_row = 0
-        self.max_input_length = 50
-
+        self.max_input_length = 1
 
     def start(self):
-        # curses.wrapper(self.main)
-        # curses.noecho()
         self.screen = curses.initscr()
         curses.noecho()
         curses.cbreak()
@@ -121,15 +111,37 @@ class CursedPrintRedWhiteUserInput():
         curses.endwin()
 
     def main(self, stdscr):
-        # self.screen = stdscr
         self.screen.clear()
-        # self.screen.keypad(True)
         self.print_rows, self.print_cols = self.screen.getmaxyx()
         self.print_pad = curses.newpad(self.print_rows, self.print_cols)
-        self.input_pad = curses.newpad(3, self.print_cols)
+        self.input_pad = curses.newpad(5, self.print_cols)
         self.screen.keypad(True)
-        # self.screen.keypad(True)
-    
+
+    def input_dict(self, n):
+        dict_input = ""
+        for i in range(n):
+            self.input_pad.clear()
+            self.input_pad.addstr(0, 0, f"Enter key-value pair {i+1}: ", curses.color_pair(1))
+            self.input_pad.refresh(0, 0, 2, 0, 2, self.print_cols - 1)
+
+            while True:
+                x = self.screen.getch()
+                if x == ord('\n'):
+                    break
+                elif x == curses.KEY_BACKSPACE or x == 127:
+                    if len(dict_input) > 0:
+                        dict_input = dict_inpiut[:-1]
+                        self.input_pad.addstr(1, 0, " " * (self.print_cols - 1), curses.color_pair(1))
+                        self.input_pad.addstr(1, 0, dict_input, curses.color_pair(1))
+                        self.input_pad.refresh(0, 0, 2, 0, 3, self.print_cols - 1)
+                else:
+                    if len(dict_input) < self.print_cols - 1:
+                        dict_input += chr(x)
+                        self.input_pad.addstr(1, 0, dict_input, curses.color_pair(1))
+                        self.input_pad.refresh(0, 0, 2, 0, 3, self.print_cols - 1)
+            
+            yield dict_input.split()
+            dict_input = ""
 
     def print_curses(self, variable):
         ascii_art = AsciiArt("/home/adrian/Downloads/genkai.jpg")
@@ -140,7 +152,7 @@ class CursedPrintRedWhiteUserInput():
         lines = str(variable).split('\n')
         max_line_length = max(len(line) for line in lines)
         self.print_rows = len(lines)
-        self.print_cols = max(max_line_length, 70) 
+        self.print_cols = max(max_line_length, 70)
         self.print_pad = curses.newpad(self.print_rows + 2, self.print_cols)
 
         wrapped_lines = []
@@ -150,47 +162,51 @@ class CursedPrintRedWhiteUserInput():
             else:
                 wrapped_lines.append(line)
 
-
         for i, line in enumerate(wrapped_lines):
             if i == 0:
                 line = line[:self.print_cols - 10]
             self.print_pad.addstr(i + 2, 0, line.ljust(self.print_cols - 10), curses.color_pair(1))
-        
+
         prompt = "entry: "
+        test_prompt = "test:"
         input_str = ""
         dict_prompt = "Enter dictionary (key1 value1 key2 value2 ...): "
         dict_input = ""
 
-
-        while(x != ord('q')):
+        while x != ord('q'):
             self.screen.refresh()
             ascii_art.draw_menu(self.screen)
 
-            max_start_row = max(0, len(wrapped_lines) - (curses.LINES - 4))
+            max_start_row = max(0, len(wrapped_lines) - (curses.LINES - 6))  # Adjusted to accommodate input_pad
             self.print_start_row = min(self.print_start_row, max_start_row)
 
-            self.print_pad.refresh(self.print_start_row, 0, 2, 0, min(len(wrapped_lines) + 2, curses.LINES - 2), max(len(line), curses.COLS - 1))
+            self.print_pad.refresh(self.print_start_row, 0, 5, 0, min(len(wrapped_lines) + 5, curses.LINES - 2), max(len(line), curses.COLS - 1))  # Adjusted to accommodate input_pad
 
             self.print_pad.addstr(0, 0, prompt + input_str.ljust(self.max_input_length), curses.color_pair(1))
             self.print_pad.refresh(0, 0, 0, 0, 1, self.print_cols - 1)
 
             self.input_pad.addstr(0, 0, dict_prompt, curses.color_pair(1))
-            self.input_pad.addstr(2, 0, dict_input, curses.color_pair(1))
-            self.input_pad.refresh(0, 0, 1, 0, 3, self.print_cols - 1)
+            self.input_pad.addstr(1, 0, dict_input, curses.color_pair(1))
+            self.input_pad.refresh(0, 0, 2, 0, 6, self.print_cols - 1) 
 
             x = self.screen.getch()
 
             if x == ord('\n'):
                 try:
-                    n = int(input_str.strip())
-                    dictionary = dict(dict_input.split() for _ in range(n))
-                    self.input_pad.clear()
-                    self.input_pad.addstr(2, 0, "Dictionary: " + str(dictionary), curses.color_pair(1))
-                    self.input_pad.refresh(0, 0, 1, 0, 3, self.print_cols - 1)
-                    input_str = ""
-                    dict_input = ""
+                    if len(input_str.strip()) <= 1:
+                        n = int(input_str.strip()) 
+                        dictionary = dict(pair for pair in self.input_dict(n))
+                        self.input_pad.clear()
+
+                        dict_lines = textwrap.wrap("Dictionary: " + str(dictionary), width=self.print_cols - 1)
+                        for i, line in enumerate(dict_lines):
+                            self.input_pad.addstr(2 + i, 0, line, curses.color_pair(1))
+
+                        self.input_pad.refresh(0, 0, 2, 0, 2 + len(dict_lines), self.print_cols - 1) # Adjusted to display input_pad
+                        input_str = ""
+                        #dict_input = ""
                 except (ValueError, IndexError):
-                    pass               
+                    pass
 
             elif x == curses.KEY_BACKSPACE or x == 127:
                 if len(input_str) > 0:
@@ -201,33 +217,33 @@ class CursedPrintRedWhiteUserInput():
                     dict_input = dict_input[:-1]
                     self.input_pad.addstr(1, 0, " " * (self.print_cols - 1), curses.color_pair(1))
                     self.input_pad.addstr(1, 0, dict_input, curses.color_pair(1))
-                    self.input_pad.refresh(0, 0, 1, 0, 3, self.print_cols - 1)
+                    self.input_pad.refresh(0, 0, 2, 0, 6, self.print_cols - 1)  # Adjusted to display input_pad
             elif x == curses.KEY_UP and self.print_start_row > 0:
                 self.print_start_row -= 1
-            elif (x == curses.KEY_DOWN and self.print_start_row < len(wrapped_lines) - min(self.print_rows, curses.LINES-3)):
-                self.print_start_row +=1
+            elif x == curses.KEY_DOWN and self.print_start_row < len(wrapped_lines) - min(self.print_rows, curses.LINES - 6):  # Adjusted to accommodate input_pad
+                self.print_start_row += 1
             else:
                 if len(input_str) < self.max_input_length:
                     input_str += chr(x)
                 elif len(dict_input) < self.print_cols - 1:
                     dict_input += chr(x)
 
-            # if (x == curses.KEY_UP and self.print_start_row > 0):
-            #     self.print_start_row -= 1
-            # elif (x == curses.KEY_DOWN and self.print_start_row < len(wrapped_lines) - min(self.print_rows, curses.LINES - 1)):
-            #     self.print_start_row += 1
-        
             ascii_art.handle_input(x)
             self.screen.clear()
-            
-            #self.screen.scrollok(1)
+
             curses.noecho()
             curses.cbreak()
             self.screen.keypad(True)
 
-string = output_crime()   
+string = output_crime()
 sources = string
 if __name__ == "__main__":
     app = CursedPrintRedWhiteUserInput()
     app.start()
     app.print_curses(sources)
+
+
+    
+
+
+

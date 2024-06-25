@@ -239,5 +239,3 @@ def luks_process_two():
     subprocess.run(['cryptsetup'] + key_file_command + ['luksOpen'] + block_command + name_physical_volume)
 
 luks_process_two()
-
-

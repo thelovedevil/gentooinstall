@@ -208,6 +208,8 @@ print_app.print_curses(str(block_device_selection_list.blockdevices))
 def gpg_tty(): 
         subprocess.run(['export', 'GPG_TTY=$(tty)'])
 
+
+
 def luks_key():
         subprocess.run('dd', 'if=/dev/urandom', 'bs=8388607', 'count=1', '|', 'gpg', '--symmetric', '--cipher-algo', 'AES256', '--output', s+'/luks-key.gpg')
 

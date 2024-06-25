@@ -28,7 +28,7 @@ pandas_block_devices = return_pandas()
 format_block_device = block_dev.block_digest(pandas_block_devices)
 
 def mkfs_vfat():
-        subprocess.run(['mkfs.vfat', '-F32', format_block_device[0]])
+        subprocess.run(['sudo', 'mkfs.vfat', '-F32', format_block_device[0]])
         print_app.print_curses("successfully formatted devie -F32")
 
 mkfs_vfat()
