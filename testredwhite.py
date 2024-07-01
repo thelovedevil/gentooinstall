@@ -121,7 +121,7 @@ class CursedPrintRedWhiteUserInput():
         dict_input = ""
         for i in range(n):
             self.input_pad.clear()
-            self.input_pad.addstr(0, 0, f"Enter key-value pair {i+1}: ", curses.color_pair(1))
+            self.input_pad.addstr(0, 0, f"Enter key-value pair {i + 1}: ", curses.color_pair(1))
             self.input_pad.refresh(0, 0, 2, 0, 2, self.print_cols - 1)
 
             while True:
@@ -130,7 +130,7 @@ class CursedPrintRedWhiteUserInput():
                     break
                 elif x == curses.KEY_BACKSPACE or x == 127:
                     if len(dict_input) > 0:
-                        dict_input = dict_inpiut[:-1]
+                        dict_input = dict_input[:-1]
                         self.input_pad.addstr(1, 0, " " * (self.print_cols - 1), curses.color_pair(1))
                         self.input_pad.addstr(1, 0, dict_input, curses.color_pair(1))
                         self.input_pad.refresh(0, 0, 2, 0, 3, self.print_cols - 1)
@@ -142,6 +142,13 @@ class CursedPrintRedWhiteUserInput():
             
             yield dict_input.split()
             dict_input = ""
+
+    def dictionary_generator(self):
+        while True:
+            if hasattr(self, 'current_dictionary'):
+                yield self.current_dictionary
+            else:
+                yield None
 
     def print_curses(self, variable):
         ascii_art = AsciiArt("/home/adrian/Downloads/genkai.jpg")
@@ -196,6 +203,7 @@ class CursedPrintRedWhiteUserInput():
                     if len(input_str.strip()) <= 1:
                         n = int(input_str.strip()) 
                         dictionary = dict(pair for pair in self.input_dict(n))
+                        self.current_dictionary = dictionary
                         self.input_pad.clear()
 
                         dict_lines = textwrap.wrap("Dictionary: " + str(dictionary), width=self.print_cols - 1)
@@ -203,8 +211,10 @@ class CursedPrintRedWhiteUserInput():
                             self.input_pad.addstr(2 + i, 0, line, curses.color_pair(1))
 
                         self.input_pad.refresh(0, 0, 2, 0, 2 + len(dict_lines), self.print_cols - 1) # Adjusted to display input_pad
+                        yield dictionary
                         input_str = ""
-                        #dict_input = ""
+                        dict_input = ""
+                        return
                 except (ValueError, IndexError):
                     pass
 
@@ -237,10 +247,22 @@ class CursedPrintRedWhiteUserInput():
 
 string = output_crime()
 sources = string
+# if __name__ == "__main__":
+#     app = CursedPrintRedWhiteUserInput()
+#     app.start()
+#     app.print_curses(sources)
+
 if __name__ == "__main__":
-    app = CursedPrintRedWhiteUserInput()
-    app.start()
-    app.print_curses(sources)
+    try:
+        app = CursedPrintRedWhiteUserInput()
+        app.start()
+        for dictionary in app.print_curses(sources):
+            # This will print each dictionary yielded by print_curses
+            print(dictionary)
+    except Exception as e:
+        print(f"An error occurred: {e}")
+    finally:
+        curses.endwin() 
 
 
     

@@ -206,7 +206,6 @@ crypt_command = []
 crypt_command = crypt_options_input()
 print(crypt_command)
 
-
 key_file_command = []
 key_file_command = key_file_input()
 print(key_file_command)
