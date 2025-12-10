@@ -17,7 +17,7 @@ class Menu(object):
         self.items.append(("exit", "exit"))
 
     def navigate(self, n):
-        self.positions += n
+        self.position += n
         if self.position < 0:
             self.position = 0
         elif self.position >= len(self.items):

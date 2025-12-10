@@ -38,17 +38,23 @@ class Table():
         return (self.cursor[0], self.cursor[1])
     
     def select(self, win):
-        key = win.getkey()
-        if key == '\n':
-            if self.col_names == True:
-                if self.cursor[0] == self.cursor[0]:
-                    if self.cursor[1] == self.cursor[1]:
-                        y = self.cursor[0]
-                        x = self.cursor[1]
-                        return self.table[y][x]
-                        win.refresh()
+        if self.col_names == True:
+            if self.cursor[0] == self.cursor[0]:
+                if self.cursor[1] == self.cursor[1]:
+                    y = self.cursor[0]
+                    x = self.cursor[1]
+                    return self.table[y][x]
+                    win.refresh()
 
-                
+    def user_input(self, win):
+        if self.col_names == True:
+            if self.cursor[0] == self.cursor[0]:
+                if self.cursor[1] == self.cursor[1]:
+                    y = self.cursor[0]
+                    x = self.cursor[1]
+                    curses.echo()
+                    self.table[y][x] = str(win.getstr(0,0, 30).decode("utf-8"))
+
     def set_cell(self, row, col, value):
         if self.col_names == True:
             row += 1

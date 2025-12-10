@@ -10,13 +10,14 @@ def menu(dictionary):
     curses.cbreak()
     curses.start_color()
     screen.keypad( 1 )
-    curses.init_pair(1,curses.COLOR_BLACK, curses.COLOR_CYAN)
+    curses.init_pair(1,curses.COLOR_BLACK, curses.COLOR_RED)
     highlightText = curses.color_pair( 1 )
     normalText = curses.A_NORMAL
     screen.border( 0 )
     curses.curs_set( 0 )
+    row,col = screen.getmaxyx()
     max_row = 10 #max number of rows
-    box = curses.newwin( max_row + 2, 64, 1, 1 )
+    box = curses.newwin( row, col)
     box.box()
 
 
@@ -118,4 +119,3 @@ def menu(dictionary):
 
     curses.endwin()
     exit()
-    

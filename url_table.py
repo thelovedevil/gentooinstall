@@ -9,17 +9,20 @@ from bs4 import BeautifulSoup, SoupStrainer
 from cursesprint import print_curses
 
 
-def return_pandas_dictionary(dictionary):
-    return dictionary
+def url_digest(stdscr, sources):
 
-dictionary_variable = return_pandas_dictionary(sources_)
+    def return_pandas_dictionary(sources):
+        return sources
 
-def main(stdscr):
+    dictionary_variable = return_pandas_dictionary(sources)
     x = 0
     stdscr = curses.initscr()
-    
+    curses.noecho()
+    curses.cbreak()
+    stdscr.keypad(True)
+    special_address_list = []
 
-    table = Table(stdscr, len(dictionary_variable), (len(dictionary_variable.columns)), 20, 100, 10, spacing=1, col_names=True)
+    table = Table(stdscr, len(dictionary_variable), (len(dictionary_variable.columns)), 100, 100, 10, spacing=1, col_names=True)
 
     m = 0 
     while m < len(dictionary_variable.columns):
@@ -32,10 +35,9 @@ def main(stdscr):
         while n < (len(dictionary_variable.columns)):
                 table.set_cell(m, n, numpy_table[m][n])
                 n += 1
-           
-           
+            
+            
         m += 1
-    table.refresh()
     while ( x != 'q'):
         table.refresh()
         x = stdscr.getkey()
@@ -49,15 +51,21 @@ def main(stdscr):
             table.cursor_up()
         elif (x == '\n'):
             print_curses(str(table.select(stdscr)))
-            
-            
+            special_address = str(table.select(stdscr))
+            special_address_list.append(special_address)
+            print_curses(str(special_address_list))
     
-stdscr = curses.initscr()
-curses.noecho()
-curses.cbreak()
-stdscr.keypad(True)
-curses.nocbreak()
-stdscr.keypad(False)
-curses.echo()
-curses.endwin()
-curses.wrapper(main)
+    
+    stdscr = curses.initscr()
+    curses.noecho()
+    curses.cbreak()
+    stdscr.keypad(True)
+    curses.nocbreak()
+    stdscr.keypad(False)
+    curses.echo()
+    curses.endwin()
+    return (special_address_list)
+
+if __name__ == "__url_digest__":
+    curses.wrapper(url_digest)
+    
