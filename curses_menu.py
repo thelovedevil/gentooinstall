@@ -4,6 +4,9 @@ from __future__ import annotations
 
 import atexit
 import curses
+import locale
+
+locale.setlocale(locale.LC_ALL, '')
 import os
 import pathlib
 import shutil

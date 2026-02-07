@@ -1,6 +1,9 @@
 #!/usr/bin/env python3
 
 import logging
+import locale
+
+locale.setlocale(locale.LC_ALL, '')
 import os
 import sys
 import shutil

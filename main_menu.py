@@ -1,5 +1,8 @@
 #!/usr/bin/env python
 import curses
+import locale
+
+locale.setlocale(locale.LC_ALL, '')
 from cursesmenu.items import FunctionItem, SubmenuItem, CommandItem, MenuItem, SubmenuItem
 from curses_menu import CursesMenu
 from ui.ascii_art import AsciiArt

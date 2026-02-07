@@ -1,6 +1,9 @@
 #!/usr/bin/env python3
 
 import curses
+import locale
+
+locale.setlocale(locale.LC_ALL, '')
 from ui.printer import CursedPrinter
 from ui.ascii_art import AsciiArt
 

@@ -1,6 +1,9 @@
 #!/usr/bin/env python
 
 import subprocess
+import locale
+
+locale.setlocale(locale.LC_ALL, '')
 import curses
 import logging # For logging errors
 

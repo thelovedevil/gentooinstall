@@ -1,5 +1,8 @@
 #!/usr/bin/env python3
 import curses
+import locale
+
+locale.setlocale(locale.LC_ALL, '')
 from curseXcel import Table
 import numpy
 from ui.printer import CursedPrinter 

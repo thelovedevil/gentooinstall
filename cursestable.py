@@ -75,39 +75,26 @@ def main(stdscr, printer: CursedPrinter, new_table: pd.DataFrame):
     m = 0
     # The index() function and associated logic seems incomplete or specific to a very particular table structure
     # For now, we will skip this and assume new_table is already prepared.
-    # def index():
-    #     index = 0
-    #     list = []
-    #     while index < len(dict_table.dictionary_devices):
-    #         index += 1
-    #         list.append(len(dict_table.dictionary_devices[index]))
-    #         list.sort()
-    #         for x in list:
-    #             if max(list) == len(dict_table.dictionary_devices[index].values()):
-    #                 maximum_of_list = max(list)
-    #                 return index
     
-    # indexed = index()
-
-
     # Instantiate ui.table.Table
     max_y, max_x = stdscr.getmaxyx()
-    table_height = max_y - 5 # Leave space for messages
-    table_width = max_x # Use full width
+    table_height = max_y - 2
+    table_width = max_x
     
     table_widget = Table(stdscr, printer, new_table, table_height, table_width)
     
-    printer.display_text(["Block Device Table: Use UP/DOWN to navigate, ENTER to select, 'q' to quit."], row=0, col=0)
+    def draw_screen():
+        stdscr.clear()
+        printer.display_text(["Block Device Table: Use UP/DOWN to navigate, ENTER to select, 'q' to quit."], row=0, col=0)
+        table_widget.display()
+        stdscr.refresh()
+
+    draw_screen() # Initial draw
     
     while (x != ord('q')):
-        stdscr.clear() # Clear screen to redraw everything
-        printer.display_text(["Block Device Table: Use UP/DOWN to navigate, ENTER to select, 'q' to quit."], row=0, col=0)
-
-        table_widget.display() # Draw the table
-        
         x = stdscr.getch()
 
-        table_result = table_widget.handle_input(x) # Handle table input
+        table_result = table_widget.handle_input(x)
 
         if table_result == 'quit':
             break
@@ -115,10 +102,8 @@ def main(stdscr, printer: CursedPrinter, new_table: pd.DataFrame):
             selected_item_value = table_result['PATH'] # Assuming 'PATH' is the column with device path
             printer.display_text([f"Selected: {selected_item_value}"])
             stdscr.getch() # Pause to show selection
-            # Clear selection message (optional)
-            printer.display_text([" " * max_x], row=max_y - 2, col=0) 
         
-    
+        draw_screen() # Redraw after every input
 if __name__ == "__main__":
     from ui.printer import CursedPrinter # Ensure CursedPrinter is imported
     from ui.input import Input # Ensure Input is imported if needed in main

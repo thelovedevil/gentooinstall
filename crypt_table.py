@@ -5,6 +5,7 @@ import subprocess
 import json
 import pandas as pd
 import logging
+import locale
 
 from ui.printer import CursedPrinter
 from ui.table import Table
@@ -12,13 +13,14 @@ from utils import test_crypt_options # Import the utility function
 
 # Configure logging
 logging.basicConfig(level=logging.ERROR, format='%(levelname)s: %(message)s')
+locale.setlocale(locale.LC_ALL, '')
 
 
 def return_options_dictionary(sources):
     return sources
 
 
-def options_digest(stdscr, printer: CursedPrinter, sources):
+def crypt_options_digest(stdscr, printer: CursedPrinter, sources):
     x = 0
     special_address_list = []
 
@@ -67,7 +69,7 @@ if __name__ == "__main__":
         printer.display_text(["Loading crypt options..."])
         sources = test_crypt_options() # Call the utility function from utils
         
-        selected_options = options_digest(stdscr, printer, sources)
+        selected_options = crypt_options_digest(stdscr, printer, sources)
         printer.display_text([f"Selected options: {selected_options}"])
         printer.display_text(["Press any key to exit."])
         stdscr.getch()

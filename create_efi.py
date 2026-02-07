@@ -1,8 +1,9 @@
 #!/usr/bin/env python3
 
-
-
+import locale
 import subprocess
+
+locale.setlocale(locale.LC_ALL, '')
 from block_device_class_table import Block_Table
 import json
 import pandas as pd

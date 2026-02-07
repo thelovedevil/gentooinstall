@@ -1,6 +1,9 @@
 #!/usr/bin/env python3
 
 import curses
+import locale
+
+locale.setlocale(locale.LC_ALL, '')
 import subprocess
 import logging
 import json

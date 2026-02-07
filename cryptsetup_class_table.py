@@ -37,28 +37,28 @@ class Crypt_Table():
         x = 0
         special_address_list = []
 
-        def return_options_dictionary():
-            return sources
-        
-        dictionary_variable = return_options_dictionary()
+        dictionary_variable = sources
 
-        # Instantiate ui.table.Table
+        if dictionary_variable.empty:
+            printer.display_text(["No options found to display."], color_pair=2)
+            stdscr.getch()
+            return []
+
         max_y, max_x = stdscr.getmaxyx()
-        table_height = max_y // 2 # Allocate half screen height for table
-        table_width = max_x // 2  # Allocate half screen width for table
+        table_height = max_y - 2 # Allocate most of the screen for the table, leave 2 for header/footer
+        table_width = max_x // 2
         
         table_widget = Table(stdscr, printer, dictionary_variable, table_height, table_width)
         
-        ascii_art_obj = AsciiArt("resources/keiko.jpg") # Use relative path
-        ascii_art_x_pos = max_x // 2 + 5 # Place it roughly in the middle-right
-        
-        printer.display_text(["Cryptsetup Options Table: Use UP/DOWN to navigate, ENTER to select, 'q' to quit."], row=0, col=0)
-        
-        while (x != ord('q')):
-            stdscr.clear() # Clear screen to redraw everything
-            printer.display_text(["Cryptsetup Options Table: Use UP/DOWN to navigate, ENTER to select, 'q' to quit."], row=0, col=0)
+        ascii_art_obj = AsciiArt("resources/keiko.jpg")
+        ascii_art_x_pos = max_x // 2 + 5
 
-            table_widget.display() # Draw the table
+        def draw_screen():
+            stdscr.clear()
+            printer.display_text(["Cryptsetup Options Table: Use UP/DOWN to navigate, ENTER to select, 'q' to quit."], row=0, col=0)
+            
+            # The table widget will draw itself at the correct position
+            table_widget.display()
             
             printer.display_ascii_art(
                 ascii_art_obj,
@@ -66,25 +66,29 @@ class Crypt_Table():
                 col=ascii_art_x_pos,
                 width_ratio=0.4,
                 height_ratio=0.9
-            ) # Refresh ASCII art
-            
+            )
+            stdscr.refresh()
+
+        draw_screen() # Initial draw
+        
+        while (x != ord('q')):
             x = stdscr.getch()
 
-            table_result = table_widget.handle_input(x) # Handle table input
+            table_result = table_widget.handle_input(x)
 
             if table_result == 'quit':
                 break
             elif table_result is not None:
-                selected_item_value = table_result.iloc[0] # Assuming first column is the value we want
+                selected_item_value = table_result.iloc[0]
                 special_address_list.append(selected_item_value)
                 printer.display_text([f"Selected: {selected_item_value}"])
-                stdscr.getch() # Pause to show selection
-                # Clear selection message (optional)
-                printer.display_text([" " * max_x], row=max_y - 2, col=0) 
+                stdscr.getch()
             
-            # Handle scrolling for ASCII art, if not handled by table_widget
+            # Handle ASCII art scrolling
             if (x in [ord('w'), ord('a'), ord('d'), ord('s')]):
-                printer.handle_input(x) # Handle scrolling for ascii art
+                printer.handle_input(x)
+            
+            draw_screen() # Redraw after every input
 
         return special_address_list
         

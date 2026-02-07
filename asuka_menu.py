@@ -1,6 +1,9 @@
 #!/usr/bin/env python3
 
 import curses
+import locale
+
+locale.setlocale(locale.LC_ALL, '')
 import subprocess
 from curses import panel
 from cryptsetup_class_table import sources, Crypt_Table

@@ -1,6 +1,9 @@
 #!/usr/bin/env python3
 
 import subprocess
+import locale
+
+locale.setlocale(locale.LC_ALL, '')
 import json
 import pandas as pd
 import curses

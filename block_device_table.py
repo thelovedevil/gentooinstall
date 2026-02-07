@@ -1,6 +1,9 @@
 #!/usr/bin/env python3
 
 import curses
+import locale
+
+locale.setlocale(locale.LC_ALL, '')
 from curseXcel import Table # Keep for now, but its usage will change
 import subprocess
 import json

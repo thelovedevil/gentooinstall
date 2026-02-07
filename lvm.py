@@ -2,6 +2,9 @@
 
 ''' objects and functions neccesary to create lvm structure '''
 import subprocess
+import locale
+
+locale.setlocale(locale.LC_ALL, '')
 import curses
 import logging
 import json # For parsing lsblk output if needed elsewhere
