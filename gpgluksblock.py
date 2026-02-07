@@ -1,20 +1,15 @@
 #!/usr/bin/env python3
 
-from cursedprint import CursedPrint
 import subprocess
 from block_device_class_table import Block_Table
 import json
 import pandas as pd
-from cursedinput import input_string
-from cursesscrollmenu import menu
+from ui.input import Input
 import create_efi
 from utils import test_crypt_options
 
 block_dev = Block_Table()
 block_dev.start()
-
-print_app = CursedPrint()
-print_app.start()
 
 def return_pandas():
     process = subprocess.run("lsblk --json -o NAME,SIZE,UUID,MOUNTPOINT,PATH,FSTYPE ".split(), capture_output=True, text=True)
@@ -39,7 +34,7 @@ def block_device_selection():
 block_device = block_device_selection()
 
 luks = block_device
-print_app.print_curses(luks)
+print(luks) # TODO: Use ui.printer.CursedPrinter
 
 def gpg_tty(): 
         subprocess.run(['export', 'GPG_TTY=$(tty)'])
@@ -47,15 +42,16 @@ def gpg_tty():
 def luks_key():
         subprocess.run('dd', 'if=/dev/urandom', 'bs=8388607', 'count=1', '|', 'gpg', '--symmetric', '--cipher-algo', 'AES256', '--output', create_efi.s+'/luks-key.gpg')
 
-print_app.print_curses(str(luks_dictionary.cipher))
+print(str(luks_dictionary.cipher)) # TODO: Use ui.printer.CursedPrinter
 def luks_process_prefab():              
         luks_process = subprocess.run(['cryptsetup', '--cipher', luks_dictionary.cipher, '--key-size', luks_dictionary.keysize, '--hash', luks_dictionary.hash, '--key-file', luks_dictionary.keyfile, 'luksFormat', luks])
 
 luks_process_prefab()
 
 def name_physical_volume():
-    print_app.print_curses('please enter a name for a logical volume management (LVM) physical volume <: press enter >')
-    name = input_string()
+    print('please enter a name for a logical volume management (LVM) physical volume <: press enter >') # TODO: Use ui.printer.CursedPrinter
+    # TODO: Refactor to use ui.input.Input with a curses-aware printer
+    name = input("LVM physical volume name: ") 
     return name
 
 name_physical_volume = name_physical_volume()

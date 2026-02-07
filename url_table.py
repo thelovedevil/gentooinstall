@@ -1,71 +1,78 @@
 #!/usr/bin/env python3
+
 import curses
-from curseXcel import Table
 import subprocess
 import json
 import pandas as pd
-from beautiful_soup_test import sources_
-from bs4 import BeautifulSoup, SoupStrainer
-from cursesprint import print_curses
+import logging
+
+from ui.printer import CursedPrinter
+from ui.table import Table
+import beautiful_soup_test # Assuming sources_ is a variable from here
+
+# Configure logging
+logging.basicConfig(level=logging.ERROR, format='%(levelname)s: %(message)s')
 
 
-def url_digest(stdscr, sources):
+def return_pandas_dictionary(sources):
+    # The 'sources' here is expected to be a pandas DataFrame from beautiful_soup_test
+    return sources
 
-    def return_pandas_dictionary(sources):
-        return sources
 
-    dictionary_variable = return_pandas_dictionary(sources)
+def url_digest(stdscr, printer: CursedPrinter, sources):
     x = 0
-    stdscr = curses.initscr()
-    curses.noecho()
-    curses.cbreak()
-    stdscr.keypad(True)
     special_address_list = []
 
-    table = Table(stdscr, len(dictionary_variable), (len(dictionary_variable.columns)), 100, 100, 10, spacing=1, col_names=True)
+    dictionary_variable = return_pandas_dictionary(sources)
 
-    m = 0 
-    while m < len(dictionary_variable.columns):
-        table.set_column_header(dictionary_variable.columns[m], m)
-        m += 1
-    numpy_table = dictionary_variable.to_numpy()
-    m = 0
-    while m < len(dictionary_variable):
-        n = 0
-        while n < (len(dictionary_variable.columns)):
-                table.set_cell(m, n, numpy_table[m][n])
-                n += 1
-            
-            
-        m += 1
-    while ( x != 'q'):
-        table.refresh()
-        x = stdscr.getkey()
-        if ( x == 'a'):
-            table.cursor_left()
-        elif ( x == 'd'):
-            table.cursor_right()
-        elif (x == 's'):
-            table.cursor_down()
-        elif (x == 'w'):
-            table.cursor_up()
-        elif (x == '\n'):
-            print_curses(str(table.select(stdscr)))
-            special_address = str(table.select(stdscr))
-            special_address_list.append(special_address)
-            print_curses(str(special_address_list))
-    
-    
-    stdscr = curses.initscr()
-    curses.noecho()
-    curses.cbreak()
-    stdscr.keypad(True)
-    curses.nocbreak()
-    stdscr.keypad(False)
-    curses.echo()
-    curses.endwin()
-    return (special_address_list)
+    if dictionary_variable.empty:
+        printer.display_text(["No URLs found to display."], color_pair=2)
+        stdscr.getch()
+        return []
 
-if __name__ == "__url_digest__":
-    curses.wrapper(url_digest)
+    max_y, max_x = stdscr.getmaxyx()
+    table_height = max_y - 5 # Leave space for messages
+    table_width = max_x # Use full width
     
+    table_widget = Table(stdscr, printer, dictionary_variable, table_height, table_width)
+    
+    printer.display_text(["URL Table: Use UP/DOWN to navigate, ENTER to select, 'q' to quit."], row=0, col=0)
+    
+    while (x != ord('q')):
+        stdscr.clear() # Clear screen to redraw everything
+        printer.display_text(["URL Table: Use UP/DOWN to navigate, ENTER to select, 'q' to quit."], row=0, col=0)
+
+        table_widget.display() # Draw the table
+        
+        x = stdscr.getch()
+
+        table_result = table_widget.handle_input(x) # Handle table input
+
+        if table_result == 'quit':
+            break
+        elif table_result is not None:
+            selected_item_value = table_result.iloc[0] # Assuming first column is the value we want (the URL)
+            special_address_list.append(selected_item_value)
+            printer.display_text([f"Selected: {selected_item_value}"])
+            stdscr.getch() # Pause to show selection
+            # Clear selection message (optional)
+            printer.display_text([" " * max_x], row=max_y - 2, col=0) 
+        
+    return special_address_list
+
+
+if __name__ == "__main__":
+    def main_curses(stdscr):
+        printer = CursedPrinter(stdscr)
+        
+        printer.display_text(["Loading URLs..."])
+        # Assuming beautiful_soup_test.sources_ returns a pandas DataFrame
+        # TODO: Refactor beautiful_soup_test to ensure it returns a DataFrame
+        sources = beautiful_soup_test.sources_ 
+        
+        selected_urls = url_digest(stdscr, printer, sources)
+        printer.display_text([f"Selected URLs: {selected_urls}"])
+        printer.display_text(["Press any key to exit."])
+        stdscr.getch()
+
+    curses.wrapper(main_curses)

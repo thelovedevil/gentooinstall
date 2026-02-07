@@ -28,9 +28,8 @@ def print_ascii_art(ascii_matrix):
 
 size = 100, 100
 
-im = Image.open("/home/kali/Documents/asuka_original_resized.jpg")
+im = Image.open("resources/asuka_original_resized.jpg")
 im.thumbnail(size, Image.Resampling.LANCZOS)
-im.save("asuka_original_resized.jpg")       
 
 
 print(im.format, im.size, im.mode)

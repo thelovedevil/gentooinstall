@@ -1,10 +1,17 @@
 #!/usr/bin/env python3
+
 import curses
-from curseXcel import Table
+# from curseXcel import Table # Removed
 import subprocess
 import json
 import pandas as pd
-from cursesprint import print_curses
+import logging
+
+from ui.printer import CursedPrinter
+from ui.table import Table # New import
+
+# Configure logging
+logging.basicConfig(level=logging.ERROR, format='%(levelname)s: %(message)s')
 
 
 class DictionaryDevice:
@@ -25,9 +32,26 @@ class DictionaryDevice:
 def dictionary_test_table(dictionary_command_line):
     return DictionaryDevice(dictionary_command_line)
 
+
+def run_lsblk():
+    try:
+        process = subprocess.run("lsblk --json -o NAME,SIZE,UUID,MOUNTPOINT,PATH,FSTYPE ".split(), capture_output=True, text=True, check=True)
+        return json.loads(process.stdout)
+    except subprocess.CalledProcessError as e:
+        logging.error(f"Error running lsblk: {e.stderr}")
+        return {"blockdevices": []}
+    except json.JSONDecodeError:
+        logging.error("Error decoding lsblk JSON output.")
+        return {"blockdevices": []}
+    except FileNotFoundError:
+        logging.error("lsblk command not found. Please ensure lsblk is installed and in your PATH.")
+        return {"blockdevices": []}
+
 def return_pandas():
-    process = subprocess.run("lsblk --json -o NAME,SIZE,UUID,MOUNTPOINT,PATH,FSTYPE ".split(), capture_output=True, text=True)
-    data = json.loads(process.stdout)
+    data = run_lsblk()
+    if not data or not data.get("blockdevices"):
+        return pd.DataFrame()
+    
     df = pd.json_normalize(data=data.get("blockdevices")).explode(column="children")
     df = (pd 
         .concat(objs=[df, df.children.apply(func=pd.Series)], axis=1)
@@ -35,78 +59,84 @@ def return_pandas():
         .fillna("")
         .reset_index(drop=True)
         )
-    print(df) 
     return df
 
 def return_blockdev_name():
-        process = subprocess.run("lsblk --json -o NAME,SIZE,UUID,MOUNTPOINT,PATH,FSTYPE ".split(), capture_output=True, text=True)
-        return json.loads(process.stdout)
-
-new_table = return_pandas()
+    return run_lsblk()
 
 
-block_devices = return_blockdev_name()
-
-
-dict_table = dictionary_test_table(block_devices)
-
-def main(stdscr):
+def main(stdscr, printer: CursedPrinter, new_table: pd.DataFrame):
     x = 0
-    stdscr = curses.initscr()
-    m = 0
-    def index():
-        index = 0
-        list = []
-        while index < len(dict_table.dictionary_devices):
-            index += 1
-            list.append(len(dict_table.dictionary_devices[index]))
-            list.sort()
-            for x in list:
-                if max(list) == len(dict_table.dictionary_devices[index].values()):
-                    maximum_of_list = max(list)
-                    return index
-    
-    indexed = index()
+    # Removed redundant curses init and setup as CursedPrinter handles it
 
-    table = Table(stdscr, len(new_table), (len(new_table.columns)), 20, 100, 10, spacing=1, col_names=True)
+    block_devices = return_blockdev_name() # Get block devices in raw JSON form
+    dict_table = dictionary_test_table(block_devices) # Not used after initial dict_table = new_table.
 
-    m = 0 
-    while m < len(new_table.columns):
-        table.set_column_header(new_table.columns[m], m)
-        m += 1
-    numpy_table = new_table.to_numpy()
     m = 0
-    while m < len(new_table):
-        n = 0
-        while n < (len(new_table.columns)):
-                table.set_cell(m, n, numpy_table[m][n])
-                n += 1
-           
-           
-        m += 1
-    table.refresh()
-    while ( x != 'q'):
-        table.refresh()
-        x = stdscr.getkey()
-        if ( x == 'a'):
-            table.cursor_left()
-        elif ( x == 'd'):
-            table.cursor_right()
-        elif (x == 's'):
-            table.cursor_down()
-        elif (x == 'w'):
-            table.cursor_up()
-        elif (x == '\n'):
-            print_curses(str(table.select(stdscr)))
-            
-            
+    # The index() function and associated logic seems incomplete or specific to a very particular table structure
+    # For now, we will skip this and assume new_table is already prepared.
+    # def index():
+    #     index = 0
+    #     list = []
+    #     while index < len(dict_table.dictionary_devices):
+    #         index += 1
+    #         list.append(len(dict_table.dictionary_devices[index]))
+    #         list.sort()
+    #         for x in list:
+    #             if max(list) == len(dict_table.dictionary_devices[index].values()):
+    #                 maximum_of_list = max(list)
+    #                 return index
     
-stdscr = curses.initscr()
-curses.noecho()
-curses.cbreak()
-stdscr.keypad(True)
-curses.nocbreak()
-stdscr.keypad(False)
-curses.echo()
-curses.endwin()
-curses.wrapper(main)
+    # indexed = index()
+
+
+    # Instantiate ui.table.Table
+    max_y, max_x = stdscr.getmaxyx()
+    table_height = max_y - 5 # Leave space for messages
+    table_width = max_x # Use full width
+    
+    table_widget = Table(stdscr, printer, new_table, table_height, table_width)
+    
+    printer.display_text(["Block Device Table: Use UP/DOWN to navigate, ENTER to select, 'q' to quit."], row=0, col=0)
+    
+    while (x != ord('q')):
+        stdscr.clear() # Clear screen to redraw everything
+        printer.display_text(["Block Device Table: Use UP/DOWN to navigate, ENTER to select, 'q' to quit."], row=0, col=0)
+
+        table_widget.display() # Draw the table
+        
+        x = stdscr.getch()
+
+        table_result = table_widget.handle_input(x) # Handle table input
+
+        if table_result == 'quit':
+            break
+        elif table_result is not None:
+            selected_item_value = table_result['PATH'] # Assuming 'PATH' is the column with device path
+            printer.display_text([f"Selected: {selected_item_value}"])
+            stdscr.getch() # Pause to show selection
+            # Clear selection message (optional)
+            printer.display_text([" " * max_x], row=max_y - 2, col=0) 
+        
+    
+if __name__ == "__main__":
+    from ui.printer import CursedPrinter # Ensure CursedPrinter is imported
+    from ui.input import Input # Ensure Input is imported if needed in main
+
+    def main_curses(stdscr):
+        printer = CursedPrinter(stdscr)
+        input_handler = Input(printer) # Instantiate Input handler
+        
+        printer.display_text(["Loading block device data for cursestable..."])
+        new_table = return_pandas()
+        if new_table.empty:
+            printer.display_text(["Failed to load block device data. Exiting."], color_pair=2)
+            stdscr.getch()
+            return
+        
+        main(stdscr, printer, new_table) # Pass printer and new_table to main
+        
+        printer.display_text(["cursestable script completed. Press any key to exit."])
+        stdscr.getch() # Wait for user input before exiting
+
+    curses.wrapper(main_curses)

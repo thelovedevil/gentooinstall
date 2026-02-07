@@ -1,225 +1,229 @@
 #!/usr/bin/env python3
+
+import curses
 import subprocess
+import logging
 import json
 import pandas as pd
-from testtest import sources_testcrypt
+import sys # For sys.exit
+import moby_dick # Assuming moby_dick provides text strings
+
+# Import the new UI components
+from ui.printer import CursedPrinter
+from ui.input import Input
+
+# Import utility functions
+from utils import test_crypt_options, test_dd_options, test_gpg_options
+
+# Import refactored digest functions from their respective modules
 from cryptsetup_table import crypt_options_digest
-from utils import test_crypt_options
-from cryptsetup_class_table import Crypt_Table
-from cursedprint import CursedPrint
-from cursedinput import Input
-from dd_class_table import Dd_Table, test_dd_options
-from gpg_class_table import GpG_Table, test_gpg_options
-import create_efi
-from block_device_class_table import Block_Table, return_pandas
-import moby_dick
+from block_device_class_table import block_digest
+from dd_class_table import dd_options_digest
+from gpg_class_table import gpg_options_digest
+# from cryptsetup_class import Crypt_Table # Not directly used if only digest is needed
+# from block_device_class_table import Block_Table # Not directly used if only digest is needed
+# from dd_class_table import Dd_Table # Not directly used if only digest is needed
+# from gpg_class_table import GpG_Table # Not directly used if only digest is needed
 
-input_app = Input()
-#input_app.start()
+# Assuming create_efi.s refers to an EFI directory path
+import create_efi # Needs to be updated if create_efi.s is not global or passed
 
-blockdevice_app = Block_Table()
-#blockdevice_app.start()
+# Configure logging
+logging.basicConfig(level=logging.ERROR, format='%(levelname)s: %(message)s')
 
-crypt_app = Crypt_Table()
-#crypt_app.start()
+# Placeholder for a simpler way to get options, assuming actual selection is curses-driven
+def get_options_from_user(printer: CursedPrinter, input_handler: Input, prompt_message: str):
+    printer.display_text([prompt_message])
+    num_entries_str = input_handler.input_string("Enter number of entries: ")
+    options = []
+    try:
+        num_entries = int(num_entries_str)
+        for i in range(num_entries):
+            key = input_handler.input_string(f"Enter option {i+1} key: ")
+            value = input_handler.input_string(f"Enter option {i+1} value: ")
+            options.append(key)
+            options.append(value)
+    except ValueError:
+        printer.display_text(["Invalid number entered. Returning empty options."], color_pair=2)
+    return options
 
-print_app = CursedPrint()
-print_app.start()
 
-dd_app = Dd_Table()
-#dd_app.start()
+def block_options_input(printer: CursedPrinter, input_handler: Input, stdscr):
+    printer.display_text(["filling in block_options process"])
+    block_sources = block_digest(stdscr, printer, None) # block_digest itself should get its sources
+    # TODO: Integrate properly with block_digest for actual selection
+    return get_options_from_user(printer, input_handler, "Enter block device options:")
 
-gpg_app = GpG_Table()
-#pg_app.start()
 
-crypt_sources = test_crypt_options()
+def crypt_options_input(printer: CursedPrinter, input_handler: Input, stdscr):
+    printer.display_text(["filling in crypt_options process"])
+    crypt_sources = crypt_options_digest(stdscr, printer, test_crypt_options()) # Get fresh options
+    # TODO: Integrate properly with crypt_options_digest for actual selection
+    return get_options_from_user(printer, input_handler, "Enter cryptsetup options:")
 
-block_sources = return_pandas()
 
-def block_options_input():
-    dictionary = {}
-    # print_app.print_curses("filling in block_options process")
-    # print_app.print_curses("please enter the number of entries to enter n:")
-    # print_app.print_curses("enter range of list to create:<: as of now you may only create one list >")
-    string = moby_dick.block_options()
-    print_app.print_curses(string)
-    n = int(input_app.input_string())
+def overwrite_options_input(printer: CursedPrinter, input_handler: Input, stdscr):
+    printer.display_text(["filling in overwrite_options process"])
+    dd_sources = dd_options_digest(stdscr, printer, test_dd_options()) # Get fresh options
+    # TODO: Integrate properly with dd_options_digest for actual selection
+    return get_options_from_user(printer, input_handler, "Enter overwrite options (e.g., if=/dev/zero bs=4M count=10):")
 
-    for i in range(n):
-        string = moby_dick.instructions()
-        print_app.print_curses(string)
-        option = []
-        option = blockdevice_app.block_digest(block_sources)
-        value = []
-        string_two = moby_dick.enter_value()
-        print_app.print_curses(string_two)
-        value = blockdevice_app.block_digest(block_sources)
-        final = [j for i in zip(option, value) for j in i]
-        print_app.print_curses(final)
-        return final
 
-def crypt_options_input():
-    dictionary = {}
-    string = moby_dick.crypt_options()
-    print_app.print_curses(strings)
-    n = int(input_app.input_string())
+def dd_options_input(printer: CursedPrinter, input_handler: Input, stdscr):
+    printer.display_text(["filling in dd_options process"])
+    dd_sources = dd_options_digest(stdscr, printer, test_dd_options()) # Get fresh options
+    # TODO: Integrate properly with dd_options_digest for actual selection
+    return get_options_from_user(printer, input_handler, "Enter dd options (e.g., if=/dev/urandom bs=8M count=1):")
 
-    for i in range(n):
-        string = moby_dick.instructions()
-        print_app.print_curses(string)
-        option = []
-        option = crypt_app.crypt_options_digest(crypt_sources)
-        value = []
-        string_two = moby_dick.enter_value()
-        print_app.print_curses(string_two)
-        value = crypt_app.crypt_options_digest(crypt_sources)
-        final = [j for i in zip(option, value) for j in i]
-        print(final)
-        return final
 
-dd_sources = test_dd_options()
+def gpg_options_input(printer: CursedPrinter, input_handler: Input, stdscr):
+    printer.display_text(["filling in gpg_options process"])
+    printer.display_text(["!!! gpg_options must be written in for accuracy using 'r' command !!!"])
+    gpg_sources = gpg_options_digest(stdscr, printer, test_gpg_options()) # Get fresh options
+    # TODO: Integrate properly with gpg_options_digest for actual selection
+    return get_options_from_user(printer, input_handler, "Enter gpg options (e.g., --symmetric --cipher-algo AES256):")
 
-def overwrite_options_input():
-    dictionary = {}
-    string = moby_dick.overwrite_options()
-    print_app.print_curses(string)
-    n = int(input_app.input_string())
 
-    for i in range(n):
-        string = moby_dick.instructions()
-        print_app.print_curses(string)
-        option = []
-        option = dd_app.dd_options_digest(dd_sources)
-        value = []
-        string_two = moby_dick.enter_value()
-        print_app.print_curses(string_two)
-        value = dd_app.dd_options_digest(dd_sources)
-        final = [j for i in zip(option, value) for j in i]
-        prepend = lambda x: "="+x
-        final[1::2] = map(prepend, final[1::2])
-        final_fantasy_seven = [ ''.join(x) for x in zip(final[0::2], final[1::2]) ]
-        print(final)
-        print(final_fantasy_seven)
-        return final_fantasy_seven
+def key_file_input(printer: CursedPrinter, input_handler: Input, stdscr):
+    printer.display_text(["now entering key file input from prior cryptsetup keyfile"])
+    printer.display_text(["simply enter the same value as used for prior key file"])
+    crypt_sources_local = test_crypt_options() # Get fresh options
+    gpg_sources_for_keyfile = gpg_options_digest(stdscr, printer, crypt_sources_local) # Assuming it can use crypt options
+    # TODO: Integrate properly with gpg_options_digest for actual selection
+    return get_options_from_user(printer, input_handler, "Enter key file options (e.g., --keyfile /path/to/key):")
 
-def dd_options_input():
-    dictionary = {}
-    string = moby_dick.dd_options()
-    print_app.print_curses(string)
-    n = int(input_app.input_string())
 
-    for i in range(n):
-        string = moby_dick.instructions()
-        print_app.print_curses(string)
-        option = []
-        option = dd_app.dd_options_digest(dd_sources)
-        value = []
-        string_two = moby_dick.enter_value()
-        print_app.print_curses(string_two)
-        value = dd_app.dd_options_digest(dd_sources)
-        final = [j for i in zip(option, value) for j in i]
-        prepend = lambda x: "="+x
-        final[1::2] = map(prepend, final[1::2])
-        final_fantasy_seven = [ ''.join(x) for x in zip(final[0::2], final[1::2]) ]
-        print(final)
-        print(final_fantasy_seven)
-        return final_fantasy_seven
-
-gpg_sources = test_gpg_options()
-
-def gpg_options_input():
-    dictionary = {}
-    string = moby_dick.gpg_options()
-    print_app.print_curses(string)
-    n = int(input_app.input_string())
-
-    for i in range(n):
-        string = moby_dick.instructions()
-        print_app.print_curses(string)
-        option = []
-        option = gpg_app.gpg_options_digest(gpg_sources)
-        value = []
-        string_two = moby_dick.enter_value()
-        print_app.print_curses(string_two)
-        value = gpg_appwhite.gpg_options_digest(gpg_sources)
-        final = [j for i in zip(option, value) for j in i]
-        print(final)
-        return final
-
-def key_file_input():
-    dictionary = {}
-    string = moby_dick.key_file()
-    print_app.print_curses(string)
-    n = int(input_app.input_string())
-
-    for i in range(n):
-        string_two = moby_dick.instructions()
-        print_app.print_curses(string)
-        option = []
-        option = gpg_app.gpg_options_digest(crypt_sources)
-        value = []
-        string_two = moby_dick.enter_value()
-        print_app.print_curses(string_two)
-        value = gpg_app.gpg_options_digest(crypt_sources)
-        final = [j for i in zip(option, value) for j in i]
-        print(final)
-        return final
-
-def name_physical_volume():
-    string = moby_dick.physical_volume()
-    print_app.print_curses(s)
-    name = input_app.input_string()
+def name_physical_volume(printer: CursedPrinter, input_handler: Input): 
+    printer.display_text(['lastly please enter a name for a logical volume management (LVM) physical volume <: press enter >'])
+    name = input_handler.input_string("LVM physical volume name: ")
     return name    
 
-block_command = []
-block_command = block_options_input()
-print(block_command)
 
-dd_command = []
-dd_command = dd_options_input()
-print(dd_command)
+def gpg_tty(printer: CursedPrinter): 
+    try:
+        subprocess.run(['export', 'GPG_TTY=$(tty)'], shell=True, check=True)
+        printer.display_text(["GPG_TTY set successfully."])
+    except subprocess.CalledProcessError as e:
+        logging.error(f"Error setting GPG_TTY: {e.stderr.strip()}")
+        printer.display_text([f"Error setting GPG_TTY: {e.stderr.strip()}"], color_pair=2)
+    except FileNotFoundError:
+        logging.error("Shell command 'export' not found. This might indicate a problem with shell environment.")
+        printer.display_text(["Error: 'export' command not found. Cannot set GPG_TTY."], color_pair=2)
 
-gpg_command = []
-gpg_command = gpg_options_input()
-print(gpg_command)
+def over_write(printer: CursedPrinter, overwrite_command: list[str]):
+    printer.display_text(["Starting disk overwrite..."])
+    try:
+        dd_proc = subprocess.Popen(['sudo', 'dd'] + overwrite_command, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
+        stdout, stderr = dd_proc.communicate()
+        if dd_proc.returncode != 0:
+            raise subprocess.CalledProcessError(dd_proc.returncode, dd_proc.args, stdout, stderr)
+        
+        sync_proc = subprocess.run(['sync'], check=True, capture_output=True, text=True)
+        printer.display_text(["Disk overwrite and sync completed successfully."])
+    except subprocess.CalledProcessError as e:
+        logging.error(f"Error during overwrite (exit code {e.returncode}): {e.stderr.strip()}")
+        printer.display_text([f"Error during overwrite: {e.stderr.strip()}"], color_pair=2)
+    except FileNotFoundError:
+        logging.error("dd or sync command not found. Ensure they are installed and in PATH.")
+        printer.display_text(["Error: dd or sync command not found."], color_pair=2)
 
-overwrite_command = []
-overwrite_command = overwrite_options_input()
-print(overwrite_command)
 
-crypt_command = []  
-crypt_command = crypt_options_input()
-print(crypt_command)
+def luks_key(printer: CursedPrinter, dd_command: list[str], gpg_command: list[str], s_efi_dir: str):
+    printer.display_text(["running process for luks key creation"])
+    try:
+        dd_proc = subprocess.Popen(['sudo', 'dd'] + dd_command, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
+        gpg_cmd_full = ['gpg'] + gpg_command + [f"{s_efi_dir}/luks-key.gpg"]
+        gpg_proc = subprocess.run(gpg_cmd_full, stdin=dd_proc.stdout, check=True, capture_output=True, text=True)
+        dd_proc.stdout.close()
+        dd_proc.wait()
+        if dd_proc.returncode != 0:
+            raise subprocess.CalledProcessError(dd_proc.returncode, dd_proc.args, dd_proc.stdout, dd_proc.stderr)
+        
+        printer.display_text(["LUKS key created successfully."])
+    except subprocess.CalledProcessError as e:
+        logging.error(f"Error during LUKS key creation (exit code {e.returncode}): {e.stderr.strip()}")
+        printer.display_text([f"Error during LUKS key creation: {e.stderr.strip()}"], color_pair=2)
+    except FileNotFoundError:
+        logging.error("dd or gpg command not found. Ensure they are installed and in PATH.")
+        printer.display_text(["Error: dd or gpg command not found."], color_pair=2)
 
-key_file_command = []
-key_file_command = key_file_input()
-print(key_file_command)
 
-name_physical_volume = name_physical_volume()
+def luks_process_one(printer: CursedPrinter, crypt_command: list[str], block_command: list[str]):              
+    printer.display_text(["Starting LUKS format process..."])
+    try:
+        luks_process_cmd = ['sudo', 'cryptsetup'] + crypt_command + ['luksFormat'] + block_command
+        subprocess.run(luks_process_cmd, check=True, capture_output=True, text=True)
+        printer.display_text(["LUKS format completed successfully."])
+    except subprocess.CalledProcessError as e:
+        logging.error(f"Error during LUKS format (exit code {e.returncode}): {e.stderr.strip()}")
+        printer.display_text([f"Error during LUKS format: {e.stderr.strip()}"], color_pair=2)
+    except FileNotFoundError:
+        logging.error("cryptsetup command not found. Ensure it is installed and in PATH.")
+        printer.display_text(["Error: cryptsetup command not found."], color_pair=2)
 
-def gpg_tty(): 
-    subprocess.run(['export', 'GPG_TTY=$(tty)'])
 
-def over_write():
-    overwrite_subprocess = subprocess.run(['sudo', 'dd'] + overwrite_command, stdout=subprocess.PIPE)
-    subprocess.run(['&&', 'sync'], stdin=overwrite_subprocess)
+def luks_process_two(printer: CursedPrinter, key_file_command: list[str], block_command: list[str], physical_volume_name: str, s_efi_dir: str):
+    printer.display_text(["Starting LUKS decrypt and open process..."])
+    try:
+        gpg_decrypt_cmd = ['sudo', 'gpg', '--decrypt', f"{s_efi_dir}/luks-key.gpg"]
+        gpg_proc = subprocess.Popen(gpg_decrypt_cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
+        
+        cryptsetup_open_cmd = ['cryptsetup'] + key_file_command + ['luksOpen'] + block_command + [physical_volume_name]
+        cryptsetup_proc = subprocess.run(cryptsetup_open_cmd, stdin=gpg_proc.stdout, check=True, capture_output=True, text=True)
+        gpg_proc.stdout.close()
+        gpg_proc.wait()
+        if gpg_proc.returncode != 0:
+            raise subprocess.CalledProcessError(gpg_proc.returncode, gpg_proc.args, gpg_proc.stdout, gpg_proc.stderr)
+        
+        printer.display_text(["LUKS device decrypted and opened successfully."])
+    except subprocess.CalledProcessError as e:
+        logging.error(f"Error during LUKS decrypt/open (exit code {e.returncode}): {e.stderr.strip()}")
+        printer.display_text([f"Error during LUKS decrypt/open: {e.stderr.strip()}"], color_pair=2)
+    except FileNotFoundError:
+        logging.error("gpg or cryptsetup command not found. Ensure they are installed and in PATH.")
+        printer.display_text(["Error: gpg or cryptsetup command not found."], color_pair=2)
 
-over_write()
 
-def luks_key():
-    print_app.print_curses("running process for luks key creation")
-    dd_subprocess = subprocess.run(['sudo', 'dd'] + dd_command, stdout=subprocess.PIPE)
-    subprocess.run(['gpg'] + gpg_command + create_efi.s + '/luks-key.gpg', stdin=dd_subprocess)
+# Main entry point for the curses application
+def main_curses(stdscr):
+    printer = CursedPrinter(stdscr)
+    input_handler = Input(printer)
 
-luks_key()
+    printer.display_text([moby_dick.welcome_message()]) # Assuming moby_dick provides a welcome message
+    printer.display_text(["Initializing options input test..."])
 
-def luks_process_one():              
-    luks_process = subprocess.run(['sudo', 'cryptsetup'] + crypt_command + ['luksFormat'] + block_command)
+    # Collect inputs using the refactored input functions
+    block_command = block_options_input(printer, input_handler, stdscr)
+    dd_command = dd_options_input(printer, input_handler, stdscr)
+    gpg_command = gpg_options_input(printer, input_handler, stdscr)
+    overwrite_command = overwrite_options_input(printer, input_handler, stdscr)
+    crypt_command = crypt_options_input(printer, input_handler, stdscr)
+    key_file_command = key_file_input(printer, input_handler, stdscr)
+    physical_volume_name = name_physical_volume(printer, input_handler)
 
-luks_process_one()
+    printer.display_text(["Collected Commands:"])
+    printer.display_text([f"Block Command: {block_command}"])
+    printer.display_text([f"DD Command: {dd_command}"])
+    printer.display_text([f"GPG Command: {gpg_command}"])
+    printer.display_text([f"Overwrite Command: {overwrite_command}"])
+    printer.display_text([f"Crypt Command: {crypt_command}"])
+    printer.display_text([f"Key File Command: {key_file_command}"])
+    printer.display_text([f"Physical Volume Name: {physical_volume_name}"])
 
-def luks_process_two():
-    luks_process = subprocess.run(['sudo', 'gpg', '--decrypt'] + create_efi.s + '/luks-key.gpg', stdout=subprocess.PIPE)
-    subprocess.run(['cryptsetup'] + key_file_command + ['luksOpen'] + block_command + name_physical_volume)
+    # Execute commands with error handling
+    gpg_tty(printer)
+    over_write(printer, overwrite_command)
+    # The 's' variable from create_efi is needed here. It needs to be collected/passed.
+    # For now, let's assume a placeholder is used or input from user
+    efi_dir_path = input_handler.input_string("Enter EFI directory path (e.g., /mnt/gentoo/boot/efi): ")
 
-luks_process_two()
+    luks_key(printer, dd_command, gpg_command, efi_dir_path)
+    luks_process_one(printer, crypt_command, block_command)
+    luks_process_two(printer, key_file_command, block_command, physical_volume_name, efi_dir_path)
+
+    printer.display_text(["All options input test processes completed. Press any key to exit."])
+    stdscr.getch()
+
+
+if __name__ == "__main__":
+    curses.wrapper(main_curses)

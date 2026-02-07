@@ -98,9 +98,6 @@ class CursesMenu:
 
         # highlight should be initialized to black-on-white, but bold is a fine
         # fallback that doesn't need the screen initialized first
-        self.highlight: int = curses.A_BOLD
-        self.normal: int = curses.A_NORMAL
-
         # TODO: add a way to replace item indices with letters
         self.items: ItemGroup = ItemGroup(self)
         self.end_items: ItemGroup = ItemGroup(self)
@@ -282,10 +279,7 @@ class CursesMenu:
                 curses.cbreak()
                 CursesMenu.stdscr.keypad(True)  # noqa: FBT003
                 # noinspection PyBroadException
-                try:  # noqa: SIM105
-                    curses.start_color()
-                except:  # noqa: E722,S110 # pragma: no cover all
-                    pass
+
                 self._main_loop()
             finally:
                 # I currently don't remember whether there's a situation where stdscr
@@ -351,9 +345,7 @@ class CursesMenu:
         self.clear_screen()
         self._running.clear()
 
-    def _set_up_colors(self) -> None:
-        curses.init_pair(1, curses.COLOR_WHITE, curses.COLOR_RED)
-        self.highlight = curses.color_pair(1)
+
 
     def draw(self) -> None:
         """
@@ -400,7 +392,8 @@ class CursesMenu:
                 pad_width = len(str(len(self.items)))
                 index_text = index_text.zfill(pad_width)
 
-        text_style = self.highlight if self.current_option == index else self.normal
+        # Use color pair 2 for highlight and color pair 1 for normal text from CursedPrinter
+        text_style = curses.color_pair(2) if self.current_option == index else curses.color_pair(1)
         assert self.screen is not None
         assert text_style is not None
 

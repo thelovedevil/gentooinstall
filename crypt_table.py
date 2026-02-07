@@ -1,103 +1,75 @@
 #!/usr/bin/env python3
+
 import curses
-from curseXcel import Table
 import subprocess
 import json
 import pandas as pd
-from bs4 import BeautifulSoup, SoupStrainer
-from cursesprint import print_curses
-from testtest import sources_testcrypt
+import logging
 
-stdscr = curses.initscr()
-def test_crypt():
-    command = ["cryptsetup", "--help"]
-    cryptsetup_process = subprocess.Popen(command, text=True, stdout=subprocess.PIPE)
-    awk_command = ["awk", "{print substr($0,3,140)}"]
-    awk_process = subprocess.Popen(awk_command, text=True, stdin=cryptsetup_process.stdout, stdout=subprocess.PIPE)
-    sed_one_command = ["sed", "s/,/:/"]
-    sed_one_process = subprocess.Popen(sed_one_command, text=True, stdin=awk_process.stdout, stdout=subprocess.PIPE)
-    sed_two_command = ["sed", "1, 4d"]
-    sed_two_process = subprocess.Popen(sed_two_command, text=True, stdin=sed_one_process.stdout, stdout=subprocess.PIPE)
-    head_command = ["head", "-n-54"]
-    head_process = subprocess.Popen(head_command, text=True, stdin=sed_two_process.stdout, stdout=subprocess.PIPE)
-    # print(cryptsetup_process.stdout)
-    # print(awk_process)
-    # print(sed_one_process)
-    # print(sed_two_process)
-    # print(head_process)
-    output, error = head_process.communicate()
-    variable = output.splitlines()
-    df = pd.DataFrame(variable)
-    pattern = r'(\D\D:+)'
-    df.columns = ["options"]
-    match = df["options"].str.extract(pattern)
-    pattern_two = r'(\S\S+)'
-    match_two = df['options'].str.extract(pattern_two)
-    frames = [df['options'].str.extract(pattern), df['options'].str.extract(pattern_two)]
-    return df
-#| awk '{print substr($0,3,35)}'| sed 's/,//' | sed '1, 4d' | head 
+from ui.printer import CursedPrinter
+from ui.table import Table
+from utils import test_crypt_options # Import the utility function
 
-sources_testcrypt = test_crypt()
+# Configure logging
+logging.basicConfig(level=logging.ERROR, format='%(levelname)s: %(message)s')
 
-def main(stdscr):
-    stdscr = curses.initscr()
-    stdscr.clear()
 
-def options_digest(stdscr, sources):
+def return_options_dictionary(sources):
+    return sources
 
-    def return_options_dictionary(sources):
-        return sources
 
-    dictionary_variable = return_options_dictionary(sources)
+def options_digest(stdscr, printer: CursedPrinter, sources):
     x = 0
-    stdscr = curses.initscr()
     special_address_list = []
 
-    table = Table(stdscr, len(dictionary_variable), (len(dictionary_variable.columns)), 140, 100, 15, spacing=1, col_names=True)
+    dictionary_variable = return_options_dictionary(sources)
 
-    m = 0 
-    while m < len(dictionary_variable.columns):
-        table.set_column_header(dictionary_variable.columns[m], m)
-        m += 1
-    numpy_table = dictionary_variable.to_numpy()
-    m = 0
-    while m < len(dictionary_variable):
-        n = 0
-        while n < (len(dictionary_variable.columns)):
-                table.set_cell(m, n, numpy_table[m][n])
-                n += 1
-            
-            
-        m += 1
-    while ( x != 'q'):
-        table.refresh()
-        x = stdscr.getkey()
-        if ( x == 'a'):
-            table.cursor_left()
-        elif ( x == 'd'):
-            table.cursor_right()
-        elif (x == 's'):
-            table.cursor_down()
-        elif (x == 'w'):
-            table.cursor_up()
-        elif (x == '\n'):
-            print_curses(stdscr, str(table.select(stdscr)))
-            special_address = str(table.select(stdscr))
-            special_address_list.append(special_address)
-            print_curses(stdscr, str(special_address_list))
+    if dictionary_variable.empty:
+        printer.display_text(["No options found to display."], color_pair=2)
+        stdscr.getch()
+        return []
+
+    max_y, max_x = stdscr.getmaxyx()
+    table_height = max_y - 5 # Leave space for messages
+    table_width = max_x // 2  # Use half width for table, assuming something else might be displayed
     
+    table_widget = Table(stdscr, printer, dictionary_variable, table_height, table_width)
     
-    stdscr = curses.initscr()
-    curses.noecho()
-    curses.cbreak()
-    stdscr.keypad(True)
-    curses.nocbreak()
-    stdscr.keypad(False)
-    curses.echo()
-    curses.endwin()
-    return (special_address_list)
+    printer.display_text(["Crypt Options Table: Use UP/DOWN to navigate, ENTER to select, 'q' to quit."], row=0, col=0)
+    
+    while (x != ord('q')):
+        stdscr.clear() # Clear screen to redraw everything
+        printer.display_text(["Crypt Options Table: Use UP/DOWN to navigate, ENTER to select, 'q' to quit."], row=0, col=0)
 
-if __name__ == "__test_crypt__":
-    curses.wrapper(url_digest)
+        table_widget.display() # Draw the table
+        
+        x = stdscr.getch()
 
-options_digest(stdscr, sources_testcrypt)
+        table_result = table_widget.handle_input(x) # Handle table input
+
+        if table_result == 'quit':
+            break
+        elif table_result is not None:
+            selected_item_value = table_result.iloc[0] # Assuming first column is the value we want
+            special_address_list.append(selected_item_value)
+            printer.display_text([f"Selected: {selected_item_value}"])
+            stdscr.getch() # Pause to show selection
+            # Clear selection message (optional)
+            printer.display_text([" " * max_x], row=max_y - 2, col=0) 
+        
+    return special_address_list
+
+
+if __name__ == "__main__":
+    def main_curses(stdscr):
+        printer = CursedPrinter(stdscr)
+        
+        printer.display_text(["Loading crypt options..."])
+        sources = test_crypt_options() # Call the utility function from utils
+        
+        selected_options = options_digest(stdscr, printer, sources)
+        printer.display_text([f"Selected options: {selected_options}"])
+        printer.display_text(["Press any key to exit."])
+        stdscr.getch()
+
+    curses.wrapper(main_curses)

@@ -1,95 +1,87 @@
 #!/usr/bin/env python3
+
 import curses
-from curseXcel import Table
+from curseXcel import Table # Keep for now, but its usage will change
 import subprocess
 import json
 import pandas as pd
-from cursesprint import print_curses
+import logging
+
+# Configure logging
+logging.basicConfig(level=logging.ERROR, format='%(levelname)s: %(message)s')
+
 
 def return_pandas():
-    process = subprocess.run("lsblk --json -o NAME,SIZE,UUID,MOUNTPOINT,PATH,FSTYPE ".split(), capture_output=True, text=True)
-    data = json.loads(process.stdout)
-    df = pd.json_normalize(data=data.get("blockdevices")).explode(column="children")
-    df = (pd 
-        .concat(objs=[df, df.children.apply(func=pd.Series)], axis=1)
-        .drop(columns=[0, "children"])
-        .fillna("")
-        .reset_index(drop=True)
-        )
-    print(df) 
-    return df
+    try:
+        process = subprocess.run("lsblk --json -o NAME,SIZE,UUID,MOUNTPOINT,PATH,FSTYPE ".split(), capture_output=True, text=True, check=True)
+        data = json.loads(process.stdout)
+        df = pd.json_normalize(data=data.get("blockdevices")).explode(column="children")
+        df = (pd 
+            .concat(objs=[df, df.children.apply(func=pd.Series)], axis=1)
+            .drop(columns=[0, "children"])
+            .fillna("")
+            .reset_index(drop=True)
+            )
+        # Removed print(df)
+        return df
+    except subprocess.CalledProcessError as e:
+        logging.error(f"Error running lsblk for pandas: {e.stderr}")
+        return pd.DataFrame()
+    except json.JSONDecodeError:
+        logging.error("Error decoding lsblk JSON output for pandas.")
+        return pd.DataFrame()
+    except FileNotFoundError:
+        logging.error("lsblk command not found. Ensure lsblk is installed and in your PATH.")
+        return pd.DataFrame()
 
-stdscr = curses.initscr()
-test = return_pandas()
 
-def main(stdscr):
-    stdscr = curses.initscr()
-    stdscr.clear()
-
-def block_digest(stdscr, sources):
-
+def block_digest(stdscr, printer, sources):
     x = 0
-    stdscr = curses.initscr()
-    curses.noecho()
-    curses.cbreak()
-    stdscr.keypad(True)
-    
     special_block_list = []
 
-    def return_block():
-        return sources
+    # The Table class from curseXcel needs significant refactoring or replacement.
+    # For now, we will display the raw pandas DataFrame using the new printer.
+    printer.display_text(["Available Block Devices:"])
+    if not sources.empty:
+        printer.display_text(sources.to_string().splitlines())
+    else:
+        printer.display_text(["No block devices found."])
+
+    printer.display_text(["Use arrow keys to navigate (placeholder), 'q' to quit, Enter to select (placeholder)."])
     
-    new_table = return_block()
+    # Simulate table interaction using input_handler if available, otherwise raw getch
+    # For simplicity, let's just make it a quit loop for now
+    while ( x != ord('q')):
+        stdscr.refresh()
+        x = stdscr.getch()
+        if x == ord('\n'):
+            # Placeholder for selection
+            selected_item = input("Enter selected device path (e.g., /dev/sda): ") # Temporarily using basic input
+            special_block_list.append(selected_item)
+            printer.display_text([f"Selected: {selected_item}"])
+        elif x == ord('q'):
+            break
 
-    table = Table(stdscr, len(new_table), (len(new_table.columns)), 20, 100, 10, spacing=1, col_names=True)
-
-    
-    m = 0 
-    while m < len(new_table.columns):
-        table.set_column_header(new_table.columns[m], m)
-        m += 1
-    numpy_table = new_table.to_numpy()
-    m = 0
-    while m < len(new_table):
-        n = 0
-        while n < (len(new_table.columns)):
-                table.set_cell(m, n, numpy_table[m][n])
-                n += 1      
-           
-        m += 1
-    table.refresh()
-    while ( x != 'q'):
-        table.refresh()
-        x = stdscr.getkey()
-        if ( x == 'a'):
-            table.cursor_left()
-        elif ( x == 'd'):
-            table.cursor_right()
-        elif (x == 's'):
-            table.cursor_down()
-        elif (x == 'w'):
-            table.cursor_up()
-        elif (x == '\n'):
-            print_curses(stdscr, str(table.select(stdscr)))
-            special_block = str(table.select(stdscr))
-            special_block_list.append(special_block)
-            print_curses(stdscr, str(special_block_list))
-            
-            
-    stdscr = curses.initscr()
-    curses.noecho()
-    curses.cbreak()
-    stdscr.keypad(True)
-    curses.nocbreak()
-    stdscr.keypad(False)
-    curses.echo()
-    stdscr.clear()
-    curses.endwin()
-    return (special_block_list)
+    return special_block_list
 
 
-if __name__ == "__block_digest__":
-    curses.wrapper(block_digest)
+if __name__ == "__main__":
+    from ui.printer import CursedPrinter
 
+    def main_curses(stdscr):
+        printer = CursedPrinter(stdscr)
+        # input_handler = Input(printer) # If input is needed beyond getch
 
-block_digest(stdscr, test)
+        printer.display_text(["Loading block device data..."])
+        sources = return_pandas()
+        if sources.empty:
+            printer.display_text(["Failed to load block device data. Exiting."], color_pair=2)
+            stdscr.getch()
+            return
+        
+        selected_devices = block_digest(stdscr, printer, sources)
+        printer.display_text([f"Selected devices: {selected_devices}"])
+        printer.display_text(["Press any key to exit."])
+        stdscr.getch() # Wait for user input before exiting
+
+    curses.wrapper(main_curses)

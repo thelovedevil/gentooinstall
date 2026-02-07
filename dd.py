@@ -1,29 +1,29 @@
 #!/usr/bin/env python3
 
-import curses
-from curseXcel import Table
 import subprocess
-import json
-import pandas as pd
-from bs4 import BeautifulSoup, SoupStrainer
-import cursesprint
+import logging
+import pandas as pd # test_dd_options returns a pandas DataFrame
 
-stdscr = curses.initscr()
-def test_dd_options():
-    command = ["dd", "--help"]
-    cryptsetup_process = subprocess.Popen(command, text=True, stdout=subprocess.PIPE)
-    awk_command = ["awk", "{print substr($0,3,15)}"]
-    awk_process = subprocess.Popen(awk_command, text=True, stdin=cryptsetup_process.stdout, stdout=subprocess.PIPE)
-    sed_one_command = ["sed", "1, 4d"]
-    sed_one_process = subprocess.Popen(sed_one_command, text=True, stdin=awk_process.stdout, stdout=subprocess.PIPE)
-    sed_two_command = ["head", "-n-51"]
-    sed_two_process = subprocess.Popen(sed_two_command, text=True, stdin=sed_one_process.stdout, stdout=subprocess.PIPE)
-    head_command = ["sed", "-e", "s/=[a-zA-Z]*/ /g"]
-    head_process = subprocess.Popen(head_command, text=True, stdin=sed_two_process.stdout, stdout=subprocess.PIPE)
-    output, error = head_process.communicate()
-    variable = output.split()
-    print(variable)
-    df = pd.DataFrame(variable)
-    return df
+from utils import test_dd_options # Import the utility function
 
-test_dd_options() 
+# Configure logging
+logging.basicConfig(level=logging.ERROR, format='%(levelname)s: %(message)s')
+
+
+if __name__ == "__main__":
+    logging.info("Starting dd options test...")
+    try:
+        # Call the utility function to get dd options
+        dd_options_df = test_dd_options()
+        
+        if not dd_options_df.empty:
+            print("\nSuccessfully retrieved DD options:")
+            print(dd_options_df.to_string())
+        else:
+            print("\nNo DD options retrieved or an error occurred.")
+
+    except Exception as e:
+        logging.error(f"An error occurred while testing dd options: {e}")
+        print(f"\nAn error occurred: {e}")
+    
+    print("\nDD options test completed.")

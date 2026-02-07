@@ -1,156 +1,101 @@
 #!/usr/bin/env python3
 
-# from cursedprint import CursedPrint
-# import subprocess
-# from block_device_class_table import Block_Table
-# import json
-# import pandas as pd
-# from cursedinput import Input
-# from cursesscrollmenu import menu
-# import moby_dick
-
-# input_app = Input()
-# input_app.start()
-
-# block_dev = Block_Table()
-# block_dev.start()
-
-# print_app = CursedPrint()
-# print_app.start()
-
-# def variable_dictionary():
-#         dictionary = {}
-#         string = moby_dick.entries()
-#         print_app.print_curses(string)
-#         n = input_app.input_string()
-#         string_two = moby_dick.key_value()
-#         print_app.print_curses(string_two)
-#         dictionary = dict(input_app.input_string().split() for _ in range(int(n)))
-#         return dictionary
-
-# string = moby_dick.following()
-# print_app.print_curses(string)
-# directory_list = variable_dictionary()
-# print_app.print_curses(str(directory_list))
-# s = menu(directory_list)[0]
-
-# #value_selected_for = moby_dick.value_selected()
-# #print_app.print_curses(value_selected_for)
-# #print_app.print_curses(s)
-
-# def mkdir():
-#         subprocess.run(['sudo', 'mkdir', '-v', '-p', s])
-
-# mkdir()
 
 
-# def mount():
-#         subprocess.run(['sudo', 'mount', '-v', '-t', s])
-
-# mount()
-
-from cursedprint import CursedPrint
 import subprocess
 from block_device_class_table import Block_Table
 import json
 import pandas as pd
-from cursedinput import Input
-from cursesscrollmenu import menu
+from ui.input import Input
 import moby_dick
-from cursedprint_invred import CursedPrintInvRed
-from cursedprint_redwhite import CursedPrintRedWhite
-from cursedprint_cyanredgenkai import CursedPrintCyanRedGenkai
-#from cursedprint_redwhite_userinput import CursedPrintRedWhiteUserInput
-from testredwhite import CursedPrintRedWhiteUserInput
+from ui.printer import CursedPrinter # New import for the refactored printer
 
-print_app = CursedPrint()
-print_app.start()
-input_app = Input()
-input_app.start()
+# Input and printer apps need to be initialized within curses.wrapper
+# For now, I will use temporary standard print for debugging
+# print_app = CursedPrinter(stdscr) # This needs to be done within a curses context
+# input_app = Input(print_app) # Input also needs a printer
 
-print_appinvred = CursedPrintInvRed()
-print_appinvred.start()
 
-print_appredwhite = CursedPrintRedWhite()
-print_appredwhite.start()
 
-print_appcyanredgenkai = CursedPrintCyanRedGenkai()
-print_appcyanredgenkai.start()
-
-print_appuserinput = CursedPrintRedWhiteUserInput()
-print_appuserinput.start()
-
-# app = CursedPrintRedWhiteUserInput()
-#         app.start()
-#         for dictionary in app.print_curses(sources):
-#             # This will print each dictionary yielded by print_curses
-#             print(dictionary)
-
-def variable_dictionary():
+def variable_dictionary(printer: CursedPrinter, input_handler: Input):
     string = moby_dick.entries()
-    print_appredwhite.print_curses(string)
+    printer.display_text(string.splitlines())
     string_two = moby_dick.key_value()
+    printer.display_text(string_two.splitlines())
 
-    app = CursedPrintRedWhiteUserInput()
-    app.start()
-
-    for dictionary in app.print_curses(string_two):
-        if dictionary:
-            print_appredwhite.print_curses(f"Dictionary received: {dictionary}")
-            # This will print each dictionary yielded by print_curses
-            return dictionary
+    # This part was for CursedPrintRedWhiteUserInput which is now gone.
+    # We will just proceed to ask for input.
+    printer.display_text(["No dictionary received. Please enter manually."])
+    n_str = input_handler.input_string("Enter number of entries (n): ")
     
-    print_appredwhite.print_curses("No dictionary recieved. Please enter manually.")
-    n = input_app.input_string()
-    if n.isdigit():
-        n = int(n)
-        dictionary = {}
+    dictionary = {}
+    if n_str.isdigit():
+        n = int(n_str)
         for _ in range(n):
-            key = input_app.input_string()
-            value = input_app.input_string()
+            key = input_handler.input_string("Enter key: ")
+            value = input_handler.input_string(f"Enter value for {key}: ")
             dictionary[key] = value
-
     else:
-        try:
-            dictionary = eval(n)
-
-        except:
-            print_appredwhite.print_curses("invalid input. returning empty dictionary.")
-            dictionary = {}
-
-    print_appredwhite.print_curses(f"Final dictionary: {dictionary}")
+        printer.display_text(["Invalid input for number of entries. Returning empty dictionary."])
+    
+    printer.display_text([f"Final dictionary: {dictionary}"])
     return dictionary
 
 
 
-def main():
-    
+def main(printer: CursedPrinter, input_handler: Input):
+    block_dev = Block_Table() # This might need to be initialized in a curses context as well.
+                              # For now, let's assume Block_Table itself doesn't directly
+                              # use curses, or it gets stdscr passed to it.
 
-    
-    block_dev = Block_Table()
     string = moby_dick.following()
-    print_appinvred.print_curses(string)
+    printer.display_text(string.splitlines())
     
+    mkdir(printer, input_handler)
+    mount(printer, input_handler)
 
-    mkdir()
-    mount()
-
-def mkdir():
-    directory_list = variable_dictionary()
-    print_appinvred.print_curses(f"Directory list for mkdir: {directory_list}")
-    s = menu(directory_list)[0]
-    print_appinvred.print_curses(f"Selected item: {s}")
+def mkdir(printer: CursedPrinter, input_handler: Input):
+    directory_list = variable_dictionary(printer, input_handler)
+    printer.display_text([f"Directory list for mkdir: {directory_list}"])
+    # TODO: Replace 'menu' with a curses-aware selection mechanism, perhaps from curses_menu
+    # For now, we will just take the first item as a placeholder or prompt for input
+    # Assuming directory_list is a dictionary and we need a value from it
+    if directory_list:
+        s = input_handler.input_string("Enter directory name to create (from list): ") # Assuming the user picks from the list
+        if s not in directory_list.values(): # Basic validation
+            printer.display_text(["Warning: Entered directory not in list. Using first available."])
+            s = list(directory_list.values())[0] if directory_list.values() else "efi"
+    else:
+        s = input_handler.input_string("Enter directory name to create: ")
+        
+    printer.display_text([f"Selected item: {s}"])
     subprocess.run(['sudo', 'mkdir', '-v', '-p', s])
-    print_appinvred.print_curses("mkdir run")
+    printer.display_text(["mkdir run"])
 
-def mount():
-    directory_list = variable_dictionary()
-    print_appcyanredgenkai.print_curses(f"Directory list for mount: {directory_list}")
-    s = menu(directory_list)[0]
-    print_appcyanredgenkai.print_curses(f"Selected item: {s}")    
+def mount(printer: CursedPrinter, input_handler: Input):
+    directory_list = variable_dictionary(printer, input_handler)
+    printer.display_text([f"Directory list for mount: {directory_list}"])
+    # TODO: Replace 'menu' with a curses-aware selection mechanism
+    # For now, we will just take the first item as a placeholder or prompt for input
+    if directory_list:
+        s = input_handler.input_string("Enter directory to mount (from list): ")
+        if s not in directory_list.values(): # Basic validation
+            printer.display_text(["Warning: Entered directory not in list. Using first available."])
+            s = list(directory_list.values())[0] if directory_list.values() else "efi"
+    else:
+        s = input_handler.input_string("Enter directory to mount: ")
+        
+    printer.display_text([f"Selected item: {s}"])
     subprocess.run(['sudo', 'mount', '-v', '-t', s])
-    print_appcyanredgenkai.print_curses("mount run")
+    printer.display_text(["mount run"])
 
 
 if __name__ == "__main__":
-    main()
+    import curses
+    
+    def main_curses(stdscr):
+        printer = CursedPrinter(stdscr)
+        input_handler = Input(printer)
+        main(printer, input_handler)
+
+    curses.wrapper(main_curses)
