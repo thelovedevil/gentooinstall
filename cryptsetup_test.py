@@ -1,13 +1,7 @@
 #!/usr/bin/env python3
-import curses
-from curseXcel import Table
-import subprocess
-import json
-import pandas as pd
-from bs4 import BeautifulSoup, SoupStrainer
-from cursesprint import print_curses
 from testtest import sources_testcrypt
-from cryptsetup_table import crypt_options_digest, test_crypt_options
+from cryptsetup_table import crypt_options_digest
+from utils import test_crypt_options
 
 crypt_options = test_crypt_options()
 variable_one = []
@@ -15,7 +9,7 @@ variable_two = []
 variable_three = []
 variable_four = []
 
-stdscr = curses.initscr()
+
 # print_curses(stdscr, "now select a crypt option")
 # variable_one = crypt_options_digest(stdscr, crypt_options)
 # print_curses(stdscr, "good, now write an option value")

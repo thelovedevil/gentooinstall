@@ -17,6 +17,8 @@ from deprecated import deprecated
 
 import cursesmenu.utils
 from cursesmenu.item_group import ItemGroup
+from ui.printer import CursedPrinter
+from ui.ascii_art import AsciiArt
 
 if TYPE_CHECKING:
     # noinspection PyCompatibility,PyProtectedMember
@@ -92,6 +94,7 @@ class CursesMenu:
         self.ascii_art = ascii_art
 
         self.screen: Window | None = None
+        self.printer: CursedPrinter | None = None
 
         # highlight should be initialized to black-on-white, but bold is a fine
         # fallback that doesn't need the screen initialized first
@@ -306,8 +309,8 @@ class CursesMenu:
             self.width = CursesMenu.stdscr.getmaxyx()[1] // 2 
         self.screen = curses.newpad(self.menu_height, self.width)
         self._set_up_colors()
-        curses.curs_set(0)
         CursesMenu.stdscr.refresh()
+        self.printer = CursedPrinter(CursesMenu.stdscr) # Instantiate CursedPrinter here
         self.draw()
         
 
@@ -319,8 +322,27 @@ class CursesMenu:
 
             #draw ascii art
 
-            if self.ascii_art:
-                self.ascii_art.draw_menu(CursesMenu.stdscr)
+            if self.ascii_art and self.printer:
+                # Calculate position and size for ASCII art
+                # For now, let's place it to the right of the menu
+                menu_width = self.width
+                screen_height, screen_width = CursesMenu.stdscr.getmaxyx()
+                
+                ascii_art_x_pos = menu_width + 2 # A small offset
+                
+                # Ensure ascii art doesn't go off screen
+                # This will need more sophisticated logic based on desired layout
+                available_width_for_art = screen_width - ascii_art_x_pos
+                
+                # Define desired width and height ratios for the ASCII art
+                # For example, 0.75 of available width and 0.9 of screen height
+                self.printer.display_ascii_art(
+                    self.ascii_art,
+                    row=0, # Start at top
+                    col=ascii_art_x_pos,
+                    width_ratio=available_width_for_art / screen_width, # Ratio of screen width
+                    height_ratio=0.9 # Keep 90% of screen height
+                )
             
             self.process_user_input()
             
@@ -403,8 +425,8 @@ class CursesMenu:
         self.screen.refresh(top_row, 0, 0, 0, screen_rows - 1, self.width - 1)
 
     def ascii_art_input(self, user_input):
-        if self.ascii_art:
-                self.ascii_art.handle_input(user_input)
+        if self.printer and self.ascii_art: # Check if printer is initialized
+                self.printer.handle_input(user_input)
         
 
     def process_user_input(self) -> int:

@@ -2,10 +2,11 @@
 
 import curses
 from curses import panel
-import cursesprint
-from cryptsetup_table import test_crypt_options, crypt_options_digest
 
-sources = test_crypt_options
+from utils import test_crypt_options
+from cryptsetup_table import crypt_options_digest
+
+sources = test_crypt_options()
 class Menu(object):
     def __init__(self, items, stdscreen):
         self.window = stdscreen.subwin(0, 0)

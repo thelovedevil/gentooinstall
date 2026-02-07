@@ -9,18 +9,12 @@ import shutil
 import subprocess
 from subprocess import Popen, PIPE
 import json
-import operator
-import signal
-import curses
-import cursesscrollmenu
-import pandas as pd
-from cursesscrollmenu import menu
 from inputastring import input_string
 import cursesprint
 from url_table import url_digest
 from block_device_table import block_digest
-import numpy
-from cryptsetup_table import crypt_options_digest, test_crypt_options
+from cryptsetup_table import crypt_options_digest
+from utils import test_crypt_options
 from gpg_table import test_gpg_options, gpg_options_digest
 from dd_table import test_dd_options, dd_options_digest
 from cursedprint import CursedPrint
@@ -30,7 +24,6 @@ print_app.start()
 print_app.start_print()
 
 
-stdscr = curses.initscr()
 print_app.print_curses("testing whether booted in uefi or bios")
 
 def return_blockdev_name():
@@ -60,7 +53,6 @@ def return_pandas():
         ) 
     return df
 
-stdscr = curses.initscr()
 pandas_block_devices = return_pandas()
 
 
@@ -88,7 +80,6 @@ class BlockDevice:
 block_device_selection_list = BlockDevice(block_device_json_only)
 
 def fdisk_process(): 
-        stdscr = curses.initscr()
         print_app.print_curses("fdisk process about to be run on selected block device")
         print_app.print_curses("please select exactly one block device")
         selected_device = block_digest(stdscr, pandas_block_devices)

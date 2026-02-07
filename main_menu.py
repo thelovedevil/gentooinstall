@@ -2,7 +2,7 @@
 import curses
 from cursesmenu.items import FunctionItem, SubmenuItem, CommandItem, MenuItem, SubmenuItem
 from curses_menu import CursesMenu
-from asuka_menu import AsciiArt
+from ui.ascii_art import AsciiArt
 
 
 
@@ -14,7 +14,7 @@ def main(stdscr):
     # menu = Menu(menu_items)
 
 
-    art = AsciiArt("/home/kali/Documents/asuka_original_resized.jpg")
+    art = AsciiArt("asuka_original_resized.jpg")
     menu = CursesMenu("Root Menu", "Root Menu Subtitle", width=curses.COLS // 2, ascii_art=art)
     item1 = MenuItem("basic Item doing nothing", menu)
     print(__file__)
@@ -106,19 +106,7 @@ def main(stdscr):
     _ = menu.join()
     
     
-    # curses.wrapper(ascii_art, "/home/adrian/Documents/gentooinstall/asuka_original_resized.jpg")
 
-    while True:
-        #art.draw_menu(stdscr)
-        # if menu.ascii_art:
-        #     menu.ascii_art.draw_menu(stdscr)
-        stdscr.refresh()
-        #art.handle_input(key)
-
-        # Add functionality for other menu items here
-        
-        if menu.should_exit:
-            break
 
 
 if __name__ == "__main__":

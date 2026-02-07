@@ -8,6 +8,7 @@ import pandas as pd
 from cursedinput import input_string
 from cursesscrollmenu import menu
 import create_efi
+from utils import test_crypt_options
 
 block_dev = Block_Table()
 block_dev.start()
@@ -27,7 +28,6 @@ def return_pandas():
         ) 
     return df
 
-stdscr = curses.initscr()
 pandas_block_devices = return_pandas()
 
 def block_device_selection():
