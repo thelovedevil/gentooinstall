@@ -4,7 +4,7 @@ import locale
 
 locale.setlocale(locale.LC_ALL, '')
 from cursesmenu.items import FunctionItem, SubmenuItem, CommandItem, MenuItem, SubmenuItem
-from curses_menu import CursesMenu
+from cursesmenu.curses_menu import CursesMenu
 from ui.ascii_art import AsciiArt
 
 
@@ -18,7 +18,7 @@ def main(stdscr):
 
 
     art = AsciiArt("asuka_original_resized.jpg")
-    menu = CursesMenu("Root Menu", "Root Menu Subtitle", width=curses.COLS // 2, ascii_art=art)
+    menu = CursesMenu("Root Menu", "Root Menu Subtitle")
     item1 = MenuItem("basic Item doing nothing", menu)
     print(__file__)
     command_item = CommandItem(

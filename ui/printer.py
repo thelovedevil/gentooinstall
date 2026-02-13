@@ -45,11 +45,16 @@ class CursedPrinter:
         max_y, max_x = self.stdscr.getmaxyx()
         
         # Calculate available space for ASCII art
-        available_height = int(max_y * height_ratio)
-        available_width = int(max_x * width_ratio)
+        available_height = max(1, int(max_y * height_ratio))
+        available_width = max(1, int(max_x * width_ratio))
 
         # Regenerate ASCII art with new dimensions
-        self.current_ascii_art.convert_ascii(available_width, available_height)
+        # Only convert if dimensions are valid
+        if available_width > 0 and available_height > 0:
+            self.current_ascii_art.convert_ascii(available_width, available_height)
+        else:
+            # If dimensions are too small, clear existing art or display a message
+            self.current_ascii_art = None # No art to display
         
         self._draw_ascii_art()
 
