@@ -1,0 +1,31 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+*.egg-info/
+.venv/
+venv/
+bin/
+lib/
+
+# Logs
+wget-log
+error.log
+*.log
+
+# IDE
+.idea/
+.vscode/
+
+# Other
+CACHEDIR.TAG
+stage3-*.tar.xz.asc
+stage3-*.tar.xz.DIGESTS
+filetest
+testlsblkoutput
+newfile.py
+public.key
+jq
+wget-log.*
+asuka_original_resized.jpgoriginal_resized.jpg
