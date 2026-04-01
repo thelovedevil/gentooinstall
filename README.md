@@ -24,7 +24,7 @@ To use this installer, you will need a bootable Linux environment with Python 3 
     ```
 3.  Run the installer:
     ```
-    python3 main_menu.py
+    gentooinstaller.sh
     ```
 
 ## Usage
