@@ -17,19 +17,24 @@ class Table:
 
     def _draw_table(self):
         self.pad.clear()
-        # Draw headers
+        # Draw headers - Use Accent color (Vermillion)
         for i, col_name in enumerate(self.data_frame.columns):
-            self.pad.addstr(0, i * 15, str(col_name).ljust(14)) # Adjust column width
+            try:
+                self.pad.addstr(0, i * 15, str(col_name).ljust(14), curses.color_pair(3) | curses.A_BOLD)
+            except curses.error: pass
 
         # Draw data rows
         for r_idx, row in self.data_frame.iterrows():
-            display_row = str(r_idx + 1) # Display 1-based index
             for c_idx, cell_value in enumerate(row):
                 text = str(cell_value).ljust(14)
-                if r_idx == self.current_selection:
-                    self.pad.addstr(r_idx + 1, c_idx * 15, text, curses.A_REVERSE)
-                else:
-                    self.pad.addstr(r_idx + 1, c_idx * 15, text)
+                try:
+                    if r_idx == self.current_selection:
+                        # Use Highlight color (White on Vermillion)
+                        self.pad.addstr(r_idx + 1, c_idx * 15, text, curses.color_pair(2))
+                    else:
+                        # Use Normal color (White on Black)
+                        self.pad.addstr(r_idx + 1, c_idx * 15, text, curses.color_pair(1))
+                except curses.error: pass
         
         # Refresh the pad to the main screen
         # Arguments: pad_begin_y, pad_begin_x, screen_begin_y, screen_begin_x, screen_end_y, screen_end_x
@@ -44,8 +49,7 @@ class Table:
             self._adjust_scroll()
         elif key == ord('q'):
             return 'quit'
-        elif key == ord('
-'):
+        elif key == ord('\n'):
             return self.get_selected_row()
 
         self._draw_table() # Redraw after input

@@ -1,20 +1,28 @@
 #!/bin/bash
+# System-agnostic Gentoo Installer Bootstrap Script
+
 set -e
 
-echo "Preparing installer environment..."
+# Define the virtual environment directory
+VENV_DIR=".venv"
 
-# 1. Create the temporary virtual environment
-python3 -m venv /tmp/gentoo_installer_env
+echo "Checking for Python 3..."
+if ! command -v python3 &> /dev/null; then
+    echo "Error: python3 is not installed."
+    exit 1
+fi
 
-# 2. Activate it (redirects 'python3' and 'pip' to this environment)
-source /tmp/gentoo_installer_env/bin/activate
+# 1. Create the virtual environment if it doesn't exist
+if [ ! -d "$VENV_DIR" ]; then
+    echo "Creating virtual environment in $VENV_DIR..."
+    python3 -m venv "$VENV_DIR"
+fi
 
-# 3 Install curses-menu into this temporary environment
-pip install --quiet -r requirements.txt
+# 2. Upgrade pip and install dependencies
+echo "Installing/Updating dependencies from requirements.txt..."
+"$VENV_DIR/bin/python3" -m pip install --upgrade pip
+"$VENV_DIR/bin/python3" -m pip install -r requirements.txt
 
-# 4. Run your main menu script
-echo "Starting Gentoo Installer...."
-python3 main_menu.py
-
-# 5 Clean up by deactivating the environment once the script is closed
-deactivate
+# 3. Run the main menu
+echo "Starting Gentoo Installer..."
+"$VENV_DIR/bin/python3" main_menu.py

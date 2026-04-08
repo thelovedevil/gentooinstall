@@ -76,11 +76,16 @@ class CursesMenu:
         show_exit_item: bool = True,
         zero_pad: bool = False,
         _debug_screens: bool = False,
+        ascii_art: "AsciiArt" | None = None,
+        ascii_art_width: int = 0,
     ) -> None:
         """Initialize the menu."""
         self.title = title
         self.subtitle = subtitle
         self.zero_pad = zero_pad
+        self.ascii_art = ascii_art
+        self.ascii_art_width = ascii_art_width
+        self.art_pad = None
 
         self.screen: Window | None = None
 
@@ -135,8 +140,24 @@ class CursesMenu:
         self.user_input_handlers.update(
             {k: self.go_to for k in map(ord, map(str, range(1, 10)))},
         )
+        self.user_input_handlers.update(
+            {
+                ord("w"): self._ascii_art_scroll,
+                ord("s"): self._ascii_art_scroll,
+                ord("a"): self._ascii_art_scroll,
+                ord("d"): self._ascii_art_scroll,
+            },
+        )
 
         self._debug_screens = _debug_screens
+
+    def _ascii_art_scroll(self, user_input: int) -> None:
+        art = self._effective_ascii_art
+        if art and self.art_pad:
+            max_y, max_x = self.art_pad.getmaxyx()
+            if hasattr(art, 'handle_input'):
+                if art.handle_input(user_input, max_x, max_y):
+                    self.draw()
 
     @classmethod
     def make_selection_menu(
@@ -283,9 +304,49 @@ class CursesMenu:
         else:
             self._main_loop()
 
+    @property
+    def _effective_ascii_art(self) -> Any:
+        if self.ascii_art:
+            return self.ascii_art
+        if self.parent:
+            return self.parent._effective_ascii_art
+        return None
+
+    @property
+    def _effective_ascii_art_width(self) -> int:
+        if self.ascii_art:
+            return self.ascii_art_width
+        if self.parent:
+            return self.parent._effective_ascii_art_width
+        return 0
+
+    def _create_pads(self) -> None:
+        """Create the pads for the menu and ASCII art."""
+        assert CursesMenu.stdscr is not None
+        max_y, max_x = CursesMenu.stdscr.getmaxyx()
+        
+        art = self._effective_ascii_art
+        art_width = self._effective_ascii_art_width
+
+        if art:
+            if art_width >= max_x - 10:
+                art_width = max_x // 2
+            
+            menu_width = max_x - art_width
+            if menu_width < 10: # Ensure some minimum width
+                menu_width = 10
+            
+            self.art_pad = curses.newpad(max_y, art_width)
+            self.screen = curses.newpad(self.menu_height, menu_width)
+        else:
+            self.art_pad = None
+            self.screen = curses.newpad(self.menu_height, max_x)
+
     def _main_loop(self) -> None:
         assert CursesMenu.stdscr is not None
-        self.screen = curses.newpad(self.menu_height, CursesMenu.stdscr.getmaxyx()[1])
+        
+        self._create_pads()
+
         self._set_up_colors()
         curses.curs_set(0)
         CursesMenu.stdscr.refresh()
@@ -299,8 +360,32 @@ class CursesMenu:
         self._running.clear()
 
     def _set_up_colors(self) -> None:
-        curses.init_pair(1, curses.COLOR_BLACK, curses.COLOR_WHITE)
-        self.highlight = curses.color_pair(1)
+        # Vermillion: approx #E34234 -> R: 890, G: 259, B: 204
+        
+        if curses.has_colors():
+            vermillion = curses.COLOR_RED
+            
+            if curses.can_change_color():
+                try:
+                    curses.init_color(10, 890, 259, 204)
+                    vermillion = 10
+                except Exception:
+                    pass
+            
+            # Pair 1: Normal (White text, Black background)
+            curses.init_pair(1, curses.COLOR_WHITE, curses.COLOR_BLACK)
+            # Pair 2: Highlight (White text, Vermillion background)
+            curses.init_pair(2, curses.COLOR_WHITE, vermillion)
+            # Pair 3: Border/Title (Vermillion text, Black background)
+            curses.init_pair(3, vermillion, curses.COLOR_BLACK)
+            
+            self.normal = curses.color_pair(1)
+            self.highlight = curses.color_pair(2)
+            self.accent = curses.color_pair(3)
+        else:
+            self.normal = curses.A_NORMAL
+            self.highlight = curses.A_REVERSE
+            self.accent = curses.A_BOLD
 
     def draw(self) -> None:
         """
@@ -308,10 +393,54 @@ class CursesMenu:
 
         Adds border, title and subtitle, and items, then refreshes the screen.
         """
+        assert CursesMenu.stdscr is not None
+        
+        art = self._effective_ascii_art
+        art_width = self._effective_ascii_art_width
+        
+        if self.screen is None:
+            self._create_pads()
+        else:
+            max_y, max_x = CursesMenu.stdscr.getmaxyx()
+            current_height, current_width = self.screen.getmaxyx()
+            
+            expected_width = max_x - art_width if art else max_x
+            if current_height < self.menu_height or current_width != expected_width:
+                self._create_pads()
+
         assert self.screen is not None
-        self.screen.border()
-        self.screen.addstr(2, 2, self.title, curses.A_STANDOUT)
-        self.screen.addstr(4, 2, self.subtitle, curses.A_BOLD)
+        self.screen.clear()
+
+        if art and self.art_pad:
+            from ui.ascii_art import AsciiArt
+            if isinstance(art, AsciiArt):
+                self.art_pad.clear()
+                max_y, max_x = self.art_pad.getmaxyx()
+                if max_x > 0 and max_y > 0:
+                    art.convert_ascii(max_x, max_y)
+                    art_lines = art.get_ascii_art_lines()
+                    
+                    start_row = getattr(art, 'start_row', 0)
+                    start_col = getattr(art, 'start_col', 0)
+                    
+                    for i in range(max_y):
+                        line_idx = i + start_row
+                        if line_idx < len(art_lines):
+                            line = art_lines[line_idx]
+                            visible_line = line[start_col : start_col + max_x]
+                            try:
+                                self.art_pad.addstr(i, 0, visible_line[:max_x-1])
+                            except curses.error:
+                                try:
+                                    self.art_pad.addstr(i, 0, visible_line[:max_x-2])
+                                except curses.error:
+                                    pass
+                self.art_pad.refresh(0, 0, 0, 0, CursesMenu.stdscr.getmaxyx()[0] - 1, art_width - 1)
+
+        # Removed border to allow assets to touch
+        # Adjust title and subtitle to be left-aligned with no gap
+        self.screen.addstr(1, 0, self.title, self.accent | curses.A_STANDOUT)
+        self.screen.addstr(3, 0, self.subtitle, self.accent | curses.A_BOLD)
 
         for index, item in enumerate(self.all_items):
             self.draw_item(index, item)
@@ -351,8 +480,8 @@ class CursesMenu:
         assert text_style is not None
 
         self.screen.addstr(
-            MIN_SIZE - 1 + index,
-            4,
+            MIN_SIZE - 3 + index, # Adjusted row offset since border is gone
+            0,
             item.show(index_text),
             text_style,
         )
@@ -368,7 +497,14 @@ class CursesMenu:
         else:
             top_row = 0
 
-        self.screen.refresh(top_row, 0, 0, 0, screen_rows - 1, screen_cols - 1)
+        art = self._effective_ascii_art
+        art_width = self._effective_ascii_art_width
+
+        if art:
+            # Refresh menu to the right of the ascii art
+            self.screen.refresh(top_row, 0, 0, art_width, screen_rows - 1, screen_cols - 1)
+        else:
+            self.screen.refresh(top_row, 0, 0, 0, screen_rows - 1, screen_cols - 1)
 
     def process_user_input(self) -> int:
         """
@@ -410,12 +546,32 @@ class CursesMenu:
         self.selected_option = self.current_option
 
         assert self.selected_item is not None
-        self.selected_item.set_up()
-        self.selected_item.action()
-        self.selected_item.clean_up()
+        try:
+            self.selected_item.set_up()
+            try:
+                self.selected_item.action()
+            finally:
+                self.selected_item.clean_up()
 
-        self.returned_value = self.selected_item.get_return()
-        self.should_exit = self.selected_item.should_exit
+            self.returned_value = self.selected_item.get_return()
+            self.should_exit = self.selected_item.should_exit
+        except Exception as e:
+            # Catch errors in item execution and display them
+            if CursesMenu.stdscr:
+                try:
+                    # Try to show the error on screen at the bottom
+                    max_y, max_x = CursesMenu.stdscr.getmaxyx()
+                    error_msg = f"Error: {str(e)}"
+                    # Use a clear line to avoid overlapping with previous content
+                    CursesMenu.stdscr.move(max_y - 1, 0)
+                    CursesMenu.stdscr.clrtoeol()
+                    CursesMenu.stdscr.addstr(max_y - 1, 0, error_msg[:max_x-1], curses.A_REVERSE)
+                    CursesMenu.stdscr.refresh()
+                    time.sleep(2)
+                except curses.error:
+                    pass
+            # Resume the menu to prevent a total crash
+            self.should_exit = False
 
         if not self.should_exit:
             self.draw()
@@ -476,6 +632,7 @@ class CursesMenu:
         assert CursesMenu.stdscr is not None
         screen_rows, screen_cols = CursesMenu.stdscr.getmaxyx()
         curses.resizeterm(screen_rows, screen_cols)
+        self._create_pads()
         self.draw()
 
     def clear_screen(self) -> None:

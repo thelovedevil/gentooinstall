@@ -5,126 +5,113 @@ class CursedPrinter:
     def __init__(self, stdscr):
         self.stdscr = stdscr
         curses.curs_set(0) # Hide the cursor
-        self.stdscr.nodelay(True) # Make getch non-blocking
+        self.stdscr.nodelay(False) # Wait for input in print_curses
+        self.stdscr.keypad(True)
 
-        # Initialize default color pairs
-        curses.init_pair(1, curses.COLOR_WHITE, curses.COLOR_BLACK) # Default text
-        curses.init_pair(2, curses.COLOR_RED, curses.COLOR_BLACK)   # Error/highlight
-        curses.init_pair(3, curses.COLOR_CYAN, curses.COLOR_BLACK)  # Info
-
+        # Initialize colors (Vermillion, Black, White)
+        if curses.has_colors():
+            vermillion = curses.COLOR_RED
+            if curses.can_change_color():
+                try:
+                    curses.init_color(10, 890, 259, 204)
+                    vermillion = 10
+                except Exception: pass
+            curses.init_pair(1, curses.COLOR_WHITE, curses.COLOR_BLACK) # Normal: White on Black
+            curses.init_pair(2, curses.COLOR_WHITE, vermillion) # Highlight: White on Vermillion
+            curses.init_pair(3, vermillion, curses.COLOR_BLACK) # Accent: Vermillion on Black
+        
         self.current_ascii_art = None
         self.ascii_start_row = 0
         self.ascii_start_col = 0
-        self.display_text_lines = []
         self.text_start_row = 0
-        self.text_start_col = 0
+
+    def print_curses(self, variable, ascii_image_path="asuka_original_resized.jpg"):
+        from .ascii_art import AsciiArt
+        ascii_art = AsciiArt(ascii_image_path)
+        x = 0
+        
+        # Set background
+        self.stdscr.bkgd(' ', curses.color_pair(1))
+
+        import textwrap
+        lines = str(variable).split('\n')
+        max_y, max_x = self.stdscr.getmaxyx()
+        
+        text_cols = max_x // 2
+        wrapped_lines = []
+        for line in lines:
+            wrapped_lines.extend(textwrap.wrap(line, width=text_cols - 4))
+
+        # Pad for text
+        text_pad = curses.newpad(len(wrapped_lines) + 1, text_cols)
+        for i, line in enumerate(wrapped_lines):
+            text_pad.addstr(i, 0, line, curses.color_pair(1))
+        
+        while(x != ord('q')):
+            self.stdscr.erase()
+            
+            # Draw ASCII Art on the right side
+            art_width = max_x - text_cols
+            art_height = max_y - 2
+            ascii_art.convert_ascii(art_width, art_height)
+            
+            # Manual draw art logic from snippet structure
+            art_lines = ascii_art.get_ascii_art_lines()
+            art_start_row = getattr(ascii_art, 'start_row', 0)
+            art_start_col = getattr(ascii_art, 'start_col', 0)
+            
+            for i in range(min(art_height, len(art_lines))):
+                line_idx = i + art_start_row
+                if line_idx < len(art_lines):
+                    line = art_lines[line_idx]
+                    visible_line = line[art_start_col : art_start_col + art_width]
+                    try:
+                        self.stdscr.addstr(i, text_cols, visible_line[:art_width-1], curses.color_pair(1))
+                    except curses.error: pass
+
+            # Refresh text pad on the left
+            text_pad.refresh(self.text_start_row, 0, 0, 0, max_y - 2, text_cols - 1)
+
+            x = self.stdscr.getch()
+
+            if (x == curses.KEY_UP and self.text_start_row > 0):
+                self.text_start_row -= 1
+            elif (x == curses.KEY_DOWN and self.text_start_row < len(wrapped_lines) - (max_y - 2)):
+                self.text_start_row += 1
+        
+            # Handle art scrolling (WASD)
+            ascii_art.handle_input(x, art_width, art_height)
+            
+            # Restore state
+            curses.noecho()
+            curses.cbreak()
+            self.stdscr.keypad(True)
 
     def display_text(self, text_lines, row=0, col=0, color_pair=1):
-        """Displays text lines on the screen."""
-        self.display_text_lines = text_lines
-        self.text_start_row = row
-        self.text_start_col = col
-        self._draw_text(row, col, color_pair)
-
-    def _draw_text(self, row, col, color_pair):
-        """Internal method to draw the current text lines."""
         max_y, max_x = self.stdscr.getmaxyx()
-        for i, line in enumerate(self.display_text_lines):
+        for i, line in enumerate(text_lines):
             if row + i < max_y:
-                self.stdscr.addstr(row + i, col, line[:max_x - col], curses.color_pair(color_pair))
+                try:
+                    self.stdscr.addstr(row + i, col, line[:max_x - col], curses.color_pair(color_pair))
+                except curses.error: pass
+        self.stdscr.refresh()
 
-    def display_ascii_art(self, ascii_art_obj: AsciiArt, row=0, col=0, width_ratio=0.5, height_ratio=0.5):
-        """
-        Displays ASCII art on a portion of the screen.
-        width_ratio and height_ratio determine the size of the ASCII art relative to the terminal.
-        """
-        self.current_ascii_art = ascii_art_obj
-        self.ascii_start_row = row
-        self.ascii_start_col = col
-
+    def display_ascii_art(self, ascii_art_obj, row=0, col=0, width_ratio=0.5, height_ratio=0.5):
+        # Kept for compatibility with other parts
         max_y, max_x = self.stdscr.getmaxyx()
-        
-        # Calculate available space for ASCII art
         available_height = max(1, int(max_y * height_ratio))
         available_width = max(1, int(max_x * width_ratio))
-
-        # Regenerate ASCII art with new dimensions
-        # Only convert if dimensions are valid
-        if available_width > 0 and available_height > 0:
-            self.current_ascii_art.convert_ascii(available_width, available_height)
-        else:
-            # If dimensions are too small, clear existing art or display a message
-            self.current_ascii_art = None # No art to display
-        
-        self._draw_ascii_art()
-
-    def _draw_ascii_art(self):
-        """Internal method to draw the current ASCII art."""
-        if not self.current_ascii_art or not self.current_ascii_art.art_matrix.size > 0:
-            return
-
-        max_y, max_x = self.stdscr.getmaxyx()
-        art_lines = self.current_ascii_art.get_ascii_art_lines()
-
-        art_display_height = len(art_lines)
-        art_display_width = len(art_lines[0]) if art_lines else 0
-
-        # Create a new pad for the ASCII art to allow scrolling
-        # Pad size should be the full size of the ASCII art
-        pad = curses.newpad(art_display_height + 1, art_display_width + 1)
-        
-        for r_idx, line in enumerate(art_lines):
-            pad.addstr(r_idx, 0, line)
-
-        # Calculate the visible window for the pad
-        # This will be the area where the ASCII art is drawn on the stdscr
-        # We need to consider self.ascii_start_row/col as the top-left corner on stdscr
-        # And the size of the pad display area on stdscr
-        display_height = min(art_display_height - self.ascii_start_row, max_y - self.ascii_start_row)
-        display_width = min(art_display_width - self.ascii_start_col, max_x - self.ascii_start_col)
-
-        if display_height > 0 and display_width > 0:
-            pad.refresh(
-                self.ascii_start_row, # Pad's row to start copying from
-                self.ascii_start_col, # Pad's col to start copying from
-                self.ascii_start_row, # Screen's row to paste to
-                self.ascii_start_col, # Screen's col to paste to
-                self.ascii_start_row + display_height - 1, # Screen's bottom-right row
-                self.ascii_start_col + display_width - 1 # Screen's bottom-right col
-            )
+        ascii_art_obj.convert_ascii(available_width, available_height)
+        art_lines = ascii_art_obj.get_ascii_art_lines()
+        for i, line in enumerate(art_lines):
+            if row + i < max_y:
+                try:
+                    self.stdscr.addstr(row + i, col, line[:available_width], curses.color_pair(1))
+                except curses.error: pass
+        self.stdscr.refresh()
 
     def handle_input(self, key):
-        """Handles scrolling input for ASCII art."""
-        if not self.current_ascii_art:
-            return
-
-        art = self.current_ascii_art
-        art_height, art_width = art.art_height, art.art_width
-        max_y, max_x = self.stdscr.getmaxyx()
-
-        # Define bounds for scrolling based on actual displayed area and terminal size
-        # This needs to be carefully adjusted based on how the art is positioned and scaled.
-        # For simplicity, let's assume it takes up the full screen for scrolling purposes for now.
-        # This logic will need refinement when integrating with the menu.
-        
-        # Example scrolling logic (simplified)
-        if key == curses.KEY_UP or key == ord('k'):
-            if art.start_row > 0:
-                art.start_row -= 1
-        elif key == curses.KEY_DOWN or key == ord('j'):
-            # Prevent scrolling past the bottom of the art
-            if art.start_row < art_height - 1: # (max_y - self.ascii_start_row) might be needed here
-                art.start_row += 1
-        elif key == curses.KEY_LEFT or key == ord('h'):
-            if art.start_col > 0:
-                art.start_col -= 1
-        elif key == curses.KEY_RIGHT or key == ord('l'):
-            # Prevent scrolling past the right edge of the art
-            if art.start_col < art_width - 1: # (max_x - self.ascii_start_col) might be needed here
-                art.start_col += 1
-
-        self._draw_ascii_art() # Redraw after scroll
-        self.stdscr.refresh() # Refresh the screen
+        pass # Integrated into print_curses loop or CursesMenu
 
     def clear_screen(self):
         self.stdscr.clear()

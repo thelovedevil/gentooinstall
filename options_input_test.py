@@ -53,46 +53,51 @@ def get_options_from_user(printer: CursedPrinter, input_handler: Input, prompt_m
 
 def block_options_input(printer: CursedPrinter, input_handler: Input, stdscr):
     printer.display_text(["filling in block_options process"])
-    block_sources = block_digest(stdscr, printer, None) # block_digest itself should get its sources
-    # TODO: Integrate properly with block_digest for actual selection
-    return get_options_from_user(printer, input_handler, "Enter block device options:")
+    # Get actual selection from the table
+    selected_devices = block_digest(stdscr, printer, None, ascii_image_path="Pictures/asuka_original_resized.jpg")
+    if selected_devices:
+        return selected_devices
+    return get_options_from_user(printer, input_handler, "Manual entry (no device selected):")
 
 
 def crypt_options_input(printer: CursedPrinter, input_handler: Input, stdscr):
     printer.display_text(["filling in crypt_options process"])
-    crypt_sources = crypt_options_digest(stdscr, printer, test_crypt_options()) # Get fresh options
-    # TODO: Integrate properly with crypt_options_digest for actual selection
-    return get_options_from_user(printer, input_handler, "Enter cryptsetup options:")
+    # Get actual selection from the table
+    selected_options = crypt_options_digest(stdscr, printer, None, ascii_image_path="Pictures/black_white002.jpeg") 
+    if selected_options:
+        return selected_options
+    return get_options_from_user(printer, input_handler, "Manual entry (no options selected):")
 
 
 def overwrite_options_input(printer: CursedPrinter, input_handler: Input, stdscr):
     printer.display_text(["filling in overwrite_options process"])
-    dd_sources = dd_options_digest(stdscr, printer, test_dd_options()) # Get fresh options
-    # TODO: Integrate properly with dd_options_digest for actual selection
-    return get_options_from_user(printer, input_handler, "Enter overwrite options (e.g., if=/dev/zero bs=4M count=10):")
+    selected = dd_options_digest(stdscr, printer, None, ascii_image_path="Pictures/black_white003.jpg")
+    if selected:
+        return selected
+    return get_options_from_user(printer, input_handler, "Enter overwrite options (e.g., if=/dev/zero):")
 
 
 def dd_options_input(printer: CursedPrinter, input_handler: Input, stdscr):
     printer.display_text(["filling in dd_options process"])
-    dd_sources = dd_options_digest(stdscr, printer, test_dd_options()) # Get fresh options
-    # TODO: Integrate properly with dd_options_digest for actual selection
-    return get_options_from_user(printer, input_handler, "Enter dd options (e.g., if=/dev/urandom bs=8M count=1):")
+    selected = dd_options_digest(stdscr, printer, None, ascii_image_path="Pictures/black_white003.jpg")
+    if selected:
+        return selected
+    return get_options_from_user(printer, input_handler, "Enter dd options (e.g., bs=8M):")
 
 
 def gpg_options_input(printer: CursedPrinter, input_handler: Input, stdscr):
     printer.display_text(["filling in gpg_options process"])
-    printer.display_text(["!!! gpg_options must be written in for accuracy using 'r' command !!!"])
-    gpg_sources = gpg_options_digest(stdscr, printer, test_gpg_options()) # Get fresh options
-    # TODO: Integrate properly with gpg_options_digest for actual selection
-    return get_options_from_user(printer, input_handler, "Enter gpg options (e.g., --symmetric --cipher-algo AES256):")
+    selected = gpg_options_digest(stdscr, printer, None, ascii_image_path="Pictures/black_white004.jpg")
+    if selected:
+        return selected
+    return get_options_from_user(printer, input_handler, "Enter gpg options (e.g., --symmetric):")
 
 
 def key_file_input(printer: CursedPrinter, input_handler: Input, stdscr):
     printer.display_text(["now entering key file input from prior cryptsetup keyfile"])
     printer.display_text(["simply enter the same value as used for prior key file"])
-    crypt_sources_local = test_crypt_options() # Get fresh options
-    gpg_sources_for_keyfile = gpg_options_digest(stdscr, printer, crypt_sources_local) # Assuming it can use crypt options
-    # TODO: Integrate properly with gpg_options_digest for actual selection
+    crypt_sources_local = test_crypt_options()
+    gpg_sources_for_keyfile = gpg_options_digest(stdscr, printer, crypt_sources_local, ascii_image_path="Pictures/black_white002.jpeg")
     return get_options_from_user(printer, input_handler, "Enter key file options (e.g., --keyfile /path/to/key):")
 
 
@@ -104,14 +109,14 @@ def name_physical_volume(printer: CursedPrinter, input_handler: Input):
 
 def gpg_tty(printer: CursedPrinter): 
     try:
-        subprocess.run(['export', 'GPG_TTY=$(tty)'], shell=True, check=True)
-        printer.display_text(["GPG_TTY set successfully."])
-    except subprocess.CalledProcessError as e:
-        logging.error(f"Error setting GPG_TTY: {e.stderr.strip()}")
-        printer.display_text([f"Error setting GPG_TTY: {e.stderr.strip()}"], color_pair=2)
-    except FileNotFoundError:
-        logging.error("Shell command 'export' not found. This might indicate a problem with shell environment.")
-        printer.display_text(["Error: 'export' command not found. Cannot set GPG_TTY."], color_pair=2)
+        import os
+        tty_proc = subprocess.run(['tty'], capture_output=True, text=True)
+        if tty_proc.returncode == 0:
+            os.environ['GPG_TTY'] = tty_proc.stdout.strip()
+            printer.display_text([f"GPG_TTY set to {os.environ['GPG_TTY']}"])
+    except Exception as e:
+        logging.error(f"Error setting GPG_TTY: {e}")
+        printer.display_text([f"Error setting GPG_TTY: {e}"], color_pair=2)
 
 def over_write(printer: CursedPrinter, overwrite_command: list[str]):
     printer.display_text(["Starting disk overwrite..."])
@@ -169,22 +174,18 @@ def luks_process_two(printer: CursedPrinter, key_file_command: list[str], block_
     printer.display_text(["Starting LUKS decrypt and open process..."])
     try:
         gpg_decrypt_cmd = ['sudo', 'gpg', '--decrypt', f"{s_efi_dir}/luks-key.gpg"]
-        gpg_proc = subprocess.Popen(gpg_decrypt_cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
+        device = block_command[0] if block_command else "/dev/sdX"
+        cryptsetup_open_cmd = ['sudo', 'cryptsetup', 'luksOpen', device, physical_volume_name, '--key-file', '-']
         
-        cryptsetup_open_cmd = ['cryptsetup'] + key_file_command + ['luksOpen'] + block_command + [physical_volume_name]
+        gpg_proc = subprocess.Popen(gpg_decrypt_cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
         cryptsetup_proc = subprocess.run(cryptsetup_open_cmd, stdin=gpg_proc.stdout, check=True, capture_output=True, text=True)
         gpg_proc.stdout.close()
         gpg_proc.wait()
-        if gpg_proc.returncode != 0:
-            raise subprocess.CalledProcessError(gpg_proc.returncode, gpg_proc.args, gpg_proc.stdout, gpg_proc.stderr)
         
         printer.display_text(["LUKS device decrypted and opened successfully."])
-    except subprocess.CalledProcessError as e:
-        logging.error(f"Error during LUKS decrypt/open (exit code {e.returncode}): {e.stderr.strip()}")
-        printer.display_text([f"Error during LUKS decrypt/open: {e.stderr.strip()}"], color_pair=2)
-    except FileNotFoundError:
-        logging.error("gpg or cryptsetup command not found. Ensure they are installed and in PATH.")
-        printer.display_text(["Error: gpg or cryptsetup command not found."], color_pair=2)
+    except Exception as e:
+        logging.error(f"Error during LUKS decrypt/open: {e}")
+        printer.display_text([f"Error during LUKS decrypt/open: {e}"], color_pair=2)
 
 
 # Main entry point for the curses application

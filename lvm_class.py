@@ -10,25 +10,9 @@ import pandas as pd # For processing lsblk output if needed elsewhere
 from ui.printer import CursedPrinter
 from ui.input import Input
 import moby_dick # Assuming moby_dick provides text strings
-# from block_device_class_table import Block_Table, return_pandas # Block_Table might be useful for device selection
+from utils import return_pandas
 
 # Configure logging
-logging.basicConfig(level=logging.ERROR, format='%(levelname)s: %(message)s')
-
-# Helper to run lsblk and return pandas DataFrame, similar to block_device_table
-def run_lsblk_pandas():
-    try:
-        process = subprocess.run("lsblk --json -o NAME,SIZE,UUID,MOUNTPOINT,PATH,FSTYPE ".split(), capture_output=True, text=True, check=True)
-        return json.loads(process.stdout)
-    except subprocess.CalledProcessError as e:
-        logging.error(f"Error running lsblk for pandas: {e.stderr}")
-        return pd.DataFrame()
-    except json.JSONDecodeError:
-        logging.error("Error decoding lsblk JSON output for pandas.")
-        return pd.DataFrame()
-    except FileNotFoundError:
-        logging.error("lsblk command not found. Ensure lsblk is installed and in your PATH.")
-        return pd.DataFrame()
 
 
 def name_physical_volume(printer: CursedPrinter, input_handler: Input): 

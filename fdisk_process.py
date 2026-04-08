@@ -11,26 +11,9 @@ import logging
 
 from ui.printer import CursedPrinter
 from block_device_class_table import block_digest # Import block_digest
+from utils import return_pandas # Import consolidated function
 
 import moby_dick # Assuming moby_dick provides text strings
-
-# Configure logging
-logging.basicConfig(level=logging.ERROR, format='%(levelname)s: %(message)s')
-
-
-def return_pandas():
-    try:
-        process = subprocess.run("lsblk --json -o NAME,SIZE,UUID,MOUNTPOINT,PATH,FSTYPE ".split(), capture_output=True, text=True, check=True)
-        return json.loads(process.stdout)
-    except subprocess.CalledProcessError as e:
-        logging.error(f"Error running lsblk for pandas: {e.stderr}")
-        return {"blockdevices": []}
-    except json.JSONDecodeError:
-        logging.error("Error decoding lsblk JSON output for pandas.")
-        return {"blockdevices": []}
-    except FileNotFoundError:
-        logging.error("lsblk command not found. Please ensure lsblk is installed and in your PATH.")
-        return {"blockdevices": []}
 
 
 def fdisk_process(stdscr, printer: CursedPrinter, pandas_block_devices: pd.DataFrame): 

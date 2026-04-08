@@ -22,5 +22,10 @@ class ExternalItem(MenuItem):
     def clean_up(self) -> None:
         """Put the console back in curses mode and resume the menu."""
         assert self.menu is not None
+        curses.initscr()
+        curses.noecho()
+        curses.cbreak()
+        if self.menu.stdscr:
+            self.menu.stdscr.keypad(True)
         curses.reset_prog_mode()
         self.menu.resume()

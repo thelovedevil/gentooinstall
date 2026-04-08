@@ -1,6 +1,9 @@
 #!/usr/bin/env python
 import curses
 import locale
+import os
+import shutil
+import sys
 
 locale.setlocale(locale.LC_ALL, '')
 from cursesmenu.items import FunctionItem, SubmenuItem, CommandItem, MenuItem, SubmenuItem
@@ -9,102 +12,106 @@ from ui.ascii_art import AsciiArt
 
 
 
+def change_art(menu, image_path):
+    menu.ascii_art = AsciiArt(image_path)
+    menu.draw()
+
+def curses_input_wrapper(prompt):
+    from ui.printer import CursedPrinter
+    from ui.input import Input
+    # CursesMenu.stdscr is a class variable
+    if CursesMenu.stdscr:
+        printer = CursedPrinter(CursesMenu.stdscr)
+        input_handler = Input(printer)
+        return input_handler.input_string(prompt)
+    return input(prompt)
+
 def main(stdscr):
     curses.curs_set(0)
-    curses.init_pair(1, curses.COLOR_WHITE, curses.COLOR_RED)
+    
+    # Get terminal size
+    terminal_width = shutil.get_terminal_size().columns
+    art_width = int(terminal_width * 0.6) # Increase to 60%
 
-    # menu_items = ["A", "B", "C", "EXIT"]
-    # menu = Menu(menu_items)
+    # Create the main menu with default art
+    art_main = AsciiArt("Pictures/asuka_original_resized.jpg")
+    menu = CursesMenu("Gentoo Installer", "Main Menu", ascii_art=art_main, ascii_art_width=art_width)
+    
+    # --- Installer Tools Submenu ---
+    art_tools = AsciiArt("Pictures/asuka_original_resized.jpg")
+    tools_menu = CursesMenu("Installer Tools", "Disk and System configuration", ascii_art=art_tools, ascii_art_width=art_width)
 
+    # Submenu for LUKS and LVM
+    art_luks = AsciiArt("Pictures/black_white002.jpeg")
+    submenu_four = CursesMenu("LUKS & LVM Tools", "Part Four Operations", ascii_art=art_luks, ascii_art_width=art_width)
+    
+    # Commands for the tools
+    command_item_three = CommandItem("Fdisk Process", f"{sys.executable} fdisk_process.py")
+    command_item_four = CommandItem("Format Mkfs.Vfat", f"{sys.executable} mkfsvfat.py")
+    command_item_five = CommandItem("Create EFI Directory", f"{sys.executable} create_efi.py")
+    command_item_six = CommandItem("LUKS Key & Cryptsetup", f"{sys.executable} options_input_test.py")
+    command_item_seven = CommandItem("LVM Structure Creation", f"{sys.executable} lvm_class.py")
 
-    art = AsciiArt("asuka_original_resized.jpg")
-    menu = CursesMenu("Root Menu", "Root Menu Subtitle")
-    item1 = MenuItem("basic Item doing nothing", menu)
-    print(__file__)
-    command_item = CommandItem(
-        "CommandItem that opens another menu", 
-        f"python {__file__}", 
-    )
-
-    command_item_two = CommandItem(
-        "CommandItem that opens dd menu", 
-        f"python dd_class_table.py", 
-    )
-
-    command_item_three = CommandItem(
-        "Fdisk Process On Block Device",
-        f"python fdisk_process.py",
-    )
-
-    command_item_four = CommandItem(
-        "Format Block Device Mkfs.Vfat",
-        f"python mkfsvfat.py",
-    )
-
-    command_item_five = CommandItem(
-        "Create EFI Directory",
-        f"python create_efi.py"
-    )
-
-    command_item_six = CommandItem(
-        "Overwrite Drive Create Luks Key and Cryptsetup",
-        f"python options_input_test.py"
-    )
-
-    command_item_seven = CommandItem(
-        "Create LVM Data Structure On Disk", 
-        f"python lvm_class.py"
-    )
-
-    submenu = CursesMenu.make_selection_menu([f"item{x}" for x in(1, 20)])
-    submenu_item = SubmenuItem("Long Selection SubMenu", submenu=submenu, menu=menu)
-
-
-    submenu_2 = CursesMenu("Submenu Title", "Submenu subtitle")
-    function_item_2 = FunctionItem("Fun item", input, ["enter an input"])
-    item2 = MenuItem("Another Item")
-    submenu_2.items.append(function_item_2)
-    submenu_2.items.append(item2)
-    submenu_item_2 = SubmenuItem("Short Submenu", submenu=submenu_2, menu=menu)
-
-    submenu_options = CursesMenu("Options Submenu", "Options")
+    submenu_four.items.append(command_item_three)
+    submenu_four.items.append(command_item_four)
+    submenu_four.items.append(command_item_five)
+    submenu_four.items.append(command_item_six)
+    submenu_four.items.append(command_item_seven)
+    
+    submenu_item_four = SubmenuItem("LUKS & LVM Submenu", submenu=submenu_four, menu=tools_menu)
+    
+    # Other tools
+    command_item_two = CommandItem("DD Operations Menu", f"{sys.executable} dd_class_table.py")
+    submenu_options = CursesMenu("Options Submenu", "Options", ascii_art=art_tools, ascii_art_width=art_width)
     submenu_options.items.append(command_item_two)
-    submenu_item_options = SubmenuItem("Options Submenu", submenu=submenu_options, menu=menu)
+    submenu_item_options = SubmenuItem("DD/Options Submenu", submenu=submenu_options, menu=tools_menu)
 
-    submenu_fdisk_process = CursesMenu("Fdisk Process", "Fdisk Process")
-    submenu_fdisk_process.items.append(command_item_three)
-    submenu_item_fdisk = SubmenuItem("Fdisk Process", submenu=submenu_fdisk_process, menu=menu)
+    tools_menu.items.append(submenu_item_four)
+    tools_menu.items.append(submenu_item_options)
+    
+    tools_submenu_item = SubmenuItem("Installer Tools", submenu=tools_menu, menu=menu)
 
-    submenu_mkfsvfat = CursesMenu("Format Mkfsvfat", "MKfsVfat")
-    submenu_mkfsvfat.items.append(command_item_four)
-    submenu_item_mkfsvfat = SubmenuItem("Format Mkfsvfat", submenu=submenu_mkfsvfat, menu=menu)
+    # --- Extras Submenu ---
+    art_extras = AsciiArt("Pictures/black_white003.jpg")
+    extras_menu = CursesMenu("Extras", "Examples and Customization", ascii_art=art_extras, ascii_art_width=art_width)
 
-    submenu_mkefidir = CursesMenu("Create EFI Directory", "Create EFI")
-    submenu_mkefidir.items.append(command_item_five)
-    submenu_item_mkefidir = SubmenuItem("Create EFI Directory", submenu=submenu_mkefidir, menu=menu)
+    # Art selection
+    art_select_menu = AsciiArt("Pictures/black_white004.jpg")
+    art_submenu = CursesMenu("Select Art", "Select an image to display", ascii_art=art_select_menu, ascii_art_width=art_width)
+    
+    # Add items for all images in Pictures
+    pictures_dir = "Pictures"
+    for img_file in os.listdir(pictures_dir):
+        if img_file.endswith(('.jpg', '.jpeg', '.png', '.webp')):
+            img_path = os.path.join(pictures_dir, img_file)
+            art_submenu.items.append(FunctionItem(img_file, change_art, [menu, img_path]))
 
-    submenu_key_crypt = CursesMenu("Wipe Disk With Pseudo Random Data Create Key File and Cryptsetup", "Pseudo Key Crypt")
-    submenu_key_crypt.items.append(command_item_six)
-    submenu_item_key_crypt = SubmenuItem("Wipe Disk Create Key File & Set Cryptsetup", submenu=submenu_key_crypt, menu=menu)
+    art_submenu_item = SubmenuItem("Change ASCII Art", submenu=art_submenu, menu=extras_menu)
 
-    submenu_lvm_crypt = CursesMenu("Create Lvm Structure", "LVM Structure Creation")
-    submenu_lvm_crypt.items.append(command_item_seven)
-    submenu_item_lvm_crypt = SubmenuItem("LVM Structure Creation", submenu=submenu_lvm_crypt, menu=menu)
+    # Selection Example
+    submenu_selection = CursesMenu.make_selection_menu([f"item{x}" for x in(1, 10)], title="Selection Menu")
+    submenu_item_selection = SubmenuItem("Long Selection Example", submenu=submenu_selection, menu=extras_menu)
 
-    submenu_four = CursesMenu("Part Four Submenu", "Part Four")
-    submenu_four.items.append(submenu_item_fdisk)
-    submenu_four.items.append(submenu_item_mkfsvfat)
-    submenu_four.items.append(submenu_item_mkefidir)
-    submenu_four.items.append(submenu_item_key_crypt)
-    submenu_four.items.append(submenu_item_lvm_crypt)
-    submenu_item_four = SubmenuItem("LUKS LVM ", submenu=submenu_four, menu=menu)
+    # Input Example
+    art_input = AsciiArt("Pictures/black_white005.jpg")
+    submenu_2 = CursesMenu("Input Test", "Testing curses-aware input", ascii_art=art_input, ascii_art_width=art_width)
+    function_item_2 = FunctionItem("Test Input Function", curses_input_wrapper, ["Enter some text: "])
+    submenu_2.items.append(function_item_2)
+    submenu_item_input = SubmenuItem("Input Test Submenu", submenu=submenu_2, menu=extras_menu)
 
-    # menu.items.append(item1)
-    # menu.items.append(command_item)
-    # menu.items.append(submenu_item)
-    # menu.items.append(submenu_item_2)
-    # menu.items.append(submenu_item_options)
-    menu.items.append(submenu_item_four)
+    extras_menu.items.append(art_submenu_item)
+    extras_menu.items.append(submenu_item_selection)
+    extras_menu.items.append(submenu_item_input)
+    
+    extras_submenu_item = SubmenuItem("Extras & Examples", submenu=extras_menu, menu=menu)
+
+    # --- Main Menu Construction ---
+    menu.items.append(tools_submenu_item)
+    menu.items.append(extras_submenu_item)
+    
+    command_item_self = CommandItem("Open New Root Menu instance", f"{sys.executable} {__file__}")
+    menu.items.append(command_item_self)
+
     menu.start()
     _ = menu.join()
     

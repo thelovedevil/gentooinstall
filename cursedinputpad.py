@@ -40,12 +40,14 @@ class Input:
             self.print_pad.refresh(0, 0, 0, 0, self.print_rows - 1, self.print_cols - 1)
 
             ch = stdscr.getch()
+            if ch == curses.ERR:
+                continue
             if ch == ord('\n'):
                 break
             elif ch == curses.KEY_BACKSPACE or ch == 127:
                 if len(input_str) > 0:
                     input_str = input_str[:-1]
-            else:
+            elif 0 <= ch < 256:
                 input_str += chr(ch)
 
         return input_str

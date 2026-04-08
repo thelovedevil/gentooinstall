@@ -36,7 +36,7 @@ def main(scr):
             break # exit event loop
         if ch == KEY_TAB:
             top.bottom()
-        if chr(ch)in('1','2','3'):
+        if 0 <= ch < 256 and chr(ch) in ('1','2','3'):
             my_panels[int(chr(ch))-1].top()
         pan.update_panels()
         cur.doupdate()

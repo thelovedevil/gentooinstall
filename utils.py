@@ -40,6 +40,33 @@ def soft_clear_terminal() -> None:
     print(chr(27) + "[2J", end="")  # noqa: T201
     print(chr(27) + "[1;1H", end="")  # noqa: T201
 
+def return_pandas():
+    try:
+        process = subprocess.run("lsblk --json -o NAME,SIZE,UUID,MOUNTPOINT,PATH,FSTYPE ".split(), capture_output=True, text=True, check=True)
+        data = json.loads(process.stdout)
+        if not data or not data.get("blockdevices"):
+            return pd.DataFrame()
+        
+        devices = data.get("blockdevices")
+        df = pd.json_normalize(devices)
+        
+        if "children" in df.columns:
+            # If there are children, we can try to explode them
+            df_exploded = df.explode(column="children")
+            # Only proceed with concat if children exist and are not all NaN
+            if not df_exploded["children"].isna().all():
+                children_series = df_exploded.children.apply(func=lambda x: pd.Series(x) if isinstance(x, dict) else pd.Series(dtype=float))
+                df = pd.concat(objs=[df_exploded.drop(columns=["children"]), children_series], axis=1)
+            else:
+                df = df_exploded.drop(columns=["children"])
+        
+        df = df.fillna("").reset_index(drop=True)
+        return df
+    except Exception as e:
+        import logging
+        logging.error(f"Error in return_pandas: {e}")
+        return pd.DataFrame()
+
 def test_crypt_options():
     command = ["cryptsetup", "--help"]
     cryptsetup_process = subprocess.Popen(command, text=True, stdout=subprocess.PIPE)

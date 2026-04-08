@@ -8,32 +8,9 @@ import logging
 
 from ui.printer import CursedPrinter
 from block_device_class_table import Block_Table # Block_Table should be refactored already
+from utils import return_pandas
 
 # Configure logging
-logging.basicConfig(level=logging.ERROR, format='%(levelname)s: %(message)s')
-
-
-def return_pandas():
-    try:
-        process = subprocess.run("lsblk --json -o NAME,SIZE,UUID,MOUNTPOINT,PATH,FSTYPE ".split(), capture_output=True, text=True, check=True)
-        data = json.loads(process.stdout)
-        df = pd.json_normalize(data=data.get("blockdevices")).explode(column="children")
-        df = (pd 
-            .concat(objs=[df, df.children.apply(func=pd.Series)], axis=1)
-            .drop(columns=[0, "children"])
-            .fillna("")
-            .reset_index(drop=True)
-            ) 
-        return df
-    except subprocess.CalledProcessError as e:
-        logging.error(f"Error running lsblk for pandas: {e.stderr}")
-        return pd.DataFrame()
-    except json.JSONDecodeError:
-        logging.error("Error decoding lsblk JSON output for pandas.")
-        return pd.DataFrame()
-    except FileNotFoundError:
-        logging.error("lsblk command not found. Ensure lsblk is installed and in your PATH.")
-        return pd.DataFrame()
 
 
 def mkfs_vfat(stdscr, printer: CursedPrinter, block_table_app: Block_Table, pandas_block_devices: pd.DataFrame):
