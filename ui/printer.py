@@ -1,5 +1,6 @@
 import curses
 from .ascii_art import AsciiArt # Relative import
+from .utils import truncate_to_display_width
 
 class CursedPrinter:
     def __init__(self, stdscr):
@@ -33,19 +34,40 @@ class CursedPrinter:
         # Set background
         self.stdscr.bkgd(' ', curses.color_pair(1))
 
-        import textwrap
         lines = str(variable).split('\n')
         max_y, max_x = self.stdscr.getmaxyx()
         
         text_cols = max_x // 2
-        wrapped_lines = []
+        
+        # Create a tall pad to accommodate natively wrapped text, including Japanese double-width characters
+        text_pad = curses.newpad(2000, text_cols + 1)
+        current_y = 0
         for line in lines:
-            wrapped_lines.extend(textwrap.wrap(line, width=text_cols - 4))
-
-        # Pad for text
-        text_pad = curses.newpad(len(wrapped_lines) + 1, text_cols)
-        for i, line in enumerate(wrapped_lines):
-            text_pad.addstr(i, 0, line, curses.color_pair(1))
+            if current_y >= 1990: break # Prevent overflow
+            stripped_line = line.strip()
+            if stripped_line and all(c in '-=' for c in stripped_line):
+                # Dynamically generate a neat, professional divider
+                divider = " " * 4 + "═" * (text_cols - 8)
+                try:
+                    text_pad.addstr(current_y, 0, divider, curses.color_pair(1))
+                    current_y += 1
+                except curses.error: pass
+            elif line == "":
+                current_y += 1
+            else:
+                try:
+                    # Let curses handle word wrap natively, which supports Japanese wide characters properly
+                    text_pad.addstr(current_y, 0, line, curses.color_pair(1))
+                    # Get the cursor's new Y position after wrapping
+                    new_y, new_x = text_pad.getyx()
+                    current_y = new_y
+                    # If the cursor hasn't wrapped exactly to the start of a new line, advance Y manually
+                    if new_x > 0:
+                        current_y += 1
+                except curses.error: 
+                    current_y += 1
+        
+        total_text_rows = current_y
         
         while(x != ord('q')):
             self.stdscr.erase()
@@ -69,6 +91,10 @@ class CursedPrinter:
                         self.stdscr.addstr(i, text_cols, visible_line[:art_width-1], curses.color_pair(1))
                     except curses.error: pass
 
+            # VERY IMPORTANT: Refresh stdscr FIRST so it clears the background and draws the art.
+            # This marks stdscr as "clean", preventing stdscr.getch() from implicitly refreshing and overwriting the text pad.
+            self.stdscr.refresh()
+
             # Refresh text pad on the left
             text_pad.refresh(self.text_start_row, 0, 0, 0, max_y - 2, text_cols - 1)
 
@@ -76,7 +102,7 @@ class CursedPrinter:
 
             if (x == curses.KEY_UP and self.text_start_row > 0):
                 self.text_start_row -= 1
-            elif (x == curses.KEY_DOWN and self.text_start_row < len(wrapped_lines) - (max_y - 2)):
+            elif (x == curses.KEY_DOWN and self.text_start_row < total_text_rows - (max_y - 2)):
                 self.text_start_row += 1
         
             # Handle art scrolling (WASD)
@@ -92,7 +118,9 @@ class CursedPrinter:
         for i, line in enumerate(text_lines):
             if row + i < max_y:
                 try:
-                    self.stdscr.addstr(row + i, col, line[:max_x - col], curses.color_pair(color_pair))
+                    # Truncate to display width to avoid wrapping or multi-byte slicing issues
+                    display_text = truncate_to_display_width(line, max_x - col)
+                    self.stdscr.addstr(row + i, col, display_text, curses.color_pair(color_pair))
                 except curses.error: pass
         self.stdscr.refresh()
 

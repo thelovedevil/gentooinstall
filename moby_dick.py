@@ -200,11 +200,13 @@ def output_crime():
 
 def following():
     for_the_following = '''
-    【 for the following few functions a menu will be filled by you with key value entries. 】 
-    【 for the key value entries make sure to make all keys unique all values meaningful.   】
-    【 the key value entry used should be for creation of a directory ie /efi/boot          】
-    【 for this section the menu will be user input  and mkdir and mount will be called     】
-    -----------------------------------------------------------------------------------------  
+    [ // ⍚ CYBER_ANGEL_OS.SYS_INIT ⍚ // ]
+    [ ACHTUNG: MANUELLE EINGABE ERFORDERLICH ]
+    [ SYS.MSG ]: for the following few functions a menu will be filled by you with key value entries.
+    [ SYS.MSG ]: for the key value entries make sure to make all keys unique all values meaningful.
+    [ SYS.MSG ]: the key value entry used should be for creation of a directory ie /efi/boot
+    [ SYS.MSG ]: for this section the menu will be user input  and mkdir and mount will be called
+    ==================================================
     僕が６歳のころ、『自然界の中で起こる本当の話』という原生林について書いてい
     る本の中に、すばらしい絵を見つけた。それは１匹の動物を飲みこもうとしている大
     蛇ボアの絵だった。これがその絵を写したものだ。
@@ -247,9 +249,11 @@ def following():
 
 def entries():
     number_entries = ''' 
-    【 on the next page, enter the number of entries to be made    】 
-    【 again, for now enter one entry is all the may be selected   】
-    --------------------------------------------------------------------
+    [ // ⍚ CYBER_ANGEL_OS.DATA_ENTRY ⍚ // ]
+    [ EINGABE: NUMBER OF ENTRIES ]
+    [ 指示 ]: ONLY ONE ENTRY MAY BE SELECTED FOR NOW
+    [ SYS.MSG ]: again, for now enter one entry is all the may be selected
+    ==================================================
    
     こうして、僕は６年前に、飛行機がサハラ砂漠に不時着するまで、心から話をする
     相手が見つからないまま、一人で生きてきた。不時着というのは、飛行機のエンジ
@@ -322,8 +326,10 @@ def entries():
 
 def key_value():
     key_value_pair = ''' 
-    【 now enter key value pair followed by <: enter > 】
-    ------------------------------------------------------------------------
+    [ // ⍚ CYBER_ANGEL_OS.KEY_VAL_MAP ⍚ // ]
+    [ SCHLÜSSEL-WERT-PAAR EINGEBEN ]
+    [ 指示 ]: ENTER KEY VALUE PAIR FOLLOWED BY <: ENTER >
+    ==================================================
 
         王子さまがどこから来たのかわかるまでには、ずいぶん時間がかかった。王子さま
     はかなり多くの質問をするのに、僕がたずねることはまるで聞こえていない様子だっ
@@ -374,8 +380,10 @@ def key_value():
 
 def value_selected():
     value_selected_for = ''' 
-    【 here is the value selected for 】
-    ------------------------------------------------------------------------
+    [ // ⍚ CYBER_ANGEL_OS.SELECTION_OK ⍚ // ]
+    [ AUSWAHL BESTÄTIGT ]
+    [ 状態 ]: HERE IS THE VALUE SELECTED FOR
+    ==================================================
 
 
         こうして僕はとても重要な２つ目のことを知った。王子さまの故郷の星は、なんと
@@ -446,11 +454,13 @@ def value_selected():
 
 def block_options():
     block_options = ''' 
-    【 filling in block options process                                  】
-    【 please enter the number of entries n                              】
-    【 n being the range of list to create                               】
-    【 < as of now only one list is possible to create >                 】
-    ------------------------------------------------------------------------
+    [ // ⍚ CYBER_ANGEL_OS.BLOCK_DEVICE_MGR ⍚ // ]
+    [ SYSTEM: FILLING IN BLOCK OPTIONS PROCESS ]
+    [ 指示 ]: PLEASE ENTER THE NUMBER OF ENTRIES N
+    [ SYS.MSG ]: please enter the number of entries n
+    [ SYS.MSG ]: n being the range of list to create
+    [ SYS.MSG ]: < as of now only one list is possible to create >
+    ==================================================
 
 
     毎日話をするうちに、僕は王子さまの星のことや、王子さまがその星を出て
@@ -550,11 +560,13 @@ def block_options():
 
 def instructions():
     instructions = ''' 
-    【 now enter options...                                                 】
-    【 you enter options by scrolling and selecting                         】
-    【 select via using enter                                               】 
-    【 then pressing "q" multiple times one loops back through.             】
-     ---------------------------------------------------------------------------
+    [ // ⍚ CYBER_ANGEL_OS.OPTION_SELECT ⍚ // ]
+    [ EINGABE ]: NOW ENTER OPTIONS BY SCROLLING AND SELECTING
+    [ 指示 ]: SELECT VIA USING ENTER. PRESS 'q' TO FINISH.
+    [ SYS.MSG ]: you enter options by scrolling and selecting
+    [ SYS.MSG ]: select via using enter
+    [ SYS.MSG ]: then pressing "q" multiple times one loops back through.
+    ==================================================
     ああ、小さな王子さま！ 
     こうして少しずつ、
     ささやかで悲しい君の人生の秘密を
@@ -593,7 +605,7 @@ def instructions():
     とても悲しいときには、夕日が好きになるものだよね ･･･」
     「そのときはとても悲しかったの？ 44 回夕日を見た日は」
     しかし、王子さま、君は何も答えなかったね。
-    ---------------------------------------------------------------------------
+    ==================================================
     ああ、小さな王子さま！ 
     こうして少しずつ、
     ささやかで悲しい君の人生の秘密を
@@ -635,10 +647,12 @@ def instructions():
 
 def enter_value():
     value = '''
-    【 enter the value for that option in the                           】
-    【 same manner by pressing r filling and selecting                  】 
-    【 with enter                                                       】
-    ----------------------------------------------------------------------
+    [ // ⍚ CYBER_ANGEL_OS.VALUE_SELECT ⍚ // ]
+    [ EINGABE ]: ENTER THE VALUE FOR THAT OPTION
+    [ 指示 ]: SELECT WITH ENTER.
+    [ SYS.MSG ]: same manner by pressing r filling and selecting
+    [ SYS.MSG ]: with enter
+    ==================================================
 
 
     ５日目に、またいつものようにヒツジのおかげで、
@@ -756,11 +770,13 @@ def enter_value():
 
 def crypt_options():
     crypt_options = ''' 
-    【 filling in crypt options process                  】
-    【 please enter the number of entries n              】
-    【 n being the range of list to create               】
-    【 < as of now only one list is possible to create > 】
-    ------------------------------------------------------------------------
+    [ // ⍚ CYBER_ANGEL_OS.CRYPTSETUP_MGR ⍚ // ]
+    [ SYSTEM: FILLING IN CRYPT OPTIONS PROCESS ]
+    [ VERSCHLÜSSELUNG ]: SECURE PAYLOAD PREPARATION
+    [ SYS.MSG ]: please enter the number of entries n
+    [ SYS.MSG ]: n being the range of list to create
+    [ SYS.MSG ]: < as of now only one list is possible to create >
+    ==================================================
 
 
     まもなく僕はこの花のことをよく知るようになった。
@@ -876,11 +892,13 @@ def crypt_options():
 
 def overwrite_options():
     crypt_options = ''' 
-    【 filling in overwrite options process              】
-    【 please enter the number of entries n              】
-    【 n being the range of list to create               】
-    【 < as of now only one list is possible to create > 】
-    ------------------------------------------------------------------------
+    [ // ⍚ CYBER_ANGEL_OS.DD_OVERWRITE_MGR ⍚ // ]
+    [ SYSTEM: FILLING IN OVERWRITE OPTIONS PROCESS ]
+    [ DATENVERNICHTUNG ]: WIPE DISK SECURELY
+    [ SYS.MSG ]: please enter the number of entries n
+    [ SYS.MSG ]: n being the range of list to create
+    [ SYS.MSG ]: < as of now only one list is possible to create >
+    ==================================================
 
 
     星から出ていくのに、
@@ -960,11 +978,13 @@ def overwrite_options():
 
 def dd_options():
     dd_options = ''' 
-    【 filling in dd options process                                 】
-    【 please enter the number of entries n                          】
-    【 n being the range of list to create                           】
-    【 < as of now only one list is possible to create >             】
-    ---------------------------------------------------------------------
+    [ // ⍚ CYBER_ANGEL_OS.DD_OPTIONS_MGR ⍚ // ]
+    [ SYSTEM: FILLING IN DD OPTIONS PROCESS ]
+    [ DATENTRANSFER ]: CONFIGURE DD PARAMETERS
+    [ SYS.MSG ]: please enter the number of entries n
+    [ SYS.MSG ]: n being the range of list to create
+    [ SYS.MSG ]: < as of now only one list is possible to create >
+    ==================================================
 
 
         王子さまは、小惑星 
@@ -1129,11 +1149,13 @@ def dd_options():
 
 def gpg_options():
     gpg_options = ''' 
-    【 filling in gpg options process                    】
-    【 please enter the number of entries n              】
-    【 n being the range of list to create               】
-    【 < as of now only one list is possible to create > 】
-    ---------------------------------------------------------------------
+    [ // ⍚ CYBER_ANGEL_OS.GPG_OPTIONS_MGR ⍚ // ]
+    [ SYSTEM: FILLING IN GPG OPTIONS PROCESS ]
+    [ KRYPTOGRAPHIE ]: ASYMMETRIC / SYMMETRIC ENCRYPTION
+    [ SYS.MSG ]: please enter the number of entries n
+    [ SYS.MSG ]: n being the range of list to create
+    [ SYS.MSG ]: < as of now only one list is possible to create >
+    ==================================================
 
 
     ２番目の星にはうぬぼれ屋が住んでいた。
@@ -1187,11 +1209,13 @@ def gpg_options():
 
 def key_file():
     key_file = ''' 
-    【 now entering key file input from prior cryptsetup keyfile                    】
-    【 simply enter the same value as used for prior key file                       】
-    【 please enter the number of entries to enter n:                               】
-    【 in other words enter range of list to create: < should only need value (1) > 】
-    ---------------------------------------------------------------------------------
+    [ // ⍚ CYBER_ANGEL_OS.KEYFILE_MGR ⍚ // ]
+    [ SYSTEM: ENTERING KEY FILE INPUT FROM PRIOR CRYPTSETUP ]
+    [ SCHLÜSSEL ]: SIMPLY ENTER THE SAME VALUE AS USED FOR PRIOR KEY FILE
+    [ SYS.MSG ]: simply enter the same value as used for prior key file
+    [ SYS.MSG ]: please enter the number of entries to enter n:
+    [ SYS.MSG ]: in other words enter range of list to create: < should only need value (1) >
+    ==================================================
 
 
     次の星には酒びたりの男が住んでいた。その星を訪れたのはほんの短い時間だった
@@ -1215,9 +1239,11 @@ def key_file():
 
 def physical_volume():
     name = '''
-    【 lastly please enter a name for a logical volume management 】
-    【 (LVM) physical volume <: press enter >                     】
-    ------------------------------------------------------------------------------
+    [ // ⍚ CYBER_ANGEL_OS.LVM_PV_MGR ⍚ // ]
+    [ SYSTEM: ENTER NAME FOR LOGICAL VOLUME MANAGEMENT (LVM) PHYSICAL VOLUME ]
+    [ PHYSISCHES VOLUMEN ]: <: PRESS ENTER >
+    [ SYS.MSG ]: (LVM) physical volume <: press enter >
+    ==================================================
 
 
         4 番目の星は実業家の星だった。実業家は仕事に没頭していたので、王子さまがやっ
@@ -1307,9 +1333,11 @@ def physical_volume():
 
 def volume_group():
     volume_group = ''' 
-    【 please enter a name for the volume group to lie 】
-    【 within the physical volume <: press enter >     】
-    ----------------------------------------------------------------------
+    [ // ⍚ CYBER_ANGEL_OS.LVM_VG_MGR ⍚ // ]
+    [ SYSTEM: ENTER NAME FOR THE VOLUME GROUP WITHIN THE PHYSICAL VOLUME ]
+    [ VOLUMENGRUPPE ]: <: PRESS ENTER >
+    [ SYS.MSG ]: within the physical volume <: press enter >
+    ==================================================
 
 
     ５番目の星はとても変わった星だった。たずねた星の中でいちばん小さな星だった。
@@ -1375,15 +1403,15 @@ def volume_group():
 
 def lvm_instructions():
     lvm_instructions = '''
-    【 please enter values for the size and name                       】
-    【 respectively of your swap partition <: press enter > the format 】 
-    【 should be of the following. <: press enter > size should be     】
-    【 suffixed with M or G as Megs or Gigs respective ie. 10G for 10  】 
-    【 Gigabytes <: press enter >name is simply written as a simple    】
-    【 input string. <: press enter >the extents options may be left   】
-    【 null or simply skipped by pressing enter, it will be used later 】
-    【 <: press enter >hajime (begin) <:  q >                          】
-   ------------------------------------------------------------------------
+    [ SYS.MSG ]: please enter values for the size and name
+    [ SYS.MSG ]: respectively of your swap partition <: press enter > the format
+    [ SYS.MSG ]: should be of the following. <: press enter > size should be
+    [ SYS.MSG ]: suffixed with M or G as Megs or Gigs respective ie. 10G for 10
+    [ SYS.MSG ]: Gigabytes <: press enter >name is simply written as a simple
+    [ SYS.MSG ]: input string. <: press enter >the extents options may be left
+    [ SYS.MSG ]: null or simply skipped by pressing enter, it will be used later
+    [ SYS.MSG ]: <: press enter >hajime (begin) <:  q >
+    ==================================================
 
 
      ６番目の星は前の星より 10 倍も大きな星だった。そこには大きな本を何冊も書い
@@ -1466,11 +1494,14 @@ def lvm_instructions():
 
 def sec_lvm_instructions():
     sec_lvm_instructions = '''
-    【 now please do the same for your root portion                                    】
-    【 of the volume group you've named within your physical volume <: press enter >") 】 
-    【 size suffixed with M or G followed by category name again followed by extents   】
-    【 which may be skipped <: press enter >") hajime (begin) <: press enter >")       】
-    ------------------------------------------------------------------------------------
+    [ // ⍚ CYBER_ANGEL_OS.LVM_ROOT_MGR ⍚ // ]
+    [ SYSTEM: CONFIGURE ROOT PORTION OF THE VOLUME GROUP ]
+    [ FORMAT ]: SIZE SUFFIXED WITH M OR G, THEN NAME, THEN EXTENTS
+    [ 状態 ]: HAJIME (BEGIN)
+    [ SYS.MSG ]: of the volume group you've named within your physical volume <: press enter >")
+    [ SYS.MSG ]: size suffixed with M or G followed by category name again followed by extents
+    [ SYS.MSG ]: which may be skipped <: press enter >") hajime (begin) <: press enter >")
+    ==================================================
 
 
      こうしたわけで、7 番目の星は地球だった。
@@ -1493,13 +1524,16 @@ def sec_lvm_instructions():
 
 def third_lvm_instructions():
     sec_lvm_instructions = '''
-    【 the last dictionary may skip size. <: press enter > ")                          】
-    【 lastly we will fill in our home directory. <: press enter >                     】
-    【 here we shall use the extents option with your input. <: press enter >          】
-    【 note the format for extents is some 'NUM'%FREE i.e. 95%FREE <: press enter >    】
-    【 this is done to variably fill the remaining harddrive space on disk in order to 】
-    【 fill either all or some. <: press enter > hajime (begin) <: press enter >       】
-   -------------------------------------------------------------------------------------
+    [ SYS.MSG ]: the last dictionary may skip size. <: press enter > ")
+    [ // ⍚ CYBER_ANGEL_OS.LVM_HOME_MGR ⍚ // ]
+    [ SYSTEM: CONFIGURE HOME DIRECTORY USING EXTENTS OPTION ]
+    [ FORMAT ]: EXTENTS SHOULD BE 'NUM'%FREE (e.g. 95%FREE)
+    [ 状態 ]: HAJIME (BEGIN)
+    [ SYS.MSG ]: here we shall use the extents option with your input. <: press enter >
+    [ SYS.MSG ]: note the format for extents is some 'NUM'%FREE i.e. 95%FREE <: press enter >
+    [ SYS.MSG ]: this is done to variably fill the remaining harddrive space on disk in order to
+    [ SYS.MSG ]: fill either all or some. <: press enter > hajime (begin) <: press enter >
+    ==================================================
 
 
         人は気のきいたことを言おうとすると、事実から少しそれることもある。点灯夫に
@@ -1552,9 +1586,11 @@ def third_lvm_instructions():
 
 def fdisk_process():
     fdisk = """
-    【 fdisk process about to be run on selected block device 】
-    【 please select exactly one block device                 】
-    -------------------------------------------------------------------------------------
+    [ // ⍚ CYBER_ANGEL_OS.FDISK_MGR ⍚ // ]
+    [ SYSTEM: FDISK PROCESS ABOUT TO RUN ON SELECTED BLOCK DEVICE ]
+    [ ACHTUNG ]: PLEASE SELECT EXACTLY ONE BLOCK DEVICE
+    [ SYS.MSG ]: please select exactly one block device
+    ==================================================
     王子さまは砂漠を横切ったが、途中で 1 輪の花にしか会わなかった。花びらが３枚
     の、まったく何でもない花だった。
     「こんにちは」、王子さまが言った。

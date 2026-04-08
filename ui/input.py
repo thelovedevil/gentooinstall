@@ -58,15 +58,15 @@ class CursesTextScrollWithInput:
         dictionary = {}
         max_y, max_x = self.screen.getmaxyx()
         for i in range(n):
-            key_prompt = f"Entry {i+1}/{n} - Key (e.g. partition name): "
+            key_prompt = f"[ ⍚ SYS.REQ.KEY // ENTRY {i+1}/{n} ] (e.g. partition name) >> "
             self.screen.erase()
-            self.screen.addstr(max_y // 2, 2, key_prompt)
+            self.screen.addstr(max_y // 2, 2, key_prompt, curses.A_BOLD)
             self.screen.refresh()
             key = self.input_string_internal(key_prompt)
             
-            val_prompt = f"Entry {i+1}/{n} - Value (e.g. mount point): "
+            val_prompt = f"[ ⍚ SYS.REQ.VAL // ENTRY {i+1}/{n} ] (e.g. mount point) >> "
             self.screen.erase()
-            self.screen.addstr(max_y // 2, 2, val_prompt)
+            self.screen.addstr(max_y // 2, 2, val_prompt, curses.A_BOLD)
             self.screen.refresh()
             val = self.input_string_internal(val_prompt)
             

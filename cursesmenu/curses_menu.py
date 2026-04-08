@@ -14,6 +14,7 @@ from typing import TYPE_CHECKING, Any, cast
 
 import cursesmenu.utils
 from cursesmenu.item_group import ItemGroup
+from cursesmenu.utils import pad_to_display_width, truncate_to_display_width
 
 if TYPE_CHECKING:
     # noinspection PyCompatibility,PyProtectedMember
@@ -410,37 +411,40 @@ class CursesMenu:
 
         assert self.screen is not None
         self.screen.clear()
+        
+        max_y, max_x = self.screen.getmaxyx()
 
         if art and self.art_pad:
             from ui.ascii_art import AsciiArt
             if isinstance(art, AsciiArt):
                 self.art_pad.clear()
-                max_y, max_x = self.art_pad.getmaxyx()
-                if max_x > 0 and max_y > 0:
-                    art.convert_ascii(max_x, max_y)
+                art_pad_y, art_pad_x = self.art_pad.getmaxyx()
+                if art_pad_x > 0 and art_pad_y > 0:
+                    art.convert_ascii(art_pad_x, art_pad_y)
                     art_lines = art.get_ascii_art_lines()
                     
                     start_row = getattr(art, 'start_row', 0)
                     start_col = getattr(art, 'start_col', 0)
                     
-                    for i in range(max_y):
+                    for i in range(art_pad_y):
                         line_idx = i + start_row
                         if line_idx < len(art_lines):
                             line = art_lines[line_idx]
-                            visible_line = line[start_col : start_col + max_x]
+                            visible_line = line[start_col : start_col + art_pad_x]
                             try:
-                                self.art_pad.addstr(i, 0, visible_line[:max_x-1])
+                                self.art_pad.addstr(i, 0, visible_line[:art_pad_x-1])
                             except curses.error:
                                 try:
-                                    self.art_pad.addstr(i, 0, visible_line[:max_x-2])
+                                    self.art_pad.addstr(i, 0, visible_line[:art_pad_x-2])
                                 except curses.error:
                                     pass
                 self.art_pad.refresh(0, 0, 0, 0, CursesMenu.stdscr.getmaxyx()[0] - 1, art_width - 1)
 
         # Removed border to allow assets to touch
         # Adjust title and subtitle to be left-aligned with no gap
-        self.screen.addstr(1, 0, self.title, self.accent | curses.A_STANDOUT)
-        self.screen.addstr(3, 0, self.subtitle, self.accent | curses.A_BOLD)
+        # Truncate title and subtitle to avoid wrapping and keep it "neat and concise"
+        self.screen.addstr(1, 0, truncate_to_display_width(self.title, max_x), self.accent | curses.A_STANDOUT)
+        self.screen.addstr(3, 0, truncate_to_display_width(self.subtitle, max_x), self.accent | curses.A_BOLD)
 
         for index, item in enumerate(self.all_items):
             self.draw_item(index, item)
@@ -479,10 +483,17 @@ class CursesMenu:
         assert self.screen is not None
         assert text_style is not None
 
+        item_text = item.show(index_text)
+        max_y, max_x = self.screen.getmaxyx()
+        
+        # Pad to full width for full-width highlight bar and truncate to avoid wrapping
+        padded_text = pad_to_display_width(item_text, max_x)
+        final_text = truncate_to_display_width(padded_text, max_x)
+
         self.screen.addstr(
             MIN_SIZE - 3 + index, # Adjusted row offset since border is gone
             0,
-            item.show(index_text),
+            final_text,
             text_style,
         )
 

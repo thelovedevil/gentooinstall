@@ -1,6 +1,7 @@
 import curses
 import pandas as pd
 from .printer import CursedPrinter
+from .utils import pad_to_display_width
 
 class Table:
     def __init__(self, stdscr, printer: CursedPrinter, data_frame: pd.DataFrame, height: int, width: int):
@@ -20,13 +21,16 @@ class Table:
         # Draw headers - Use Accent color (Vermillion)
         for i, col_name in enumerate(self.data_frame.columns):
             try:
-                self.pad.addstr(0, i * 15, str(col_name).ljust(14), curses.color_pair(3) | curses.A_BOLD)
+                # Use pad_to_display_width for alignment of Japanese characters
+                text = pad_to_display_width(str(col_name), 14)
+                self.pad.addstr(0, i * 15, text, curses.color_pair(3) | curses.A_BOLD)
             except curses.error: pass
 
         # Draw data rows
         for r_idx, row in self.data_frame.iterrows():
             for c_idx, cell_value in enumerate(row):
-                text = str(cell_value).ljust(14)
+                # Use pad_to_display_width for alignment of Japanese characters
+                text = pad_to_display_width(str(cell_value), 14)
                 try:
                     if r_idx == self.current_selection:
                         # Use Highlight color (White on Vermillion)

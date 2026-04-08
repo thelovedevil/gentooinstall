@@ -1,4 +1,5 @@
 import curses
+from ui.utils import get_display_width, pad_to_display_width, truncate_to_display_width
 
 class Table():
     def __init__(self, win, rows, cols, cell, width, height, col_names=None, spacing=None):
@@ -61,14 +62,19 @@ class Table():
         self.table[row][col] = str(value)
 
     def set_word(self, val):
-        if len(val) > self.cell:
-            val = val[:self.cell-2]
+        val_width = get_display_width(val)
+        if val_width > self.cell:
+            val = truncate_to_display_width(val, self.cell - 2)
             val = val + '..'
-        elif len(val) < self.cell:
-            x = len(val)
-            while x < self.cell:
-                val = ' ' + val
-                x += 1
+        elif val_width < self.cell:
+            val = pad_to_display_width(val, self.cell, side='right') # Original code used left padding (spaces before word)
+            # Wait, the original code did:
+            # while x < self.cell: val = ' ' + val; x += 1
+            # That's left padding. Let's stick to it if that was the style.
+            # actually pad_to_display_width(side='right') means spaces on the right?
+            # No, my pad_to_display_width(side='left') adds spaces on the right.
+            # So side='right' adds spaces on the left.
+            # Original code was left padding.
         return val
 
     def print_cell(self, y, x, val, hl, length):

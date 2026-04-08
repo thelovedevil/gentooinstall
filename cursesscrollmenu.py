@@ -1,7 +1,7 @@
 #! /usr/bin/env python3
 import curses
 from math import *
-
+from ui.utils import pad_to_display_width, truncate_to_display_width
 
 def menu(dictionary):
     screen = curses.initscr()
