@@ -19,22 +19,27 @@ from ui.printer import CursedPrinter # New import for the refactored printer
 
 
 def variable_dictionary(printer: CursedPrinter, input_handler: Input):
-    from ui.input import CursesTextScrollWithInput
+    string_entries = moby_dick.entries()
+    printer.print_curses(string_entries, ascii_image_path="Pictures/black_white005.jpg")
     
-    scroll_app = CursesTextScrollWithInput(printer)
-    
-    content = moby_dick.entries() + "\n" + moby_dick.key_value()
-    
-    # This will show the text, allow scrolling, and then ask for dict input
-    dictionary = scroll_app.display_and_get_dict(content, ascii_image_path="Pictures/black_white005.jpg")
-    
-    if not dictionary:
-        printer.display_text(["No dictionary received. Returning empty dictionary."])
+    n_str = input_handler.input_string("Enter the number of entries (n): ")
+    if not n_str.isdigit():
+        printer.display_text(["No valid number received. Returning empty dictionary."])
         return {}
+    n = int(n_str)
     
-    if isinstance(dictionary, str):
-        # Fallback if user entered something else
-        return {dictionary: dictionary}
+    dictionary = {}
+    for i in range(n):
+        string_kv = moby_dick.key_value()
+        printer.print_curses(string_kv, ascii_image_path="Pictures/black_white005.jpg")
+        
+        key_prompt = f"Entry {i+1}/{n} - Key (e.g. partition name): "
+        key = input_handler.input_string(key_prompt)
+        
+        val_prompt = f"Entry {i+1}/{n} - Value (e.g. mount point): "
+        val = input_handler.input_string(val_prompt)
+        
+        dictionary[key] = val
         
     printer.display_text([f"Final dictionary: {dictionary}"])
     return dictionary
@@ -43,7 +48,7 @@ def variable_dictionary(printer: CursedPrinter, input_handler: Input):
 
 def main(printer: CursedPrinter, input_handler: Input):
     string = moby_dick.following()
-    printer.display_text(string.splitlines())
+    printer.print_curses(string, ascii_image_path="Pictures/black_white005.jpg")
     
     directory_list = variable_dictionary(printer, input_handler)
     

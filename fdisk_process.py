@@ -18,9 +18,9 @@ import moby_dick # Assuming moby_dick provides text strings
 
 def fdisk_process(stdscr, printer: CursedPrinter, pandas_block_devices: pd.DataFrame): 
     string = moby_dick.fdisk_process()
-    printer.display_text(string.splitlines())
+    printer.print_curses(string, ascii_image_path="Pictures/asuka_original_resized.jpg")
     
-    selected_device_list = block_digest(stdscr, printer, pandas_block_devices)
+    selected_device_list = block_digest(stdscr, printer, pandas_block_devices, ascii_image_path="Pictures/asuka_original_resized.jpg")
     
     if not selected_device_list:
         printer.display_text(["No device selected for cfdisk. Aborting."], color_pair=2)

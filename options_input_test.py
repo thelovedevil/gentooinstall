@@ -52,57 +52,170 @@ def get_options_from_user(printer: CursedPrinter, input_handler: Input, prompt_m
 
 
 def block_options_input(printer: CursedPrinter, input_handler: Input, stdscr):
-    printer.display_text(["filling in block_options process"])
-    # Get actual selection from the table
-    selected_devices = block_digest(stdscr, printer, None, ascii_image_path="Pictures/asuka_original_resized.jpg")
-    if selected_devices:
-        return selected_devices
-    return get_options_from_user(printer, input_handler, "Manual entry (no device selected):")
+    string = moby_dick.block_options()
+    printer.print_curses(string, ascii_image_path="Pictures/asuka_original_resized.jpg")
+    
+    n_str = input_handler.input_string("Enter the number of entries (n): ")
+    n = int(n_str) if n_str.isdigit() else 0
+    
+    final_list = []
+    for i in range(n):
+        string_inst = moby_dick.instructions()
+        printer.print_curses(string_inst, ascii_image_path="Pictures/asuka_original_resized.jpg")
+        
+        option = block_digest(stdscr, printer, None, ascii_image_path="Pictures/asuka_original_resized.jpg")
+        
+        string_val = moby_dick.enter_value()
+        printer.print_curses(string_val, ascii_image_path="Pictures/asuka_original_resized.jpg")
+        
+        value = block_digest(stdscr, printer, None, ascii_image_path="Pictures/asuka_original_resized.jpg")
+        
+        if option and value:
+            # Replicating the zip logic: [j for i in zip(option, value) for j in i]
+            final_list.extend([option[0], value[0]])
+            
+    return final_list
 
 
 def crypt_options_input(printer: CursedPrinter, input_handler: Input, stdscr):
-    printer.display_text(["filling in crypt_options process"])
-    # Get actual selection from the table
-    selected_options = crypt_options_digest(stdscr, printer, None, ascii_image_path="Pictures/black_white002.jpeg") 
-    if selected_options:
-        return selected_options
-    return get_options_from_user(printer, input_handler, "Manual entry (no options selected):")
+    string = moby_dick.crypt_options()
+    printer.print_curses(string, ascii_image_path="Pictures/black_white002.jpeg")
+    
+    n_str = input_handler.input_string("Enter the number of entries (n): ")
+    n = int(n_str) if n_str.isdigit() else 0
+    
+    final_list = []
+    crypt_sources = test_crypt_options()
+    for i in range(n):
+        string_inst = moby_dick.instructions()
+        printer.print_curses(string_inst, ascii_image_path="Pictures/black_white002.jpeg")
+        
+        option = crypt_options_digest(stdscr, printer, crypt_sources, ascii_image_path="Pictures/black_white002.jpeg") 
+        
+        string_val = moby_dick.enter_value()
+        printer.print_curses(string_val, ascii_image_path="Pictures/black_white002.jpeg")
+        
+        value = crypt_options_digest(stdscr, printer, crypt_sources, ascii_image_path="Pictures/black_white002.jpeg") 
+        
+        if option and value:
+            final_list.extend([option[0], value[0]])
+            
+    return final_list
 
 
 def overwrite_options_input(printer: CursedPrinter, input_handler: Input, stdscr):
-    printer.display_text(["filling in overwrite_options process"])
-    selected = dd_options_digest(stdscr, printer, None, ascii_image_path="Pictures/black_white003.jpg")
-    if selected:
-        return selected
-    return get_options_from_user(printer, input_handler, "Enter overwrite options (e.g., if=/dev/zero):")
+    string = moby_dick.overwrite_options()
+    printer.print_curses(string, ascii_image_path="Pictures/black_white003.jpg")
+    
+    n_str = input_handler.input_string("Enter the number of entries (n): ")
+    n = int(n_str) if n_str.isdigit() else 0
+    
+    final_list = []
+    dd_sources = test_dd_options()
+    for i in range(n):
+        string_inst = moby_dick.instructions()
+        printer.print_curses(string_inst, ascii_image_path="Pictures/black_white003.jpg")
+        
+        option = dd_options_digest(stdscr, printer, dd_sources, ascii_image_path="Pictures/black_white003.jpg")
+        
+        string_val = moby_dick.enter_value()
+        printer.print_curses(string_val, ascii_image_path="Pictures/black_white003.jpg")
+        
+        value = dd_options_digest(stdscr, printer, dd_sources, ascii_image_path="Pictures/black_white003.jpg")
+        
+        if option and value:
+            # Specific formatting for DD: prepend = lambda x: "="+x
+            final_list.append(option[0])
+            final_list.append("=" + value[0])
+            
+    # Returning the joined format as in thirdtuesday
+    final_fantasy_seven = [ ''.join(x) for x in zip(final_list[0::2], final_list[1::2]) ]
+    return final_fantasy_seven
 
 
 def dd_options_input(printer: CursedPrinter, input_handler: Input, stdscr):
-    printer.display_text(["filling in dd_options process"])
-    selected = dd_options_digest(stdscr, printer, None, ascii_image_path="Pictures/black_white003.jpg")
-    if selected:
-        return selected
-    return get_options_from_user(printer, input_handler, "Enter dd options (e.g., bs=8M):")
+    string = moby_dick.dd_options()
+    printer.print_curses(string, ascii_image_path="Pictures/black_white003.jpg")
+    
+    n_str = input_handler.input_string("Enter the number of entries (n): ")
+    n = int(n_str) if n_str.isdigit() else 0
+    
+    final_list = []
+    dd_sources = test_dd_options()
+    for i in range(n):
+        string_inst = moby_dick.instructions()
+        printer.print_curses(string_inst, ascii_image_path="Pictures/black_white003.jpg")
+        
+        option = dd_options_digest(stdscr, printer, dd_sources, ascii_image_path="Pictures/black_white003.jpg")
+        
+        string_val = moby_dick.enter_value()
+        printer.print_curses(string_val, ascii_image_path="Pictures/black_white003.jpg")
+        
+        value = dd_options_digest(stdscr, printer, dd_sources, ascii_image_path="Pictures/black_white003.jpg")
+        
+        if option and value:
+            final_list.append(option[0])
+            final_list.append("=" + value[0])
+            
+    final_fantasy_seven = [ ''.join(x) for x in zip(final_list[0::2], final_list[1::2]) ]
+    return final_fantasy_seven
 
 
 def gpg_options_input(printer: CursedPrinter, input_handler: Input, stdscr):
-    printer.display_text(["filling in gpg_options process"])
-    selected = gpg_options_digest(stdscr, printer, None, ascii_image_path="Pictures/black_white004.jpg")
-    if selected:
-        return selected
-    return get_options_from_user(printer, input_handler, "Enter gpg options (e.g., --symmetric):")
+    string = moby_dick.gpg_options()
+    printer.print_curses(string, ascii_image_path="Pictures/black_white004.jpg")
+    
+    n_str = input_handler.input_string("Enter the number of entries (n): ")
+    n = int(n_str) if n_str.isdigit() else 0
+    
+    final_list = []
+    gpg_sources = test_gpg_options()
+    for i in range(n):
+        string_inst = moby_dick.instructions()
+        printer.print_curses(string_inst, ascii_image_path="Pictures/black_white004.jpg")
+        
+        option = gpg_options_digest(stdscr, printer, gpg_sources, ascii_image_path="Pictures/black_white004.jpg")
+        
+        string_val = moby_dick.enter_value()
+        printer.print_curses(string_val, ascii_image_path="Pictures/black_white004.jpg")
+        
+        value = gpg_options_digest(stdscr, printer, gpg_sources, ascii_image_path="Pictures/black_white004.jpg")
+        
+        if option and value:
+            final_list.extend([option[0], value[0]])
+            
+    return final_list
 
 
 def key_file_input(printer: CursedPrinter, input_handler: Input, stdscr):
-    printer.display_text(["now entering key file input from prior cryptsetup keyfile"])
-    printer.display_text(["simply enter the same value as used for prior key file"])
+    string = moby_dick.key_file()
+    printer.print_curses(string, ascii_image_path="Pictures/black_white002.jpeg")
+    
+    n_str = input_handler.input_string("Enter the number of entries (n): ")
+    n = int(n_str) if n_str.isdigit() else 0
+    
+    final_list = []
     crypt_sources_local = test_crypt_options()
-    gpg_sources_for_keyfile = gpg_options_digest(stdscr, printer, crypt_sources_local, ascii_image_path="Pictures/black_white002.jpeg")
-    return get_options_from_user(printer, input_handler, "Enter key file options (e.g., --keyfile /path/to/key):")
+    for i in range(n):
+        string_inst = moby_dick.instructions()
+        printer.print_curses(string_inst, ascii_image_path="Pictures/black_white002.jpeg")
+        
+        option = gpg_options_digest(stdscr, printer, crypt_sources_local, ascii_image_path="Pictures/black_white002.jpeg")
+        
+        string_val = moby_dick.enter_value()
+        printer.print_curses(string_val, ascii_image_path="Pictures/black_white002.jpeg")
+        
+        value = gpg_options_digest(stdscr, printer, crypt_sources_local, ascii_image_path="Pictures/black_white002.jpeg")
+        
+        if option and value:
+            final_list.extend([option[0], value[0]])
+            
+    return final_list
 
 
 def name_physical_volume(printer: CursedPrinter, input_handler: Input): 
-    printer.display_text(['lastly please enter a name for a logical volume management (LVM) physical volume <: press enter >'])
+    string = moby_dick.physical_volume()
+    printer.print_curses(string, ascii_image_path="Pictures/asuka_original_resized.jpg")
     name = input_handler.input_string("LVM physical volume name: ")
     return name    
 

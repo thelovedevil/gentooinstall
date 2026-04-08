@@ -17,7 +17,7 @@ from utils import return_pandas
 
 def name_physical_volume(printer: CursedPrinter, input_handler: Input): 
     string = moby_dick.physical_volume()
-    printer.display_text(string.splitlines())
+    printer.print_curses(string, ascii_image_path="Pictures/black_white002.jpeg")
     name = input_handler.input_string("LVM physical volume name: ")
     return name   
 
@@ -36,7 +36,7 @@ def pvcreate_process(printer: CursedPrinter, name_pv: str):
 
 def name_volume_group(printer: CursedPrinter, input_handler: Input):
     string = moby_dick.volume_group()
-    printer.display_text(string.splitlines())
+    printer.print_curses(string, ascii_image_path="Pictures/black_white002.jpeg")
     name = input_handler.input_string("LVM volume group name: ")
     return name
 
@@ -73,7 +73,7 @@ class Lvcreate_Container():
                 
 
 def collect_lv_info(printer: CursedPrinter, input_handler: Input, prompt_string: str) -> dict:
-    printer.display_text(prompt_string.splitlines())
+    printer.print_curses(prompt_string, ascii_image_path="Pictures/black_white002.jpeg")
     lv_info = {}
     lv_info["size"] = input_handler.input_string("Enter size (e.g., 8G or 'null' if using extents): ")
     lv_info["name"] = input_handler.input_string("Enter name (e.g., swap): ")

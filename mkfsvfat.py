@@ -14,11 +14,10 @@ from utils import return_pandas
 
 
 def mkfs_vfat(stdscr, printer: CursedPrinter, block_table_app: Block_Table, pandas_block_devices: pd.DataFrame):
-    printer.display_text(["Formatting a block device to FAT32 (mkfs.vfat)."])
-    printer.display_text(["Please select the device to format."])
+    printer.print_curses("Formatting a block device to FAT32 (mkfs.vfat).\nPlease select the device to format.\nPress 'q' to continue to the device selection table.", ascii_image_path="Pictures/asuka_original_resized.jpg")
 
     # The block_digest method now requires stdscr and printer
-    format_block_device_list = block_table_app.block_digest(stdscr, printer, pandas_block_devices)
+    format_block_device_list = block_table_app.block_digest(stdscr, printer, pandas_block_devices, ascii_image_path="Pictures/asuka_original_resized.jpg")
     
     if not format_block_device_list:
         printer.display_text(["No device selected for mkfs.vfat. Aborting."], color_pair=2)
